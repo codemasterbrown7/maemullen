@@ -4,16 +4,20 @@ Version 0.1 · Source: `Source Material/Website inspo.pdf` (20 pages) + screensh
 
 This document is the single source of truth for how the MaeMüllen site looks and behaves.
 Nothing in a component should be a hard-coded colour, size or duration — everything resolves
-to a token defined here and implemented in `app/globals.css`.
+to a token defined here and implemented in **`design/tokens.css`**.
+
+**Status: colour, typography, shape and page structure are LOCKED (2026-08-02).** What remains
+open is content-level, listed in §15.
 
 **Status key** — 🔒 locked · 🎚 choose in `design/styleguide.html` · ❓ open, to resolve with Laura & Poppy
 
 ---
 
-## 0. Locked structure
+## 0. Locked decisions
 
-Agreed with Laura & Poppy. These are **settled — do not ask again during development.**
-Colours are *not* settled; only the structure below is.
+Agreed with Laura & Poppy. **Settled — do not ask again during development.**
+
+### Structure
 
 | # | Decision | Detail |
 |---|---|---|
@@ -22,18 +26,48 @@ Colours are *not* settled; only the structure below is.
 | S3 | **Marquee is its own surface** | Sits directly under the header, coloured independently of both header and page. §8.2 |
 | S4 | **No second logotype on the page** | The logotype appears in the header only. The page body opens on the statement block, not a repeated wordmark. §4.1 of `docs/SITEMAP.md` |
 
-Stated colour *intent* at the time of the decision — a starting point, still open:
+### Colour, type and shape — 🔒 LOCKED 2026-08-02
 
-| Element | Colour |
-|---|---|
-| Header bar | pink `#e19494` |
-| Logotype | cream `#fffaed` |
-| Nav links | cream `#fffaed` — deliberately matching the logotype |
-| Marquee bar | cream `#fffaed` |
-| Marquee text | royal blue `#0b48ff` |
-| Page | cream `#fffaed` |
+Agreed with Laura & Poppy from `design/styleguide.html`. **Implemented in
+`design/tokens.css`, which is the source of truth for the build.**
 
-Loaded as the **"As briefed"** preset in the studio.
+| Role | Value | |
+|---|---|---|
+| Nav bar | `#E19494` | pink |
+| Nav links | `#FFFAED` | cream — matches the logotype |
+| Logotype | `#FFFAED` | cream |
+| Nav border | `#C98080` | |
+| Marquee bar | `#FFFAED` | cream |
+| Marquee text | `#0B48FF` | royal blue |
+| Page | `#FFFAED` | cream |
+| Surface | `#FFFFFF` | white |
+| Ink | `#000000` | |
+| Primary | `#A23B3B` | red |
+| Primary ink | `#FFFAED` | cream |
+| Accent | `#0B48FF` | royal blue |
+| Decorative | `#A23B3B` | red |
+| Border | `#E2DED1` | |
+| Focus ring | `#0B48FF` | royal blue |
+
+**Header** — bar 56px · logotype 250px wide · links 11px, weight 500, tracking 0.3em, uppercase.
+**Marquee** — text 13px.
+**Type** — headings **Playfair Display 700**, tracking −0.005em · body System/Helvetica stack ·
+base 15px on a **1.4** ratio (h2 = 58px).
+**Buttons** — 42px tall · 20px padding · 13px label · tracking 0.09em · **radius 40px (pill)**.
+
+### Accepted trade-offs
+
+Both were visible in the studio readouts when the scheme was signed off. Recorded so they are
+not re-argued during development:
+
+| Item | Measured | Decision |
+|---|---|---|
+| Nav links, cream on pink at 11px | Lc 48, needs 90 | **Accepted.** Six familiar words, not prose. |
+| Body face `-apple-system, "Helvetica Neue", Arial` | — | **Accepted.** Note it renders as Helvetica Neue on macOS and **Arial on Windows**, so the site will not look identical across platforms. Swap to Inter if that becomes a problem. |
+
+One free improvement applied in `tokens.css`: the button label was **Borderline** at weight 500
+(Lc 83, needs 90). At **weight 600** the same colours pass outright, so `--btn-weight: 600`.
+Same for the marquee at `--marquee-weight: 600`. Neither changes the look meaningfully.
 
 ---
 
@@ -162,108 +196,76 @@ APCA minimum `Lc` by use: **90** small body · **75** body (16–18px) · **60**
 5. **Red is the workhorse** — strong as ink on cream/white, and as a background under cream/white.
 6. Check any new pairing in the contrast lab in `design/styleguide.html` before it ships.
 
-### 2.4 Semantic tokens
+### 2.4 Semantic tokens 🔒
 
-Components consume these, never the brand values directly. Two palette moods 🎚 — swapping the
-mood re-skins the entire site from one block.
+Components consume these, never the brand values directly. Defined in `design/tokens.css`.
 
-**Mood A — Cream-led editorial** (cream base, red accent, blue as a rare pop)
+| Token | Value | Used for |
+|---|---|---|
+| `--nav-bg` | `#e19494` | Header bar |
+| `--nav-ink` | `#fffaed` | Nav links |
+| `--nav-border` | `#c98080` | Rule under the header |
+| `--marquee-bg` | `#fffaed` | Marquee band |
+| `--marquee-ink` | `#0b48ff` | Service names in the band |
+| `--bg` | `#fffaed` | Page background |
+| `--surface` | `#ffffff` | Cards, panels, form fields |
+| `--ink` | `#000000` | Body copy and headings |
+| `--logotype` | `#fffaed` | Wordmark and monogram |
+| `--accent` | `#a23b3b` | Buttons, links, active states |
+| `--accent-hover` | `#85302f` | Button hover / pressed |
+| `--accent-ink` | `#fffaed` | Text on `--accent` |
+| `--accent-alt` | `#0b48ff` | Secondary accent, focus |
+| `--decor` | `#a23b3b` | Large decorative fills, image mats |
+| `--border` | `#e2ded1` | Hairlines and rules |
+| `--focus-ring` | `#0b48ff` | Keyboard focus, never removed |
 
-| Token | Value |
-|---|---|
-| `--bg` | `#fffaed` cream |
-| `--surface` | `#ffffff` white |
-| `--surface-inverse` | `#000000` black |
-| `--ink` | `#000000` |
-| `--ink-muted` | `rgb(0 0 0 / 0.62)` |
-| `--ink-inverse` | `#fffaed` |
-| `--accent` | `#a23b3b` red |
-| `--accent-ink` | `#fffaed` cream |
-| `--accent-alt` | `#0b48ff` blue |
-| `--decor` | `#e19494` pink — large fills only |
-| `--border` | `rgb(0 0 0 / 0.14)` |
-| `--focus-ring` | `#0b48ff` blue |
-
-**Mood B — Pink-led bold** (pink as a dominant full-bleed brand field)
-
-| Token | Value |
-|---|---|
-| `--bg` | `#e19494` pink |
-| `--surface` | `#fffaed` cream |
-| `--surface-inverse` | `#a23b3b` red |
-| `--ink` | `#000000` — **mandated**, the only compliant ink on pink |
-| `--ink-muted` | `rgb(0 0 0 / 0.66)` |
-| `--ink-inverse` | `#fffaed` |
-| `--accent` | `#a23b3b` red — **background use only in this mood** (red-on-pink fails) |
-| `--accent-ink` | `#fffaed` |
-| `--accent-alt` | `#000000` — blue fails on pink, so black substitutes |
-| `--decor` | `#fffaed` cream |
-| `--border` | `rgb(0 0 0 / 0.18)` |
-| `--focus-ring` | `#000000` |
-
-> The consequence worth internalising: **in Mood B, red cannot be used as text.** Any red CTA
-> becomes a red *block* with cream ink sitting on the pink field. Mood B is therefore a blockier,
-> more graphic layout — that is a design consequence of the palette, not a styling preference.
-
----
+Note the shift from earlier drafts: **pink is now only the header**, and **red does the
+decorative work** it used to share with pink. Blue has been promoted from "rare pop" to a
+working colour — it carries the marquee.
 
 ## 3. Typography
 
-### 3.1 Families
+### 3.1 Families 🔒 LOCKED
 
-**Display / headings** 🎚 — a high-contrast Didone with a genuine (not slanted) italic.
+**Headings — Playfair Display, weight 700, tracking −0.005em.** Free (OFL), variable weight.
+Chosen because the supplied logotype is set heavy: Playfair at 700 sits beside the wordmark
+without looking thin next to it. Loaded from Google Fonts.
 
-> **The logotype is no longer part of this decision.** It ships as a supplied image (§1.1). The
-> display face is only needed for *headings*, so the question is not "which font matches the
-> wordmark" but "which font sits comfortably beside it".
+**Body — the system stack:** `-apple-system, "Helvetica Neue", Arial, sans-serif`.
 
-| Candidate | Licence | Notes |
-|---|---|---|
-| **Instrument Serif** | Free (OFL) | High contrast, distinctive italic, least over-exposed. **Single light weight — noticeably lighter than the wordmark's heavy "Mae".** |
-| **Playfair Display** | Free (OFL) | Variable weight to 900, so it can be set heavy enough to echo the wordmark's weight. Very widely used. |
-| PP Editorial New / Canela / Ogg | Commercial | Closest to the wordmark's swashy italic. Paid upgrade path. |
+> The deck specified **Helvetica World**. That is a paid Monotype family requiring a commercial
+> web licence, and it is **not used anywhere** in this project. The system stack was chosen
+> instead as the closest free approximation.
+>
+> ⚠️ Known consequence: this renders as **Helvetica Neue on macOS/iOS** and **Arial on Windows**,
+> so the site will not look identical on every machine. Accepted (§0). If cross-platform
+> consistency later matters, swap `--font-body` to **Inter** — one line in `tokens.css`.
 
-**Observation worth testing:** the supplied "Mae" is set *heavy* with strong stem contrast.
-Instrument Serif headings read markedly lighter beside it — which can be a deliberate hierarchy
-(bold mark, delicate headings) or can read as a mismatch. Playfair at 700–900 echoes the mark far
-more closely. Compare both against the real wordmark at the top of the one-pager before deciding.
+**The logotype is not a font decision.** It ships as a supplied image (§1.1).
 
-**Body** 🎚 — the deck specifies **Helvetica World**. That is a **paid Monotype family**; web use
-needs a commercial licence (pageview-based or subscription). **We are not using it, and it is not
-loaded in the studio mockup** — the fonts actually loaded are Inter, DM Sans, Instrument Serif,
-Playfair Display and Cormorant Garamond.
+### 3.2 Type scale 🔒 LOCKED
 
-| Candidate | Licence | Notes |
-|---|---|---|
-| **Inter** | Free (OFL) | **Recommended.** Screen-optimised, huge language coverage, closest free Helvetica. Renders identically on every platform. |
-| DM Sans | Free (OFL) | Slightly warmer and more geometric than Inter. |
-| "System / Helvetica" | Free, but inconsistent | ⚠️ Resolves to `-apple-system, "Helvetica Neue", Arial`. Looks like Helvetica Neue on a Mac, but **Windows visitors get Arial** — so the site renders differently by platform. Fine for mockups, risky to ship. |
-| Neue Haas Grotesk / Helvetica Now | Commercial | The authentic Helvetica revivals, if there is budget. |
+Base **15px** on a **1.4** ratio. Fluid via `clamp()`; the maxima below are the computed steps.
 
-Loaded via `next/font` behind `--font-display` and `--font-body` so a swap touches one file.
+| Token | Desktop | Step | Use |
+|---|---:|---|---|
+| `--text-display-xl` | 113px | ×1.4⁶ | Hero, entry animation |
+| `--text-display-lg` | 81px | ×1.4⁵ | Page titles |
+| `--text-display-md` | 58px | ×1.4⁴ | Section titles — **h2** |
+| `--text-heading-lg` | 41px | ×1.4³ | h3 |
+| `--text-heading-md` | 29px | ×1.4² | h4 |
+| `--text-heading-sm` | 21px | ×1.4 | Card titles |
+| `--text-body-lg` | 18px | — | Intro paragraphs |
+| `--text-body` | 15px | base | Default, max 68ch |
+| `--text-body-sm` | 13px | — | Captions, meta |
+| `--text-label` | 13px | — | Button labels, form labels |
+| `--text-eyebrow` | 11px | — | Nav links, section eyebrows |
 
-### 3.2 Type scale
+A 1.4 ratio is dramatic — headings are large and there is a real gap between 21px and 15px.
+That is deliberate: it gives the editorial, magazine feel the deck asks for. Do not add
+intermediate steps to soften it.
 
-Fluid via `clamp()`. Display sizes are set tight; body is set loose for readability.
-
-| Token | Size | Line height | Tracking | Use |
-|---|---|---|---|---|
-| `--text-display-xl` | `clamp(3.5rem, 13vw, 12rem)` | 0.85 | −0.02em | Hero wordmark, entry animation |
-| `--text-display-lg` | `clamp(2.75rem, 8vw, 6rem)` | 0.9 | −0.02em | Page titles |
-| `--text-display-md` | `clamp(2rem, 5vw, 3.5rem)` | 1.0 | −0.01em | Section titles |
-| `--text-heading-lg` | `clamp(1.75rem, 3.5vw, 2.5rem)` | 1.1 | −0.01em | h2 |
-| `--text-heading-md` | `clamp(1.375rem, 2.2vw, 1.75rem)` | 1.2 | 0 | h3 |
-| `--text-heading-sm` | `1.125rem` | 1.3 | 0 | h4, card titles |
-| `--text-statement` | `clamp(1.25rem, 2.6vw, 2rem)` | 1.35 | 0.01em | The justified uppercase block, §3.3 |
-| `--text-body-lg` | `1.125rem` | 1.6 | 0 | Intro paragraphs |
-| `--text-body` | `1rem` | 1.65 | 0 | Default |
-| `--text-body-sm` | `0.875rem` | 1.6 | 0 | Captions, meta |
-| `--text-label` | `0.8125rem` | 1.4 | 0.08em | Form labels, buttons (uppercase) |
-| `--text-eyebrow` | `0.6875rem` | 1.2 | 0.18em | Section eyebrows, nav (uppercase) |
-
-Weights: display 400 only. Body 400 / 500 / 600 — never 700+, and never faux-bold.
-
-Measure: prose caps at **68 characters**. The statement block caps at **44 characters** per line.
+Headings are Playfair 700 throughout. Body weights 400/500/600 only.
 
 ### 3.3 Statement paragraph 🔒
 
@@ -328,27 +330,30 @@ background collapse to a single unit of padding rather than doubling.
 
 ---
 
-## 5. Shape & elevation
+## 5. Shape & elevation 🔒 LOCKED
 
-- **Radius: 0 by default.** This is an editorial, print-derived layout — squared corners
-  throughout. `--radius-control: 0` for buttons and inputs, with a documented pill alternative
-  should the brand soften later. The only true circle is the MM monogram.
-- **Borders:** `--border-hairline` 1px, `--border-medium` 2px. Colour is always `--border`.
-- **Shadows: none.** A single `--shadow-lift` (`0 12px 32px rgb(0 0 0 / 0.10)`) exists solely for
-  the portfolio hover state. Cards, headers and modals do not use shadow — they use borders and
-  background changes.
-
----
+- **Radius: 40px on controls** — buttons and inputs are fully rounded pills
+  (`--radius-control: 40px`). This is a deliberate softening against the sharp Didone headings,
+  and it is the one place the design is not print-flat. Cards, panels and sections stay square.
+- The only true circle is the MM monogram.
+- **Borders:** `--border-hairline` 1px, `--border-medium` 2px, always in `--border`.
+- **Shadows: none.** A single `--shadow-lift` exists for the portfolio hover and nothing else.
+  Depth comes from the header/marquee/page surfaces being different colours, not from shadow.
 
 ## 6. CTAs
 
-Three tiers. Every one is uppercase, `--text-label`, weight 500, `--radius-control`.
+Three tiers. Uppercase, `--text-label` (13px), **weight 600**, `--radius-control` (40px pill),
+tracking 0.09em.
 
 | Size | Height | Padding X |
 |---|---|---|
-| `sm` | 36px | 16px |
-| `md` | 44px | 24px |
-| `lg` | 52px | 32px |
+| `sm` | 34px | 14px |
+| **`md` (default)** | **42px** | **20px** |
+| `lg` | 50px | 28px |
+
+Weight 600 rather than 500 is deliberate: at 500 the cream-on-red label measured Lc 83 against a
+90 requirement (**Borderline**); at 600 the threshold drops to 70 and it **passes** with the same
+colours and the same size.
 
 ### 6.1 Primary — solid
 
@@ -394,8 +399,8 @@ would collide with red CTAs.
   `--text-body`. Height minimum 44px for touch.
 - **Focus:** border-bottom becomes 2px `--accent`, plus the standard focus ring.
 - **Error:** border-bottom `--accent`, message below in `--accent` at `--text-body-sm`, wired with
-  `aria-describedby` and `aria-invalid`. *In Mood B the error message is black + weight 600
-  instead of red, because red-on-pink fails.*
+  `aria-describedby` and `aria-invalid`. Red on cream is legible, so the standard red error
+  message is fine everywhere on the page. Forms never sit on the pink header.
 - **Success:** confirmation replaces the form in place; focus moves to the confirmation heading.
 - **Checkbox:** 20px square, 2px `--ink` border, `--accent` fill when checked.
 - **Select:** same underline treatment, native control, custom chevron.
@@ -417,31 +422,26 @@ Settled with Laura & Poppy. **Do not re-open during development.**
   left, Portfolio / Work / Enquire on the right — so the bar is visually balanced.
 - Sticky on scroll · hairline bottom border · active item underlined · `aria-current="page"`.
 
-Default sizing (open to adjustment, not to restructuring): bar 66px, logotype 150px wide,
-links 10.5px uppercase at 0.16em tracking.
+**Locked sizing:** bar **56px** tall · logotype **250px** wide · links **11px**, weight **500**,
+tracking **0.3em**, uppercase.
 
-> ⚠️ **Consequence of a pink header — unresolved.** Pink cannot carry nav-sized text, whatever
-> colour the ink is. Measured smallest passing size on `#e19494`:
+> **Accepted trade-off — nav link legibility.** Cream on pink at 11px measures **Lc 48 against a
+> 90 requirement**. Laura & Poppy signed this off knowingly: the nav is six familiar words, not
+> prose, and the wide 0.3em tracking helps word-shape recognition. **Do not silently "fix" this
+> during development.**
 >
-> | Ink | Lc | Weight 400–500 | Weight 600–700 |
-> |---|---:|---|---|
-> | cream `#fffaed` (current) | 48 | 36px | 24px |
-> | black `#000000` | 58 | 36px | 24px |
->
-> A conventional nav runs 10–13px, so neither option passes as briefed. Three ways out:
-> **(a)** make nav links ~24px semibold — unusual but bold and possibly on-brand;
-> **(b)** darken the header bar — cream on red `#a23b3b` is **Lc 83** and passes at any nav size
-> (from 9px at weight 600), so a red bar solves it outright while keeping cream links;
-> **(c)** accept it as a considered exception — the nav is six familiar words, not prose.
->
-> This is a real decision, not a technicality. It is the one open item blocking the header.
+> For reference if it is ever revisited: on this pink, no ink colour passes below 24px semibold.
+> Switching the bar to red `#a23b3b` with cream links measures Lc 83 and passes from 9px.
 
 ### 8.2 Services marquee 🔒 — structure decided
 
 The marquee is **its own surface**, coloured independently of both the header and the page
 (`--marquee-bg`, `--marquee-ink`). It sits directly beneath the header.
 
-Behaviour spec follows below and is unchanged.
+**Locked:** background cream `#fffaed` · text royal blue `#0b48ff` · **13px at weight 600**.
+
+Weight 600 is load-bearing — blue on cream is Lc 77, which needs 90 at weight 400 but only 70 at
+weight 600. At 600 it passes at any size.
 
 ### 8.2.1 Marquee behaviour 🔒
 
@@ -492,7 +492,7 @@ Fires once. Never moves more than 16px — larger travel makes long pages feel u
 
 ### 9.3 Entry experience 🎚
 
-Round 1 of the decision ladder. Full specs in `docs/SITEMAP.md`. Shared requirements regardless
+Still to decide — the next design question. Full specs in `docs/SITEMAP.md`. Shared requirements regardless
 of which variant wins:
 
 1. Plays **once per session** (`sessionStorage`), not on every navigation.
@@ -561,22 +561,32 @@ From the deck's own copy: confident, warm, unfussy. Short declarative sentences.
 
 ## 13. Token reference
 
-Implemented in `app/globals.css` inside Tailwind v4's `@theme` block, so every token is
-simultaneously a CSS custom property and a Tailwind utility:
+**`design/tokens.css` is the source of truth.** It holds every locked value and is imported
+first, before any framework styles:
 
 ```css
-@theme {
-  --color-bg: …;        /* → bg-bg, text-bg, border-bg */
-  --color-ink: …;       /* → text-ink */
-  --color-accent: …;    /* → bg-accent */
-  --font-display: …;    /* → font-display */
-  --spacing-section: …; /* → py-section */
+@import "../design/tokens.css";
+@import "tailwindcss";
+```
+
+Then bridged into Tailwind so each token is also a utility class:
+
+```css
+@theme inline {
+  --color-bg: var(--bg);              /* → bg-bg */
+  --color-ink: var(--ink);            /* → text-ink */
+  --color-accent: var(--accent);      /* → bg-accent */
+  --color-nav-bg: var(--nav-bg);      /* → bg-nav-bg */
+  --color-marquee-bg: var(--marquee-bg);
+  --font-display: var(--font-display);
 }
 ```
 
-Palette moods are applied as `data-mood="a" | "b"` on `<html>`, each redefining the semantic
-tokens only. **Brand values are never referenced directly by a component** — that indirection is
-what lets the typeface and palette decisions land later without touching page code.
+**Brand values (`--brand-*`) are never referenced directly by a component** — always the
+semantic token. That indirection is what makes a future palette change a one-file edit.
+
+Three independent surfaces, each with its own background and ink, per §0:
+`--nav-bg` / `--nav-ink` · `--marquee-bg` / `--marquee-ink` · `--bg` / `--ink`.
 
 ---
 
@@ -612,9 +622,14 @@ Parked deliberately — resolved when we reach the relevant page.
 
 | # | Decision | Status |
 |---|---|---|
-| S1–S4 | Page structure — header surface, centred logotype, marquee surface, no second logotype | ✅ **Decided** — see §0 |
-| C1 | Colour roles — header, marquee, page, logotype, primary, accent | 🎚 Open. Intent captured as the "As briefed" preset |
-| C2 | Nav link legibility on a pink header (§8.1 warning) | ⚠️ Needs resolving if the header stays pink |
-| T1 | Heading typeface — Instrument Serif / Playfair Display / commercial | 🎚 Open |
-| T2 | Body typeface — Inter or a paid Helvetica | 🎚 Open |
-| E1 | Entry experience — envelope / kinetic type / both | Not started |
+| S1–S4 | Page structure — header surface, centred logotype, marquee surface, no second logotype | ✅ **Locked** 2026-08-02 · §0 |
+| C1 | Colour roles — all 15 assigned | ✅ **Locked** 2026-08-02 · §0, `tokens.css` |
+| C2 | Nav link legibility on pink | ✅ **Accepted trade-off** · §8.1 |
+| T1 | Heading typeface — Playfair Display 700, tracking −0.005em | ✅ **Locked** · §3.1 |
+| T2 | Body typeface — system Helvetica stack | ✅ **Locked**, with the Windows/Arial caveat · §3.1 |
+| T3 | Type scale — 15px base, 1.4 ratio | ✅ **Locked** · §3.2 |
+| B1 | Buttons — 42px, 20px padding, 13px label, 40px pill radius | ✅ **Locked** · §5, §6 |
+| E1 | Entry experience — envelope / kinetic type / both | ⬜ Not started |
+| N1 | Portfolio vs Work — one page or two? | ⬜ Open · `SITEMAP.md §2` |
+
+Content-level questions remain in §15 and `docs/SITEMAP.md §6`.

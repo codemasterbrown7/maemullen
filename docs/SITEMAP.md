@@ -57,7 +57,7 @@ the `#social-media` service block link into it.
 they split (Portfolio = a visual gallery, Work = written case studies), or one gets renamed.
 Needs deciding before the Work page is built.
 
-- The wordmark (top-left or centred, per the Round 4 header decision) always links to `/`.
+- The wordmark sits **centred in the header** (locked, `DESIGN.md` §0) and always links to `/`.
 - The services marquee is a *secondary* route into `/services` — deck p4:
   > Top of the website maemullen below moving constantly stops with cursor links to our services page
 - Every page ends with a CTA band into `/enquire`. That is the site's single conversion goal.
@@ -70,7 +70,7 @@ reference screenshot had a cart icon; nothing in MaeMüllen's own brief suggests
 
 ## 3. Global elements
 
-### 3.1 Entry experience — Round 1 decision 🎚
+### 3.1 Entry experience — ⬜ still to decide
 
 Deck p1:
 > Hand drawn / envelope made by ai like this one first thing you see pops up?

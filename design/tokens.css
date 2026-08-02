@@ -1,0 +1,123 @@
+/* ============================================================================
+   MaeMüllen — design tokens
+   LOCKED 2026-08-02. Exported from design/styleguide.html and agreed with
+   Laura & Poppy. This file is the single source of truth for the build.
+
+   Rules:
+   · Components consume these variables. Never a raw hex, px or ms.
+   · Changing a value here re-skins the whole site — that is the point.
+   · Anything not in here does not exist yet. Add it here first.
+   ============================================================================ */
+
+:root {
+  /* ── Brand palette (fixed by the deck, verified against the logo files) ── */
+  --brand-red: #a23b3b;
+  --brand-pink: #e19494;
+  --brand-cream: #fffaed;
+  --brand-blue: #0b48ff;
+  --brand-black: #000000;
+  --brand-white: #ffffff;
+
+  /* ── Header — its own surface, independent of the page ── */
+  --nav-bg: #e19494;
+  --nav-ink: #fffaed;
+  --nav-border: #c98080;
+  --nav-height: 56px;
+  --nav-mark-width: 250px;
+  --nav-link-size: 11px;
+  --nav-link-weight: 500;
+  --nav-link-tracking: 0.3em;
+
+  /* ── Services marquee — its own surface, sits under the header ── */
+  --marquee-bg: #fffaed;
+  --marquee-ink: #0b48ff;
+  --marquee-size: 13px;
+  --marquee-weight: 600; /* 600 is what makes blue-on-cream pass — see DESIGN.md §2.3 */
+
+  /* ── Page ── */
+  --bg: #fffaed;
+  --surface: #ffffff;
+  --ink: #000000;
+  --ink-muted: rgb(0 0 0 / 0.62);
+  --logotype: #fffaed;
+  --accent: #a23b3b;
+  --accent-hover: #85302f;
+  --accent-ink: #fffaed;
+  --accent-alt: #0b48ff;
+  --decor: #a23b3b;
+  --border: #e2ded1;
+  --focus-ring: #0b48ff;
+
+  /* ── Typography ── */
+  --font-display: "Playfair Display", Didot, serif;
+  --font-body: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --head-weight: 700;
+  --head-tracking: -0.005em;
+  --text-base: 15px;
+  --scale-ratio: 1.4;
+
+  /* Type scale — base 15px on a 1.4 ratio. Desktop maxima are the computed
+     steps; the clamp lower bounds keep long headlines usable on mobile. */
+  --text-display-xl: clamp(3.25rem, 11vw, 7.063rem); /* 113px — step 6 */
+  --text-display-lg: clamp(2.625rem, 8vw, 5.063rem); /*  81px — step 5 */
+  --text-display-md: clamp(2rem, 5.5vw, 3.625rem); /*  58px — step 4, h2 */
+  --text-heading-lg: clamp(1.625rem, 3.6vw, 2.563rem); /*  41px — step 3 */
+  --text-heading-md: clamp(1.35rem, 2.4vw, 1.813rem); /*  29px — step 2 */
+  --text-heading-sm: 1.313rem; /*  21px — step 1 */
+  --text-statement: clamp(1.125rem, 2.4vw, 1.625rem);
+  --text-body-lg: 1.125rem; /*  18px */
+  --text-body: 0.9375rem; /*  15px */
+  --text-body-sm: 0.8125rem; /*  13px */
+  --text-label: 0.8125rem; /*  13px — button labels */
+  --text-eyebrow: 0.6875rem; /*  11px — nav links, eyebrows */
+
+  /* ── Buttons & shape ── */
+  --radius-control: 40px; /* pill — a deliberate softening, see DESIGN.md §5 */
+  --btn-height: 42px;
+  --btn-padding-x: 20px;
+  --btn-text: 13px;
+  --btn-tracking: 0.09em;
+  --btn-weight: 600; /* 600, not 500 — lifts the label from Borderline to Passes */
+  --btn-height-sm: 34px;
+  --btn-padding-x-sm: 14px;
+  --btn-height-lg: 50px;
+  --btn-padding-x-lg: 28px;
+
+  --border-hairline: 1px;
+  --border-medium: 2px;
+  --shadow-lift: 0 12px 32px rgb(0 0 0 / 0.1);
+
+  /* ── Spacing (4px base) ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+  --space-40: 160px;
+  --space-48: 192px;
+  --space-section: clamp(4rem, 10vw, 10rem);
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+
+  /* ── Layout ── */
+  --container-narrow: 45rem;
+  --container-default: 75rem;
+  --container-wide: 90rem;
+
+  /* ── Motion ── */
+  --duration-fast: 160ms;
+  --duration-base: 260ms;
+  --duration-slow: 420ms;
+  --duration-deliberate: 720ms;
+  --duration-cinematic: 1200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+}
