@@ -3,512 +3,967 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MaeMüllen — Styleguide</title>
+<title>MaeMüllen — Design Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=DM+Sans:wght@100..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════ chrome ══════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  --red:#a23b3b; --pink:#e19494; --cream:#fffaed; --blue:#0b48ff;
-  --black:#000; --white:#fff;
-  --paper:#f7f7f8; --card:#fff; --rule:#e3e3e6; --muted:#6b6b73; --doc-ink:#17171a;
-  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
-  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ui-bg:#f4f4f6; --ui-panel:#fff; --ui-ink:#17171a; --ui-muted:#6e6e78;
+  --ui-line:#e2e2e7; --ui-accent:#2b6cff;
+  --ui-sans:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --ui-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-body{margin:0;background:var(--paper);color:var(--doc-ink);font-family:var(--sans);
-  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
-h1,h2,h3,h4{margin:0;line-height:1.15;font-weight:600}
+html,body{height:100%}
+body{margin:0;background:var(--ui-bg);color:var(--ui-ink);font-family:var(--ui-sans);
+  font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.2}
 p{margin:0}
-.mono{font-family:var(--mono);font-size:.75rem}
-.muted{color:var(--muted)}
-.sheet{max-width:1180px;margin:0 auto;background:var(--card)}
+button{font:inherit}
+.app{display:grid;grid-template-columns:1fr;min-height:100%}
+@media(min-width:1080px){.app{grid-template-columns:340px 1fr}}
 
-/* ---------- cover ---------- */
-.cover{display:grid;grid-template-columns:1fr}
-@media(min-width:820px){.cover{grid-template-columns:1.15fr .85fr}}
-.cover-l{padding:64px 56px}
-.cover-r{background:var(--red);color:var(--cream);padding:64px 56px;
-  display:flex;flex-direction:column;justify-content:space-between;min-height:280px}
-.cover-l h1{font-size:44px;letter-spacing:-.02em;line-height:1.05}
-.cover-l h1 span{color:var(--red)}
-.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+/* ── sidebar ── */
+.panel{background:var(--ui-panel);border-right:1px solid var(--ui-line);
+  padding:20px;display:flex;flex-direction:column;gap:22px}
+@media(min-width:1080px){.panel{position:sticky;top:0;height:100vh;overflow-y:auto}}
+.panel h1{font-size:17px;letter-spacing:-.01em}
+.panel h1 span{color:#a23b3b}
+.grp{border-top:1px solid var(--ui-line);padding-top:16px}
+.grp:first-of-type{border-top:0;padding-top:0}
+.grp > h3{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ui-muted);margin-bottom:11px}
+.hint{font-size:11.5px;color:var(--ui-muted);line-height:1.45;margin-top:8px}
 
-/* ---------- sections ---------- */
-section{padding:56px}
-section + section{border-top:1px solid var(--rule)}
-.sec-label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
-  margin-bottom:28px;display:flex;gap:12px;align-items:baseline}
-.sec-label b{color:var(--doc-ink);font-weight:600}
-.lede{max-width:70ch;margin-bottom:36px;color:var(--muted)}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.preset{padding:9px 10px;border:1px solid var(--ui-line);background:#fff;cursor:pointer;
+  text-align:left;border-radius:4px;font-size:12px;line-height:1.3;transition:.14s}
+.preset:hover{border-color:var(--ui-ink)}
+.preset.on{border-color:var(--ui-accent);box-shadow:inset 0 0 0 1px var(--ui-accent)}
+.preset b{display:block;font-weight:600}
+.preset i{display:flex;gap:3px;margin-top:6px;font-style:normal}
+.preset i s{width:13px;height:13px;border-radius:3px;border:1px solid rgb(0 0 0 /.12);text-decoration:none}
 
-/* ---------- option cards (the comparison) ---------- */
-.opt{border:1px solid var(--rule);margin-bottom:40px}
-.opt-head{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;
-  padding:22px 28px;border-bottom:1px solid var(--rule)}
-.opt-num{font-family:var(--mono);font-size:12px;color:var(--muted)}
-.opt-head h3{font-size:22px;letter-spacing:-.01em}
-.opt-head p{flex:1 1 320px;font-size:13.5px;color:var(--muted)}
+/* role rows */
+.role{display:flex;align-items:center;gap:9px;padding:5px 0;position:relative}
+.role .sw{width:30px;height:30px;border-radius:5px;border:1px solid rgb(0 0 0 /.16);
+  cursor:pointer;flex:none;padding:0;transition:.14s}
+.role .sw:hover{transform:scale(1.07)}
+.role .lbl{flex:1;min-width:0}
+.role .lbl b{display:block;font-size:12.5px;font-weight:600}
+.role .lbl span{display:block;font-size:10.5px;color:var(--ui-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.role .hex{font-family:var(--ui-mono);font-size:10px;color:var(--ui-muted)}
 
-.opt-grid{display:grid;grid-template-columns:1fr}
-@media(min-width:960px){.opt-grid{grid-template-columns:1fr 1fr}}
+/* colour popover */
+.pop{position:absolute;z-index:60;left:0;top:38px;width:290px;background:#fff;
+  border:1px solid var(--ui-line);border-radius:8px;box-shadow:0 14px 40px rgb(0 0 0 /.16);padding:13px}
+.pop h4{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ui-muted);margin:0 0 7px}
+.pop .brandrow{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:12px}
+.pop .rampgrid{display:grid;gap:5px;margin-bottom:12px}
+.pop .rampline{display:grid;grid-template-columns:38px repeat(6,1fr);gap:4px;align-items:center}
+.pop .rampline em{font-style:normal;font-size:9.5px;color:var(--ui-muted)}
+.pop b.dot,.pop button.dot{height:24px;border-radius:4px;border:1px solid rgb(0 0 0 /.14);
+  cursor:pointer;padding:0;display:block;width:100%}
+.pop button.dot:hover{outline:2px solid var(--ui-accent);outline-offset:1px}
+.pop .custom{display:flex;gap:8px;align-items:center}
+.pop .custom input[type=color]{width:38px;height:32px;padding:0;border:1px solid var(--ui-line);
+  border-radius:5px;background:none;cursor:pointer}
+.pop .custom input[type=text]{flex:1;font-family:var(--ui-mono);font-size:11.5px;padding:7px 8px;
+  border:1px solid var(--ui-line);border-radius:5px;min-width:0}
 
-.opt-spec{padding:28px;border-bottom:1px solid var(--rule)}
-@media(min-width:960px){.opt-spec{border-bottom:0;border-right:1px solid var(--rule)}}
+label.ctl{display:block;margin-bottom:11px}
+label.ctl > span{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:5px}
+label.ctl > span i{font-style:normal;font-family:var(--ui-mono);color:var(--ui-muted);font-size:10.5px}
+select,input[type=range]{width:100%}
+select{padding:7px 8px;border:1px solid var(--ui-line);border-radius:5px;background:#fff;font-size:12.5px}
+input[type=range]{accent-color:var(--ui-accent)}
+.seg2{display:flex;border:1px solid var(--ui-line);border-radius:5px;overflow:hidden}
+.seg2 button{flex:1;padding:7px 4px;border:0;background:#fff;cursor:pointer;font-size:11.5px}
+.seg2 button.on{background:var(--ui-ink);color:#fff}
 
-.roles{display:grid;gap:10px;margin-bottom:26px}
-.role{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center}
-.role .chip{width:44px;height:44px;border:1px solid rgb(0 0 0 / .12)}
-.role .name{font-size:13px;font-weight:600}
-.role .use{font-size:12px;color:var(--muted);line-height:1.4}
-.role .hex{font-family:var(--mono);font-size:11px;color:var(--muted)}
+/* verdict list */
+.vlist{display:grid;gap:7px}
+.v{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;
+  padding:8px 9px;border:1px solid var(--ui-line);border-radius:6px;font-size:11.5px}
+.v .prev{width:46px;height:30px;border-radius:4px;display:grid;place-items:center;
+  font-size:11px;font-weight:600;border:1px solid rgb(0 0 0 /.1)}
+.v .txt b{display:block;font-size:11.5px}
+.v .txt span{color:var(--ui-muted);font-size:10.5px}
+.v .sc{text-align:right;font-family:var(--ui-mono);font-size:10.5px;line-height:1.35}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9.5px;font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase}
+.ok{background:#e5f6ec;color:#0a7a3d}
+.warnt{background:#fff4dd;color:#8a6a00}
+.bad{background:#fdeceb;color:#b3261e}
 
-.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px}
-.sg-btn{display:inline-flex;align-items:center;justify-content:center;height:42px;
-  padding:0 22px;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-  border:1px solid transparent;cursor:default;font-family:var(--sans)}
-.sg-btn.primary{background:var(--o-primary);color:var(--o-primary-ink)}
-.sg-btn.primary.pressed{background:var(--o-primary-press)}
-.sg-btn.secondary{background:transparent;color:var(--o-ink);border-color:var(--o-ink)}
-.sg-btn.secondary.pressed{background:var(--o-ink);color:var(--o-page)}
-.btn-note{font-size:12px;color:var(--muted);margin-top:4px}
-.warn{margin-top:14px;padding:10px 14px;background:#fff6f5;border-left:3px solid var(--red);
-  font-size:12.5px;line-height:1.5}
+/* decisions */
+.dec{border:1px solid var(--ui-line);border-radius:6px;padding:9px;margin-bottom:8px}
+.dec .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dec .top b{font-size:12px}
+.dec .btns{display:flex;gap:4px}
+.dec .btns button{width:26px;height:24px;border:1px solid var(--ui-line);background:#fff;
+  border-radius:4px;cursor:pointer;font-size:12px;line-height:1}
+.dec .btns button.on[data-v="keep"]{background:#0a7a3d;color:#fff;border-color:#0a7a3d}
+.dec .btns button.on[data-v="maybe"]{background:#c8960a;color:#fff;border-color:#c8960a}
+.dec .btns button.on[data-v="no"]{background:#b3261e;color:#fff;border-color:#b3261e}
+.dec textarea{width:100%;margin-top:7px;border:1px solid var(--ui-line);border-radius:5px;
+  padding:6px 7px;font:inherit;font-size:11.5px;resize:vertical;min-height:34px}
 
-/* ---------- vibe preview ---------- */
-.preview{background:var(--o-page);color:var(--o-ink);min-height:420px;
-  display:flex;flex-direction:column}
-.pv-nav{display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;height:56px;border-bottom:1px solid var(--o-line)}
-.pv-nav img{height:15px;width:auto;filter:var(--o-mark)}
-.pv-nav ul{display:flex;gap:16px;list-style:none;margin:0;padding:0}
-.pv-nav li{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
-.pv-marq{border-bottom:1px solid var(--o-line);background:var(--o-surface);
-  padding:9px 24px;font-size:10.5px;color:var(--o-ink);overflow:hidden;white-space:nowrap}
-.pv-body{flex:1;padding:34px 24px;display:flex;flex-direction:column;gap:18px}
-.pv-body .mark{width:min(100%,340px);height:auto;filter:var(--o-mark)}
-.pv-state{font-size:11.5px;line-height:1.45;text-transform:uppercase;text-align:justify;
-  max-width:40ch;letter-spacing:.02em}
-.pv-cta{align-self:flex-start;background:var(--o-primary);color:var(--o-primary-ink);
-  padding:11px 20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
-.pv-foot{background:var(--o-decor);height:34px}
+.act{display:grid;gap:7px}
+.act button{padding:10px;border:1px solid var(--ui-ink);background:var(--ui-ink);color:#fff;
+  border-radius:6px;cursor:pointer;font-size:12.5px;font-weight:500}
+.act button.ghost{background:#fff;color:var(--ui-ink)}
+.act button:hover{opacity:.88}
 
-/* ---------- ramps ---------- */
-.ramp-block{margin-bottom:34px}
-.ramp-title{display:flex;gap:12px;align-items:baseline;margin-bottom:4px}
-.ramp-title h4{font-size:16px}
-.ramp-desc{font-size:13px;color:var(--muted);max-width:62ch;margin-bottom:14px}
-.ramp{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--rule)}
-.ramp .step{padding:14px 10px;min-height:104px;display:flex;flex-direction:column;
-  justify-content:flex-end;gap:2px}
-.ramp .step b{font-size:11px;font-family:var(--mono)}
-.ramp .step span{font-size:9.5px;font-family:var(--mono);opacity:.75}
-.rules{margin-top:12px;font-size:12.5px;color:var(--muted);display:grid;gap:5px}
-.rules li{margin-left:16px}
+/* ══════════════════════ canvas (themed) ══════════════════════ */
+.canvas{padding:26px;display:flex;flex-direction:column;gap:26px;min-width:0}
+.block{border:1px solid var(--ui-line);border-radius:10px;overflow:hidden;background:#fff}
+.block > .bh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:12px 16px;border-bottom:1px solid var(--ui-line);background:#fafafb}
+.block > .bh b{font-size:12px}
+.block > .bh span{font-size:11px;color:var(--ui-muted)}
+.pad{padding:22px}
 
-/* ---------- type ---------- */
-.type-opt{border:1px solid var(--rule);padding:26px 28px;margin-bottom:18px}
-.type-opt .head{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;margin-bottom:18px}
-.type-opt .head h4{font-size:17px}
-.type-opt .head .lic{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.type-opt .head p{flex:1 1 300px;font-size:12.5px;color:var(--muted)}
-.specimen{border-top:1px solid var(--rule);padding-top:16px;display:grid;gap:12px}
-.spec-row{display:grid;grid-template-columns:1fr;gap:4px}
-@media(min-width:760px){.spec-row{grid-template-columns:150px 1fr;gap:20px;align-items:baseline}}
-.spec-meta{font-family:var(--mono);font-size:10.5px;color:var(--muted);line-height:1.5}
-.mark-compare{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-  padding:14px 0 18px;border-bottom:1px solid var(--rule);margin-bottom:16px}
-.mark-compare img{height:34px;width:auto;filter:brightness(0)}
-.mark-compare .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+/* THEME SCOPE — everything below consumes the live tokens */
+.theme{
+  background:var(--t-page); color:var(--t-ink);
+  font-family:var(--t-body);
+  font-size:var(--t-base);
+}
+/* display:block matters — these are spans, and an inline element ignores
+   width/height, so the mask would collapse to nothing. */
+.mark{display:block;background-color:var(--t-mark);
+  -webkit-mask:url('../public/brand/wordmark-cream-trimmed.png') no-repeat left center/contain;
+  mask:url('../public/brand/wordmark-cream-trimmed.png') no-repeat left center/contain;}
+.mono-mark{display:block;background-color:var(--t-mark);
+  -webkit-mask:url('../public/brand/monogram-trimmed.png') no-repeat center/contain;
+  mask:url('../public/brand/monogram-trimmed.png') no-repeat center/contain;}
 
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
-th{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
-td.num{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
-.dots{display:flex;gap:5px}
-.dots i{width:13px;height:13px;border-radius:50%;display:block;border:1px solid rgb(0 0 0 / .14)}
-.badge{display:inline-block;padding:1px 7px;font-size:10px;letter-spacing:.07em;
-  text-transform:uppercase;border:1px solid currentColor;white-space:nowrap}
-.pass{color:#0a7a3d}.large{color:#8a6a00}.fail{color:#b3261e;font-weight:600}
-.swatch-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
-.sw{border:1px solid var(--rule)}
-.sw .fill{height:78px}
-.sw .meta{padding:9px 11px}
-.sw .meta b{display:block;font-size:12.5px}
-footer{padding:34px 56px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted)}
+.t-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:0 26px;height:66px;border-bottom:1px solid var(--t-line)}
+.t-nav .mark{width:150px;height:24px}
+.t-nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
+.t-nav a{color:inherit;text-decoration:none;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;padding:4px 0;border-bottom:1px solid transparent}
+.t-nav a:hover{border-bottom-color:currentColor}
+.t-marq{background:var(--t-surface);border-bottom:1px solid var(--t-line);
+  padding:11px 26px;font-size:11.5px;overflow:hidden;white-space:nowrap}
+.t-hero{padding:52px 26px 42px}
+.t-hero .mark{width:min(100%,620px);height:96px}
+.t-state{margin-top:26px;max-width:42ch;text-transform:uppercase;text-align:justify;
+  font-size:calc(var(--t-base) * 1.15);line-height:1.4;letter-spacing:.015em}
+.t-sec{padding:34px 26px;border-top:1px solid var(--t-line)}
+.t-h2{font-family:var(--t-head);font-weight:var(--t-head-weight);
+  font-size:var(--t-h2);line-height:1.08;letter-spacing:var(--t-head-track)}
+.t-svc{list-style:none;margin:18px 0 0;padding:0}
+.t-svc li{display:grid;grid-template-columns:52px 1fr;gap:14px;padding:13px 0;
+  border-top:1px solid var(--t-line);align-items:baseline}
+.t-svc li:last-child{border-bottom:1px solid var(--t-line)}
+.t-svc em{font-style:normal;font-family:var(--ui-mono);font-size:11px;opacity:.55}
+.t-svc b{font-weight:500;color:var(--t-primary);font-size:calc(var(--t-base) * 1.05)}
+.t-cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));margin-top:18px}
+.t-card{border:1px solid var(--t-line);background:var(--t-surface);overflow:hidden}
+.t-card .img{aspect-ratio:4/3;background:var(--t-decor)}
+.t-card .cap{padding:11px 13px;font-size:12px}
+.t-cta{padding:44px 26px;background:var(--t-primary);color:var(--t-primary-ink)}
+.t-foot{padding:24px 26px;border-top:1px solid var(--t-line);font-size:11.5px;opacity:.7;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.t-foot .mono-mark{width:22px;height:22px}
+
+/* REAL buttons — hover them, press them, tab to them */
+.btn{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  font-family:var(--t-body);font-weight:500;text-decoration:none;
+  font-size:var(--t-btn-size);letter-spacing:var(--t-btn-track);
+  text-transform:var(--t-btn-case);
+  height:var(--t-btn-h);padding-inline:var(--t-btn-px);
+  border-radius:var(--t-radius);border:1px solid transparent;
+  transition:background .15s ease,color .15s ease,transform .08s ease,border-color .15s ease}
+.btn-primary{background:var(--t-primary);color:var(--t-primary-ink)}
+.btn-primary:hover{background:var(--t-primary-hover)}
+.btn-primary:active{transform:translateY(1px)}
+.btn-secondary{background:transparent;color:var(--t-ink);border-color:var(--t-ink)}
+.btn-secondary:hover{background:var(--t-ink);color:var(--t-page)}
+.btn-secondary:active{transform:translateY(1px)}
+.btn-ghost{background:transparent;color:var(--t-ink);border:0;padding-inline:0;height:auto}
+.btn-ghost::before{content:"[";margin-right:8px;transition:transform .15s}
+.btn-ghost::after{content:"]";margin-left:8px;transition:transform .15s}
+.btn-ghost:hover::before{transform:translateX(-4px)}
+.btn-ghost:hover::after{transform:translateX(4px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--t-focus);outline-offset:3px}
+.btnbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* real form fields */
+.fields{display:grid;gap:18px;max-width:520px;margin-top:18px}
+.fld label{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+  opacity:.65;margin-bottom:6px}
+.fld input,.fld textarea,.fld select{width:100%;background:transparent;color:var(--t-ink);
+  font-family:var(--t-body);font-size:var(--t-base);border:0;
+  border-bottom:1px solid var(--t-line);padding:11px 0;min-height:44px;border-radius:0}
+.fld input:focus,.fld textarea:focus{outline:none;border-bottom:2px solid var(--t-primary)}
+.fld input:focus-visible{outline:2px solid var(--t-focus);outline-offset:3px}
+
+/* type specimen */
+.spec{display:grid;gap:16px}
+.spec .row{display:grid;grid-template-columns:1fr;gap:4px}
+@media(min-width:720px){.spec .row{grid-template-columns:130px 1fr;gap:18px;align-items:baseline}}
+.spec .meta{font-family:var(--ui-mono);font-size:10px;color:var(--ui-muted);line-height:1.5}
+
+/* contrast lab */
+.lab{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:820px){.lab{grid-template-columns:300px 1fr}}
+.lab .preview{border:1px solid var(--ui-line);border-radius:8px;padding:26px;
+  display:flex;flex-direction:column;gap:16px;justify-content:center;min-height:230px}
+.lab .ctrls{display:grid;gap:10px;align-content:start}
+.verdicts{display:grid;gap:9px;margin-top:14px}
+.verdict{border:1px solid var(--ui-line);border-radius:7px;padding:11px 13px}
+.verdict .hd{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.verdict .hd b{font-size:12px}
+.verdict .hd .n{font-family:var(--ui-mono);font-size:14px;font-weight:600}
+.verdict p{font-size:11.5px;color:var(--ui-muted);margin-top:5px;line-height:1.45}
+.thresh{display:grid;gap:3px;margin-top:9px;font-size:10.5px}
+.thresh div{display:grid;grid-template-columns:1fr auto auto;gap:8px;color:var(--ui-muted)}
+.thresh div b{font-weight:600}
+table.mini{width:100%;border-collapse:collapse;font-size:12px}
+.mini th,.mini td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--ui-line)}
+.mini th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ui-muted)}
+.mini td.n{font-family:var(--ui-mono);font-size:11px;white-space:nowrap}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ui-ink);color:#fff;padding:11px 18px;border-radius:7px;font-size:12.5px;
+  opacity:0;pointer-events:none;transition:.22s;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<div class="sheet">
+<div class="app">
 
-<!-- ================= COVER ================= -->
-<div class="cover">
-  <div class="cover-l">
-    <p class="eyebrow">Brand styleguide</p>
-    <h1>Mae<span>Müllen</span></h1>
-    <p class="muted" style="margin-top:14px;max-width:44ch">
-      The rules the website is built to. Pick one type option and one colour option;
-      everything after that follows from them.</p>
+<!-- ══════════════ CONTROL PANEL ══════════════ -->
+<aside class="panel">
+  <div>
+    <h1>Mae<span>Müllen</span> · Design Studio</h1>
+    <p class="hint" style="margin-top:5px">
+      Change anything on the left; the whole page re-skins live. Mark what you like, add notes,
+      then export a brief that becomes the design document.</p>
   </div>
-  <div class="cover-r">
-    <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Version 0.1</div>
-    <div>
-      <img src="../public/brand/wordmark-cream-trimmed.png" alt="MaeMüllen" style="width:100%;max-width:300px;height:auto">
-      <p style="margin-top:14px;font-size:12px;opacity:.85">Derived from the wireframe deck<br>and the supplied logo files</p>
+
+  <div class="grp">
+    <h3>Starting points</h3>
+    <div class="presets" id="presets"></div>
+  </div>
+
+  <div class="grp">
+    <h3>Colour roles</h3>
+    <div id="roles"></div>
+    <p class="hint">Click any swatch to change it — brand colours, their tints and shades, or a custom value.</p>
+  </div>
+
+  <div class="grp">
+    <h3>Typography</h3>
+    <div id="typeCtrls"></div>
+  </div>
+
+  <div class="grp">
+    <h3>Buttons &amp; shape</h3>
+    <div id="shapeCtrls"></div>
+  </div>
+
+  <div class="grp">
+    <h3>Legibility check</h3>
+    <div class="vlist" id="verdicts"></div>
+    <p class="hint">Judged by <b>APCA</b> (the WCAG&nbsp;3 algorithm) at the size each pairing is
+      actually used. WCAG&nbsp;2.1 is shown too, but it over-penalises light-on-light pairs.</p>
+  </div>
+
+  <div class="grp">
+    <h3>Your decisions</h3>
+    <div id="decisions"></div>
+  </div>
+
+  <div class="grp">
+    <h3>Export</h3>
+    <div class="act">
+      <button id="exportBrief">Copy design brief</button>
+      <button class="ghost" id="exportCss">Copy CSS tokens</button>
+      <button class="ghost" id="resetAll">Reset everything</button>
+    </div>
+    <p class="hint">The brief captures every choice, note and verdict — paste it back to me and it
+      goes straight into <span style="font-family:var(--ui-mono)">DESIGN.md</span>.</p>
+  </div>
+</aside>
+
+<!-- ══════════════ CANVAS ══════════════ -->
+<main class="canvas">
+
+  <div class="block">
+    <div class="bh"><b>Live page</b><span>Real links and buttons — hover, click and tab through them</span></div>
+    <div class="theme" id="livePage">
+      <nav class="t-nav">
+        <span class="mark"></span>
+        <ul>
+          <li><a href="#">About</a></li><li><a href="#">Services</a></li>
+          <li><a href="#">Packages</a></li><li><a href="#">Work</a></li><li><a href="#">Enquire</a></li>
+        </ul>
+      </nav>
+      <div class="t-marq" id="marq"></div>
+      <div class="t-hero">
+        <span class="mark"></span>
+        <p class="t-state">MaeMüllen is a creative studio where social, content and design come together.</p>
+        <div class="btnbar" style="margin-top:28px">
+          <button class="btn btn-primary">Enquire now</button>
+          <button class="btn btn-secondary">View work</button>
+          <button class="btn btn-ghost">Explore our world</button>
+        </div>
+      </div>
+      <div class="t-sec">
+        <h2 class="t-h2">Services</h2>
+        <ul class="t-svc" id="svcList"></ul>
+      </div>
+      <div class="t-sec">
+        <h2 class="t-h2">Selected work</h2>
+        <div class="t-cards">
+          <div class="t-card"><div class="img"></div><div class="cap">Bendito — menu design</div></div>
+          <div class="t-card"><div class="img"></div><div class="cap">Airbnb — content</div></div>
+          <div class="t-card"><div class="img"></div><div class="cap">Mia Massage — brand</div></div>
+        </div>
+      </div>
+      <div class="t-sec">
+        <h2 class="t-h2">Enquire</h2>
+        <div class="fields">
+          <div class="fld"><label for="f1">First name (required)</label><input id="f1" type="text" placeholder=""></div>
+          <div class="fld"><label for="f2">Brand name (required)</label><input id="f2" type="text"></div>
+          <div class="fld"><label for="f3">Describe your brand</label><textarea id="f3" rows="2"></textarea></div>
+          <div><button class="btn btn-primary">Send enquiry</button></div>
+        </div>
+      </div>
+      <div class="t-cta">
+        <h2 class="t-h2" style="max-width:20ch">Let’s make something worth remembering.</h2>
+      </div>
+      <div class="t-foot">
+        <span>© 2026 MaeMüllen</span><span class="mono-mark"></span>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ================= HOW TO USE ================= -->
-<section>
-  <div class="sec-label"><b>00</b><span>How to use this document</span></div>
-  <p class="lede">
-    Two decisions to make, in this order. <b>Part 1</b> gives you four complete colour directions —
-    the brand colours are fixed by the deck, so what changes is which colour does which
-    <em>job</em>: the page, the buttons, the accent. <b>Part 2</b> compares three heading
-    typefaces. <b>Part 3</b> is the shared detail — ramps, scale, states, contrast — that applies
-    whichever you pick.
-  </p>
-  <p class="lede" style="margin-bottom:0">
-    Once you choose, these become the rules and nothing in the build strays from them.
-  </p>
-</section>
-
-<!-- ================= PART 1 — COLOUR DIRECTIONS ================= -->
-<section>
-  <div class="sec-label"><b>01</b><span>Part 1 · Choose a colour direction</span></div>
-  <p class="lede">
-    Same six brand colours in all four. What differs is the role each one plays — and that changes
-    the whole feel. Each card shows the roles, the buttons, and a preview so you can read the vibe
-    rather than imagine it.
-  </p>
-  <div id="options"></div>
-</section>
-
-<!-- ================= PART 2 — TYPOGRAPHY ================= -->
-<section>
-  <div class="sec-label"><b>02</b><span>Part 2 · Choose a heading typeface</span></div>
-  <p class="lede">
-    The logotype is a supplied image, so this face is only for <em>headings</em> — it has to sit
-    beside the wordmark, not match it. Your "Mae" is set heavy, which is the thing to judge
-    against: a light heading face reads as deliberate contrast, or as a mismatch.
-  </p>
-  <div class="mark-compare">
-    <img src="../public/brand/wordmark-cream-trimmed.png" alt="MaeMüllen wordmark">
-    <span class="lbl">← the supplied mark, for reference</span>
+  <div class="block">
+    <div class="bh"><b>Buttons</b><span>All three tiers, at the current settings — press and tab to them</span></div>
+    <div class="theme pad">
+      <div class="btnbar" style="margin-bottom:18px">
+        <button class="btn btn-primary" style="--t-btn-h:36px;--t-btn-px:16px">Small</button>
+        <button class="btn btn-primary">Medium</button>
+        <button class="btn btn-primary" style="--t-btn-h:52px;--t-btn-px:32px">Large</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+      </div>
+      <div class="btnbar" style="margin-bottom:18px">
+        <button class="btn btn-secondary" style="--t-btn-h:36px;--t-btn-px:16px">Small</button>
+        <button class="btn btn-secondary">Medium</button>
+        <button class="btn btn-secondary" style="--t-btn-h:52px;--t-btn-px:32px">Large</button>
+        <button class="btn btn-secondary" disabled>Disabled</button>
+      </div>
+      <div class="btnbar">
+        <button class="btn btn-ghost">Explore our world</button>
+        <a href="#" style="color:var(--t-ink);text-underline-offset:.25em">A text link in prose</a>
+      </div>
+    </div>
   </div>
-  <div id="typefaces"></div>
-</section>
 
-<!-- ================= PART 3 — FOUNDATIONS ================= -->
-<section>
-  <div class="sec-label"><b>03</b><span>Part 3 · Brand palette</span></div>
-  <p class="lede">Fixed by the deck. I sampled the supplied logo files and all values match exactly.</p>
-  <div class="swatch-strip" id="palette"></div>
-</section>
+  <div class="block">
+    <div class="bh"><b>Type specimen</b><span>Live — reflects the current face, weight and scale</span></div>
+    <div class="theme pad"><div class="spec" id="specimen"></div></div>
+  </div>
 
-<section>
-  <div class="sec-label"><b>04</b><span>Colour ramps &amp; usage rules</span></div>
-  <p class="lede">
-    Tints and shades derived from each brand colour, for hovers, borders, tinted panels and
-    disabled states. The <b>500</b> step is always the true brand value — never invent a new one.
-  </p>
-  <div id="ramps"></div>
-</section>
+  <div class="block">
+    <div class="bh"><b>Contrast lab</b><span>Test any pairing at the size you will actually use it</span></div>
+    <div class="pad">
+      <div class="lab">
+        <div class="ctrls" id="labCtrls"></div>
+        <div>
+          <div class="preview" id="labPreview"></div>
+          <div class="verdicts" id="labVerdicts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<section>
-  <div class="sec-label"><b>05</b><span>Type scale</span></div>
-  <p class="lede">Fluid sizes. Display styles are set tight; body is set loose for reading.</p>
-  <table id="scale"></table>
-</section>
+  <div class="block">
+    <div class="bh"><b>Colour ramps</b><span>Tints and shades — click any step to assign it to a role</span></div>
+    <div class="pad" id="ramps"></div>
+  </div>
 
-<section>
-  <div class="sec-label"><b>06</b><span>Buttons &amp; states</span></div>
-  <p class="lede">
-    Three tiers. Every interactive element carries all five states — including a visible focus
-    ring, which is never removed.
-  </p>
-  <table id="states"></table>
-</section>
+  <div class="block">
+    <div class="bh"><b>All pairings</b><span>Every brand pair, WCAG 2.1 vs APCA</span></div>
+    <div class="pad"><table class="mini" id="matrix"></table></div>
+  </div>
 
-<section>
-  <div class="sec-label"><b>07</b><span>Spacing</span></div>
-  <p class="lede">4px base. Nothing off-scale — if a value is missing, extend the scale rather than improvise.</p>
-  <div id="spacing"></div>
-</section>
-
-<section>
-  <div class="sec-label"><b>08</b><span>Contrast — computed, not estimated</span></div>
-  <p class="lede">
-    Calculated live in the browser from the hex values above. WCAG 2.1: body text needs 4.5:1,
-    large text (≥24px) needs 3:1. <b>This is the constraint that shapes the options in Part 1.</b>
-  </p>
-  <table id="contrast"></table>
-</section>
-
-<footer>
-  MaeMüllen styleguide v0.1 · written spec in <span class="mono">design/DESIGN.md</span> ·
-  page-by-page wireframe in <span class="mono">docs/SITEMAP.md</span>
-</footer>
+</main>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
-/* ============ colour helpers ============ */
+/* ══════════════════════ colour maths ══════════════════════ */
 const hex2rgb = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
-const rgb2hex = c => '#'+c.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
-const mix = (h,t,amt) => rgb2hex(hex2rgb(h).map((v,i)=>v+(hex2rgb(t)[i]-v)*amt));
-const lum = h => { const c=hex2rgb(h).map(v=>v/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));
+const rgb2hex = c => '#'+c.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mix = (a,b,t) => rgb2hex(hex2rgb(a).map((v,i)=>v+(hex2rgb(b)[i]-v)*t));
+const WHITE='#ffffff', BLACK='#000000';
+
+/* WCAG 2.1 */
+const relLum = h => { const c=hex2rgb(h).map(v=>v/255)
+  .map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));
   return .2126*c[0]+.7152*c[1]+.0722*c[2]; };
-const ratio = (a,b) => { const l=[lum(a),lum(b)].sort((x,y)=>y-x); return (l[0]+.05)/(l[1]+.05); };
-const bestInk = bg => ratio('#000000',bg) >= ratio('#ffffff',bg) ? '#000000' : '#ffffff';
+const wcag = (a,b) => { const l=[relLum(a),relLum(b)].sort((x,y)=>y-x); return (l[0]+.05)/(l[1]+.05); };
 
-const RED='#a23b3b', PINK='#e19494', CREAM='#fffaed', BLUE='#0b48ff', BLACK='#000000', WHITE='#ffffff';
+/* APCA 0.1.9 — the WCAG 3 candidate. Handles light-on-light far better than WCAG 2. */
+const apcaY = h => { const [r,g,b]=hex2rgb(h).map(v=>v/255);
+  return .2126729*Math.pow(r,2.4)+.7151522*Math.pow(g,2.4)+.0721750*Math.pow(b,2.4); };
+function apca(txt,bg){
+  let ty=apcaY(txt), by=apcaY(bg);
+  const B=.022, C=1.414;
+  ty = ty>B ? ty : ty + Math.pow(B-ty,C);
+  by = by>B ? by : by + Math.pow(B-by,C);
+  if(Math.abs(by-ty) < .0005) return 0;
+  let out;
+  if(by>ty){ const s=(Math.pow(by,.56)-Math.pow(ty,.57))*1.14; out = s<.1?0:s-.027; }
+  else     { const s=(Math.pow(by,.65)-Math.pow(ty,.62))*1.14; out = s>-.1?0:s+.027; }
+  return out*100;
+}
+/* Minimum |Lc| for a given size + weight, from the APCA readability tables (simplified). */
+function apcaMin(px, weight){
+  const bold = weight >= 600;
+  if(px >= 72) return 30;
+  if(px >= 48) return bold ? 30 : 40;
+  if(px >= 36) return bold ? 40 : 45;
+  if(px >= 24) return bold ? 45 : 60;
+  if(px >= 18) return bold ? 60 : 75;
+  return bold ? 70 : 90;
+}
+function apcaVerdict(lc, px, weight){
+  const need = apcaMin(px, weight), abs = Math.abs(lc);
+  if(abs >= need + 15) return {tag:'ok',  word:'Comfortable', need};
+  if(abs >= need)      return {tag:'ok',  word:'Passes',      need};
+  if(abs >= need - 12) return {tag:'warnt',word:'Borderline', need};
+  return {tag:'bad', word:'Too low', need};
+}
+const wcagVerdict = (r, px, weight) => {
+  const large = px >= 24 || (px >= 18.66 && weight >= 700);
+  const need = large ? 3 : 4.5;
+  return { pass: r >= need, need, large };
+};
 
-/* ============ PART 1 — colour direction options ============ */
-const OPTIONS = [
-  {
-    n:'01', name:'Editorial Cream',
-    note:'Cream page, black text, red for action, blue used sparingly. Calm and gallery-like — the safest reading of the deck, and the most flexible for long pages of text.',
-    page:CREAM, surface:WHITE, ink:BLACK, line:'rgb(0 0 0 / .14)',
-    primary:RED, primaryInk:CREAM, accent:BLUE, decor:PINK, mark:'brightness(0)',
-    roles:[
-      [CREAM,'Page','Every page background'],
-      [WHITE,'Surface','Cards, panels, form fields'],
-      [BLACK,'Ink','All body copy and headings'],
-      [RED,'Primary','Buttons, links, active states'],
-      [BLUE,'Accent','Focus rings, one pop per page'],
-      [PINK,'Decorative','Large fills, image mats'],
-    ],
-  },
-  {
-    n:'02', name:'Bold Pink',
-    note:'Pink as a full-bleed brand field, exactly as the deck’s hero mock. The most distinctive and the most fashion-led — but it forces a blockier layout (see the warning).',
-    page:PINK, surface:CREAM, ink:BLACK, line:'rgb(0 0 0 / .18)',
-    primary:RED, primaryInk:CREAM, accent:BLACK, decor:CREAM, mark:'brightness(0)',
-    roles:[
-      [PINK,'Page','Every page background'],
-      [CREAM,'Surface','Cards, panels, form fields'],
-      [BLACK,'Ink','The only compliant ink on pink'],
-      [RED,'Primary','Buttons — as blocks, never text'],
-      [BLACK,'Accent','Focus rings, underlines'],
-      [CREAM,'Decorative','Bands, mats, dividers'],
-    ],
-    warn:'Red text on pink is 2.75:1 and fails. In this direction red can only appear as a filled block with cream text on it — so the design becomes blockier and more graphic. That is a consequence of the palette, not a style preference.',
-  },
-  {
-    n:'03', name:'Red Statement',
-    note:'Cream base broken up by full-bleed red sections with cream text. Rich and warm, with the strongest sense of occasion — closest to the wax-seal, invitation idea in the deck.',
-    page:CREAM, surface:RED, ink:BLACK, line:'rgb(0 0 0 / .14)',
-    primary:RED, primaryInk:CREAM, accent:PINK, decor:RED, mark:'brightness(0)',
-    roles:[
-      [CREAM,'Page','Base background between sections'],
-      [RED,'Surface','Full-bleed feature sections'],
-      [BLACK,'Ink','Body on cream · cream reversed on red'],
-      [RED,'Primary','Buttons on cream sections'],
-      [PINK,'Accent','Secondary tint, hovers'],
-      [BLUE,'Reserved','Focus rings only'],
-    ],
-  },
-  {
-    n:'04', name:'Electric',
-    note:'Cream and black, with royal blue doing the work red usually would. Modern and unexpected — and it is the blue Poppy actually reached for in the Bendito menu, so it has precedent in the real work.',
-    page:CREAM, surface:WHITE, ink:BLACK, line:'rgb(0 0 0 / .14)',
-    primary:BLUE, primaryInk:WHITE, accent:RED, decor:PINK, mark:'brightness(0)',
-    roles:[
-      [CREAM,'Page','Every page background'],
-      [WHITE,'Surface','Cards, panels, form fields'],
-      [BLACK,'Ink','All body copy and headings'],
-      [BLUE,'Primary','Buttons, links, active states'],
-      [RED,'Accent','Section marks, secondary CTAs'],
-      [PINK,'Decorative','Large fills, image mats'],
-    ],
-  },
-];
-
-document.getElementById('options').innerHTML = OPTIONS.map(o => {
-  const press = mix(o.primary, BLACK, .18);
-  const vars = `--o-page:${o.page};--o-surface:${o.surface};--o-ink:${o.ink};--o-line:${o.line};
-    --o-primary:${o.primary};--o-primary-ink:${o.primaryInk};--o-primary-press:${press};
-    --o-decor:${o.decor};--o-mark:${o.mark}`;
-  return `
-  <article class="opt" style="${vars}">
-    <div class="opt-head">
-      <span class="opt-num">${o.n}</span>
-      <h3>${o.name}</h3>
-      <p>${o.note}</p>
-    </div>
-    <div class="opt-grid">
-      <div class="opt-spec">
-        <div class="roles">
-          ${o.roles.map(([c,name,use])=>`
-            <div class="role">
-              <span class="chip" style="background:${c}"></span>
-              <span><span class="name">${name}</span><br><span class="use">${use}</span></span>
-              <span class="hex">${c.toUpperCase()}</span>
-            </div>`).join('')}
-        </div>
-        <div class="btn-row">
-          <span class="sg-btn primary">Enquire now</span>
-          <span class="sg-btn primary pressed">Pressed</span>
-        </div>
-        <div class="btn-row">
-          <span class="sg-btn secondary">View work</span>
-          <span class="sg-btn secondary pressed">Pressed</span>
-        </div>
-        <p class="btn-note">Primary ${o.primary.toUpperCase()} on ${o.primaryInk.toUpperCase()} —
-          ${ratio(o.primary,o.primaryInk).toFixed(2)}:1</p>
-        ${o.warn?`<div class="warn"><b>Constraint.</b> ${o.warn}</div>`:''}
-      </div>
-
-      <div class="preview">
-        <div class="pv-nav">
-          <img src="../public/brand/wordmark-cream-trimmed.png" alt="">
-          <ul><li>About</li><li>Services</li><li>Work</li><li>Enquire</li></ul>
-        </div>
-        <div class="pv-marq">Social media management &nbsp;•&nbsp; Content days &nbsp;•&nbsp; TikTok management &nbsp;•&nbsp; PR &amp; events &nbsp;•&nbsp; Design &amp; illustration</div>
-        <div class="pv-body">
-          <img class="mark" src="../public/brand/wordmark-cream-trimmed.png" alt="">
-          <p class="pv-state">MaeMüllen is a creative studio where social, content and design come together.</p>
-          <span class="pv-cta">Enquire now</span>
-        </div>
-        <div class="pv-foot"></div>
-      </div>
-    </div>
-  </article>`;
-}).join('');
-
-/* ============ PART 2 — typefaces ============ */
-const FACES = [
-  { name:'Instrument Serif', stack:"'Instrument Serif',Didot,serif", lic:'Free · OFL', weight:400,
-    note:'High contrast, distinctive italic, least over-used. One light weight only — noticeably lighter than the wordmark.' },
-  { name:'Playfair Display', stack:"'Playfair Display',Didot,serif", lic:'Free · OFL', weight:700,
-    note:'Variable to 900, so it can be set heavy enough to echo the wordmark’s weight. Very widely used.' },
-  { name:'Didot / commercial', stack:"Didot,'Bodoni 72','Playfair Display',serif", lic:'Paid', weight:400,
-    note:'Closest to the wordmark’s own character. Shown here via macOS Didot; the real equivalents are Canela, Ogg or PP Editorial New.' },
-];
-document.getElementById('typefaces').innerHTML = FACES.map(f=>`
-  <div class="type-opt">
-    <div class="head">
-      <h4>${f.name}</h4><span class="lic">${f.lic}</span><p>${f.note}</p>
-    </div>
-    <div class="specimen">
-      <div class="spec-row">
-        <span class="spec-meta">Display · 56px<br>weight ${f.weight} · lh 1.0</span>
-        <div style="font-family:${f.stack};font-weight:${f.weight};font-size:56px;line-height:1;letter-spacing:-.02em">Selected work</div>
-      </div>
-      <div class="spec-row">
-        <span class="spec-meta">Heading · 30px<br>weight ${f.weight} · lh 1.15</span>
-        <div style="font-family:${f.stack};font-weight:${f.weight};font-size:30px;line-height:1.15">Let’s make something worth remembering.</div>
-      </div>
-      <div class="spec-row">
-        <span class="spec-meta">Italic · 26px</span>
-        <div style="font-family:${f.stack};font-weight:${f.weight};font-size:26px;font-style:italic">A creative studio, thoughtfully built</div>
-      </div>
-    </div>
-  </div>`).join('');
-
-/* ============ PART 3 — palette ============ */
-const PALETTE = [
-  ['Red',RED,'Primary accent — works as ink and as a background'],
-  ['Pink',PINK,'Background only — see contrast rules'],
-  ['Cream',CREAM,'Page background · reversed ink on red'],
-  ['Royal blue',BLUE,'Rare pop · focus rings'],
-  ['Black',BLACK,'Ink'],
-  ['White',WHITE,'Surface'],
-];
-document.getElementById('palette').innerHTML = PALETTE.map(([n,h,u])=>`
-  <div class="sw">
-    <div class="fill" style="background:${h};${h===WHITE?'border-bottom:1px solid var(--rule)':''}"></div>
-    <div class="meta"><b>${n}</b><span class="mono muted">${h.toUpperCase()}</span>
-      <p class="muted" style="font-size:11.5px;margin-top:5px;line-height:1.4">${u}</p></div>
-  </div>`).join('');
-
-/* ============ ramps ============ */
-const RAMPS = [
-  { name:'Red', base:RED, desc:'The workhorse. Legal as ink on cream and white, and as a background with cream or white on it.',
-    rules:['500 is the only value for buttons and links.','700 is the hover/pressed state.','100–50 for tinted panels and table stripes.','Never place red on pink.'] },
-  { name:'Pink', base:PINK, desc:'A background colour, not an ink colour. Black is the only compliant text on it.',
-    rules:['Use 500 for large fields and image mats.','Never set cream, white, red or blue text on it.','100–50 work as subtle section tints under black text.'] },
-  { name:'Royal blue', base:BLUE, desc:'The rare pop. One deliberate use per page at most, plus focus rings.',
-    rules:['Only ever on cream or white.','Never on pink; never on black at body size.','Reserve 500 for focus rings so the meaning stays consistent.'] },
-  { name:'Neutral', base:'#8a8a90', desc:'Greys derived for borders, muted text, disabled states and placeholder blocks.',
-    rules:['700 for muted body text.','300 for hairline borders.','100 for disabled fills.'] },
-];
+/* ══════════════════════ brand palette + ramps ══════════════════════ */
+const BRAND = {
+  Red:'#a23b3b', Pink:'#e19494', Cream:'#fffaed',
+  Blue:'#0b48ff', Black:'#000000', White:'#ffffff',
+};
 const STEPS = [['50',.92],['100',.82],['300',.45],['500',0],['700',-.22],['900',-.48]];
-document.getElementById('ramps').innerHTML = RAMPS.map(r=>`
-  <div class="ramp-block">
-    <div class="ramp-title"><h4>${r.name}</h4><span class="mono muted">${r.base.toUpperCase()}</span></div>
-    <p class="ramp-desc">${r.desc}</p>
-    <div class="ramp">
-      ${STEPS.map(([label,amt])=>{
-        const c = amt>=0 ? mix(r.base,WHITE,amt) : mix(r.base,BLACK,-amt);
-        return `<div class="step" style="background:${c};color:${bestInk(c)}">
-          <b>${label}${label==='500'?' ·':''}</b><span>${c.toUpperCase()}</span></div>`;
-      }).join('')}
-    </div>
-    <ul class="rules">${r.rules.map(x=>`<li>${x}</li>`).join('')}</ul>
-  </div>`).join('');
+const rampOf = base => STEPS.map(([l,a]) => [l, a>=0 ? mix(base,WHITE,a) : mix(base,BLACK,-a)]);
+const RAMP_BASES = { Red:BRAND.Red, Pink:BRAND.Pink, Blue:BRAND.Blue, Neutral:'#8a8a90' };
 
-/* ============ type scale ============ */
-const SCALE = [
-  ['Display XL','clamp(3.5rem, 13vw, 12rem)','0.85 / −0.02em','Hero, entry animation','ink'],
-  ['Display L','clamp(2.75rem, 8vw, 6rem)','0.9 / −0.02em','Page titles','ink'],
-  ['Display M','clamp(2rem, 5vw, 3.5rem)','1.0 / −0.01em','Section titles','ink'],
-  ['Heading L','clamp(1.75rem, 3.5vw, 2.5rem)','1.1','h2','ink'],
-  ['Heading M','clamp(1.375rem, 2.2vw, 1.75rem)','1.2','h3','ink'],
-  ['Statement','clamp(1.25rem, 2.6vw, 2rem)','1.35 / justified caps','One block per page, max 4 lines','ink'],
-  ['Body L','1.125rem','1.6','Intro paragraphs','ink'],
-  ['Body','1rem','1.65 / max 68ch','Default','ink'],
-  ['Body S','0.875rem','1.6','Captions, meta','muted'],
-  ['Label','0.8125rem','1.4 / 0.08em caps','Buttons, form labels','muted'],
-  ['Eyebrow','0.6875rem','1.2 / 0.18em caps','Section eyebrows, nav','muted'],
+/* ══════════════════════ state ══════════════════════ */
+const ROLE_DEFS = [
+  ['page','Page','Every page background'],
+  ['surface','Surface','Cards, panels, bands'],
+  ['ink','Ink','Body copy and headings'],
+  ['mark','Logotype','Wordmark and monogram'],
+  ['primary','Primary','Buttons, links, active'],
+  ['primaryInk','Primary ink','Text on primary'],
+  ['accent','Accent','Section marks, seconds'],
+  ['decor','Decorative','Large fills, image mats'],
+  ['line','Border','Hairlines and rules'],
+  ['focus','Focus ring','Keyboard focus only'],
 ];
-document.getElementById('scale').innerHTML =
-  `<thead><tr><th>Style</th><th>Size</th><th>Line height / tracking</th><th>Use</th><th>Colour</th></tr></thead><tbody>`+
-  SCALE.map(([n,s,l,u,c])=>`<tr><td><b>${n}</b></td><td class="num">${s}</td><td class="num">${l}</td>
-    <td class="muted">${u}</td><td><div class="dots"><i style="background:${c==='ink'?BLACK:'#6b6b73'}"></i></div></td></tr>`).join('')+
-  `</tbody>`;
 
-/* ============ button states ============ */
-const STATES = [
-  ['Default','Primary fill, label in the reversed ink'],
-  ['Hover','Fill darkens one ramp step (700). No movement.'],
-  ['Focus-visible','2px focus ring, 3px offset — <b>in addition to</b> hover, never instead of it'],
-  ['Active','translateY(1px)'],
-  ['Disabled','40% opacity, cursor not-allowed, no hover'],
+const PRESETS = {
+  'Editorial Cream':{ page:'#fffaed',surface:'#ffffff',ink:'#000000',mark:'#000000',primary:'#a23b3b',
+    primaryInk:'#fffaed',accent:'#0b48ff',decor:'#e19494',line:'#e2ded1',focus:'#0b48ff' },
+  /* Cream logotype on pink is the deck's own hero. At display size APCA rates it
+     Lc 48 — comfortably above the 45 threshold for large headline type, even
+     though WCAG 2.1 scores it 2.27 and calls it a failure. */
+  'Bold Pink':{ page:'#e19494',surface:'#fffaed',ink:'#000000',mark:'#fffaed',primary:'#a23b3b',
+    primaryInk:'#fffaed',accent:'#000000',decor:'#fffaed',line:'#c98080',focus:'#000000' },
+  'Red Statement':{ page:'#fffaed',surface:'#a23b3b',ink:'#000000',mark:'#a23b3b',primary:'#a23b3b',
+    primaryInk:'#fffaed',accent:'#e19494',decor:'#a23b3b',line:'#e2ded1',focus:'#0b48ff' },
+  'Electric':{ page:'#fffaed',surface:'#ffffff',ink:'#000000',mark:'#0b48ff',primary:'#0b48ff',
+    primaryInk:'#ffffff',accent:'#a23b3b',decor:'#e19494',line:'#e2ded1',focus:'#a23b3b' },
+};
+
+const FACES = {
+  'Instrument Serif':"'Instrument Serif',Didot,serif",
+  'Playfair Display':"'Playfair Display',Didot,serif",
+  'Cormorant Garamond':"'Cormorant Garamond',Garamond,serif",
+  'Didot (paid direction)':"Didot,'Bodoni 72',serif",
+};
+const BODY_FACES = {
+  'Inter':"'Inter',system-ui,sans-serif",
+  'DM Sans':"'DM Sans',system-ui,sans-serif",
+  'System / Helvetica':"-apple-system,'Helvetica Neue',Arial,sans-serif",
+};
+
+const DECISIONS = [
+  ['direction','Colour direction'],
+  ['page','Base / page colour'],
+  ['primary','Primary + CTA colour'],
+  ['accent','Accent colour'],
+  ['heading','Heading typeface'],
+  ['body','Body typeface'],
+  ['buttons','Button style'],
+  ['pinkText','Cream/white on pink'],
 ];
-document.getElementById('states').innerHTML =
-  `<thead><tr><th>State</th><th>Treatment</th></tr></thead><tbody>`+
-  STATES.map(([s,t])=>`<tr><td><b>${s}</b></td><td class="muted">${t}</td></tr>`).join('')+
-  `<tr><td><b>Sizes</b></td><td class="muted">Small 36px · Medium 44px · Large 52px. Touch targets never below 44px.</td></tr>`+
-  `<tr><td><b>Tiers</b></td><td class="muted">Primary (solid) · Secondary (outline) · Tertiary — the bracket style <span class="mono">[ EXPLORE OUR WORLD ]</span> lifted from the deck</td></tr>`+
-  `</tbody>`;
 
-/* ============ spacing ============ */
-document.getElementById('spacing').innerHTML =
-  [4,8,12,16,20,24,32,40,48,64,80,96,128,160,192].map(s=>`
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:7px">
-      <span class="mono muted" style="min-width:11ch">space-${s/4} · ${s}px</span>
-      <span style="height:12px;width:${s}px;background:${RED}"></span>
+const DEFAULT = {
+  preset:'Editorial Cream',
+  roles:{...PRESETS['Editorial Cream']},
+  head:'Instrument Serif', headWeight:400, headTrack:-0.02,
+  body:'Inter', base:16, ratio:1.25,
+  radius:0, btnH:44, btnPx:24, btnCase:'uppercase', btnTrack:0.1, btnSize:13,
+  decisions:{}, notes:{},
+  lab:{ fg:'#fffaed', bg:'#e19494', size:96, weight:400 },
+};
+let S = load() || structuredClone(DEFAULT);
+
+/* Saved state may predate a role or setting added since. Backfill from the
+   defaults rather than trusting the stored shape — otherwise a stale
+   localStorage entry throws on the first render and the whole page dies. */
+function load(){
+  try{
+    const raw = localStorage.getItem('mm-studio');
+    if(!raw) return null;
+    const s = JSON.parse(raw);
+    return {
+      ...DEFAULT, ...s,
+      roles: { ...DEFAULT.roles, ...(s.roles || {}) },
+      lab:   { ...DEFAULT.lab,   ...(s.lab   || {}) },
+      decisions: s.decisions || {},
+      notes: s.notes || {},
+    };
+  }catch{ return null; }
+}
+function save(){ try{ localStorage.setItem('mm-studio', JSON.stringify(S)); }catch{} }
+
+/* ══════════════════════ render ══════════════════════ */
+function applyTheme(){
+  const r = S.roles, root = document.documentElement.style;
+  root.setProperty('--t-page', r.page);
+  root.setProperty('--t-surface', r.surface);
+  root.setProperty('--t-ink', r.ink);
+  root.setProperty('--t-mark', r.mark || r.ink);
+  root.setProperty('--t-primary', r.primary);
+  root.setProperty('--t-primary-ink', r.primaryInk);
+  root.setProperty('--t-primary-hover', mix(r.primary, relLum(r.primary)>.4?BLACK:WHITE, .18));
+  root.setProperty('--t-accent', r.accent);
+  root.setProperty('--t-decor', r.decor);
+  root.setProperty('--t-line', r.line);
+  root.setProperty('--t-focus', r.focus);
+  root.setProperty('--t-head', FACES[S.head]);
+  root.setProperty('--t-head-weight', S.headWeight);
+  root.setProperty('--t-head-track', S.headTrack+'em');
+  root.setProperty('--t-body', BODY_FACES[S.body]);
+  root.setProperty('--t-base', S.base+'px');
+  root.setProperty('--t-h2', Math.round(S.base*Math.pow(S.ratio,4))+'px');
+  root.setProperty('--t-radius', S.radius+'px');
+  root.setProperty('--t-btn-h', S.btnH+'px');
+  root.setProperty('--t-btn-px', S.btnPx+'px');
+  root.setProperty('--t-btn-case', S.btnCase);
+  root.setProperty('--t-btn-track', S.btnTrack+'em');
+  root.setProperty('--t-btn-size', S.btnSize+'px');
+}
+
+const SERVICES = ['Social media management','Content days','TikTok management','PR & events',
+  'Design & illustration','UGC & brand content','Website design'];
+
+function renderStatic(){
+  document.getElementById('marq').textContent =
+    SERVICES.join('   •   ') + '   •   ' + SERVICES.slice(0,3).join('   •   ');
+  document.getElementById('svcList').innerHTML = SERVICES.map((s,i)=>
+    `<li><em>${String(i+1).padStart(3,'0')}</em><b>${s}</b></li>`).join('');
+}
+
+function renderPresets(){
+  document.getElementById('presets').innerHTML = Object.entries(PRESETS).map(([n,p])=>`
+    <button class="preset ${S.preset===n?'on':''}" data-preset="${n}">
+      <b>${n}</b>
+      <i><s style="background:${p.page}"></s><s style="background:${p.primary}"></s>
+         <s style="background:${p.accent}"></s><s style="background:${p.decor}"></s></i>
+    </button>`).join('');
+  document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{
+    S.preset=b.dataset.preset; S.roles={...PRESETS[b.dataset.preset]}; commit();
+  });
+}
+
+let openPop=null;
+function renderRoles(){
+  const el = document.getElementById('roles');
+  el.innerHTML = ROLE_DEFS.map(([k,label,use])=>`
+    <div class="role" data-role="${k}">
+      <button class="sw" style="background:${S.roles[k]}" aria-label="Change ${label}"></button>
+      <span class="lbl"><b>${label}</b><span>${use}</span></span>
+      <span class="hex">${S.roles[k].toUpperCase()}</span>
     </div>`).join('');
+  el.querySelectorAll('.role .sw').forEach(btn=>{
+    btn.onclick = e => { e.stopPropagation(); togglePop(btn.closest('.role')); };
+  });
+}
 
-/* ============ contrast ============ */
-const C={red:RED,pink:PINK,cream:CREAM,blue:BLUE,black:BLACK,white:WHITE};
-const PAIRS=[['black','cream'],['black','white'],['black','pink'],['pink','black'],
-  ['white','red'],['red','white'],['cream','red'],['red','cream'],['white','blue'],
-  ['blue','cream'],['cream','blue'],['blue','black'],['red','black'],
-  ['red','pink'],['blue','pink'],['cream','pink'],['white','pink']];
-document.getElementById('contrast').innerHTML =
-  `<thead><tr><th>Sample</th><th>Text</th><th>On</th><th>Ratio</th><th>Verdict</th></tr></thead><tbody>`+
-  PAIRS.map(([f,b])=>{
-    const r=ratio(C[f],C[b]);
-    const cls=r>=4.5?'pass':(r>=3?'large':'fail');
-    const txt=r>=7?'AAA':(r>=4.5?'AA':(r>=3?'Large only':'Fails'));
-    return `<tr>
-      <td><span style="display:inline-block;padding:5px 12px;background:${C[b]};color:${C[f]};border:1px solid var(--rule)">Aa sample</span></td>
-      <td>${f}</td><td>${b}</td><td class="num">${r.toFixed(2)}</td>
-      <td><span class="badge ${cls}">${txt}</span></td></tr>`;
-  }).join('')+`</tbody>`;
+function togglePop(row){
+  if(openPop){ openPop.remove(); const was=openPop.dataset.for; openPop=null; if(was===row.dataset.role) return; }
+  const key = row.dataset.role;
+  const pop = document.createElement('div');
+  pop.className='pop'; pop.dataset.for=key;
+  pop.innerHTML = `
+    <h4>Brand</h4>
+    <div class="brandrow">${Object.entries(BRAND).map(([n,h])=>
+      `<button class="dot" data-c="${h}" title="${n} ${h}" style="background:${h}"></button>`).join('')}</div>
+    <h4>Ramps</h4>
+    <div class="rampgrid">${Object.entries(RAMP_BASES).map(([n,base])=>
+      `<div class="rampline"><em>${n}</em>${rampOf(base).map(([l,c])=>
+        `<button class="dot" data-c="${c}" title="${n} ${l} ${c}" style="background:${c}"></button>`).join('')}</div>`).join('')}</div>
+    <h4>Custom</h4>
+    <div class="custom">
+      <input type="color" value="${S.roles[key]}">
+      <input type="text" value="${S.roles[key].toUpperCase()}" spellcheck="false">
+    </div>`;
+  row.appendChild(pop); openPop = pop;
+  pop.onclick = e => e.stopPropagation();
+  pop.querySelectorAll('.dot').forEach(d=>d.onclick=()=>{
+    S.roles[key]=d.dataset.c; S.preset='Custom'; pop.remove(); openPop=null; commit();
+  });
+  const [ci,ti] = pop.querySelectorAll('.custom input');
+  ci.oninput = () => { S.roles[key]=ci.value; ti.value=ci.value.toUpperCase(); S.preset='Custom'; commit(true); };
+  ti.onchange = () => { if(/^#[0-9a-f]{6}$/i.test(ti.value)){ S.roles[key]=ti.value.toLowerCase();
+    S.preset='Custom'; pop.remove(); openPop=null; commit(); } };
+}
+document.addEventListener('click',()=>{ if(openPop){ openPop.remove(); openPop=null; } });
+
+/* Controls use event delegation rather than per-element handlers. An earlier
+   version bound them inside setTimeout, which silently dropped changes when a
+   re-render replaced the element before the timer fired — and broke dragging,
+   because each input event rebuilt the slider under the user's cursor. */
+const NUM = {
+  headWeight:{min:300,max:900,step:100,unit:'',   label:'Heading weight'},
+  headTrack :{min:-.05,max:.05,step:.005,unit:'em',label:'Heading tracking'},
+  base      :{min:14, max:20, step:1,   unit:'px',label:'Base size'},
+  ratio     :{min:1.1,max:1.5,step:.025,unit:'',  label:'Scale ratio'},
+  radius    :{min:0,  max:40, step:1,   unit:'px',label:'Corner radius'},
+  btnH      :{min:34, max:60, step:2,   unit:'px',label:'Button height'},
+  btnPx     :{min:12, max:48, step:2,   unit:'px',label:'Button padding'},
+  btnSize   :{min:10, max:18, step:1,   unit:'px',label:'Button text size'},
+  btnTrack  :{min:0,  max:.24,step:.01, unit:'em',label:'Button tracking'},
+  'lab.size'  :{min:10,max:160,step:1,  unit:'px',label:'Font size'},
+  'lab.weight':{min:300,max:900,step:100,unit:'', label:'Font weight'},
+};
+const getPath = k => k.includes('.') ? S[k.split('.')[0]][k.split('.')[1]] : S[k];
+const setPath = (k,v) => { if(k.includes('.')){ const [a,b]=k.split('.'); S[a][b]=v; } else S[k]=v; };
+
+function sliderHTML(key){
+  const d=NUM[key], v=getPath(key);
+  return `<label class="ctl"><span>${d.label}<i data-out="${key}">${v}${d.unit}</i></span>
+    <input type="range" data-num="${key}" min="${d.min}" max="${d.max}" step="${d.step}" value="${v}"></label>`;
+}
+function selectHTML(key, val, opts){
+  return `<label class="ctl"><span>${NUM_LABELS[key]}</span><select data-sel="${key}">${
+    opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select></label>`;
+}
+const NUM_LABELS = { head:'Heading face', body:'Body face' };
+
+document.addEventListener('input', e=>{
+  const t=e.target;
+  if(t.dataset.num){
+    const k=t.dataset.num, v=parseFloat(t.value);
+    setPath(k,v);
+    const out=document.querySelector(`[data-out="${k}"]`);
+    if(out) out.textContent = v + NUM[k].unit;
+    commit(true);                       // fast: never rebuilds the control being dragged
+  } else if(t.dataset.labc){
+    S.lab[t.dataset.labc]=t.value; commit(true);
+  }
+});
+document.addEventListener('change', e=>{
+  const k=e.target.dataset.sel;
+  if(k){ S[k]=e.target.value; commit(); }
+});
+
+function renderTypeCtrls(){
+  document.getElementById('typeCtrls').innerHTML =
+    selectHTML('head', S.head, Object.keys(FACES)) +
+    sliderHTML('headWeight') + sliderHTML('headTrack') +
+    selectHTML('body', S.body, Object.keys(BODY_FACES)) +
+    sliderHTML('base') + sliderHTML('ratio');
+}
+function renderShapeCtrls(){
+  document.getElementById('shapeCtrls').innerHTML =
+    sliderHTML('radius') + sliderHTML('btnH') + sliderHTML('btnPx') +
+    sliderHTML('btnSize') + sliderHTML('btnTrack') +
+    `<label class="ctl"><span>Button case</span><div class="seg2" id="caseSeg">
+      ${['uppercase','none'].map(c=>`<button data-case="${c}" class="${S.btnCase===c?'on':''}">${c==='none'?'Sentence':'Uppercase'}</button>`).join('')}
+    </div></label>`;
+  document.querySelectorAll('#caseSeg button').forEach(b=>b.onclick=()=>{S.btnCase=b.dataset.case;commit();});
+}
+
+/* live legibility of the actual scheme, at the sizes actually used */
+function renderVerdicts(){
+  const r=S.roles;
+  const h2 = Math.round(S.base*Math.pow(S.ratio,4));
+  const checks = [
+    ['Body on page',        r.ink, r.page,        S.base, 400],
+    ['Heading on page',     r.ink, r.page,        h2,     S.headWeight],
+    ['Logotype on page',    r.mark || r.ink, r.page, 96,   700],
+    ['Button label',        r.primaryInk, r.primary, S.btnSize, 500],
+    ['Service name',        r.primary, r.page,    Math.round(S.base*1.05), 500],
+    ['Body on surface',     r.ink, r.surface,     S.base, 400],
+    ['CTA heading',         r.primaryInk, r.primary, h2, S.headWeight],
+  ];
+  document.getElementById('verdicts').innerHTML = checks.map(([n,fg,bg,px,w])=>{
+    const lc=apca(fg,bg), v=apcaVerdict(lc,px,w), ratio=wcag(fg,bg);
+    return `<div class="v">
+      <span class="prev" style="background:${bg};color:${fg};font-size:${Math.min(15,Math.max(9,px/6))}px">Aa</span>
+      <span class="txt"><b>${n}</b><span>${px}px · weight ${w}</span></span>
+      <span class="sc"><span class="tag ${v.tag}">${v.word}</span><br>
+        Lc ${Math.abs(lc).toFixed(0)}/${v.need} · W ${ratio.toFixed(1)}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderSpecimen(){
+  const sizes=[['Display',6],['Page title',5],['Section',4],['Heading',3],['Sub',2]];
+  document.getElementById('specimen').innerHTML = sizes.map(([n,step])=>{
+    const px=Math.round(S.base*Math.pow(S.ratio,step));
+    return `<div class="row"><span class="meta">${n}<br>${px}px · w${S.headWeight}</span>
+      <div style="font-family:var(--t-head);font-weight:${S.headWeight};font-size:${px}px;
+        line-height:1.08;letter-spacing:${S.headTrack}em">Let’s make something worth remembering.</div></div>`;
+  }).join('') + `
+    <div class="row"><span class="meta">Body<br>${S.base}px · 1.65</span>
+      <div style="font-size:${S.base}px;line-height:1.65;max-width:68ch">We believe the strongest brands are
+      built through creativity, consistency and genuine connection. From social media and content
+      creation to design, illustration, PR and events.</div></div>
+    <div class="row"><span class="meta">Statement<br>justified caps</span>
+      <div class="t-state" style="margin:0">MaeMüllen is a creative studio where social, content and design come together.</div></div>`;
+}
+
+/* contrast lab — controls and output render separately so a drag never
+   rebuilds the slider the user is holding. */
+function renderLabControls(){
+  const L=S.lab;
+  const swatches = [...Object.values(BRAND), ...Object.values(S.roles)]
+    .filter((v,i,a)=>a.indexOf(v)===i);
+  const pick = (which) => `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">${
+    swatches.map(c=>`<button class="dot" data-lab="${which}" data-c="${c}"
+      style="width:24px;height:24px;background:${c};border:1px solid rgb(0 0 0/.16);border-radius:4px;cursor:pointer"></button>`).join('')}</div>`;
+  document.getElementById('labCtrls').innerHTML = `
+    <div><b style="font-size:11.5px">Text colour</b>${pick('fg')}
+      <input type="color" value="${L.fg}" data-labc="fg" style="width:100%;height:30px;border:1px solid var(--ui-line);border-radius:5px;background:none"></div>
+    <div><b style="font-size:11.5px">Background</b>${pick('bg')}
+      <input type="color" value="${L.bg}" data-labc="bg" style="width:100%;height:30px;border:1px solid var(--ui-line);border-radius:5px;background:none"></div>
+    ${sliderHTML('lab.size')}
+    ${sliderHTML('lab.weight')}`;
+  document.querySelectorAll('[data-lab]').forEach(b=>b.onclick=()=>{S.lab[b.dataset.lab]=b.dataset.c;commit();});
+}
+
+function renderLab(){
+  const L=S.lab;
+  document.getElementById('labPreview').style.background = L.bg;
+  document.getElementById('labPreview').innerHTML =
+    `<div style="color:${L.fg};font-family:var(--t-head);font-weight:${L.weight};
+       font-size:${L.size}px;line-height:1.1">MaeMüllen</div>
+     <div style="color:${L.fg};font-size:${Math.max(11,Math.min(20,L.size/4))}px">
+       The quick brown fox jumps over the lazy dog</div>`;
+
+  const lc=apca(L.fg,L.bg), v=apcaVerdict(lc,L.size,L.weight);
+  const ratio=wcag(L.fg,L.bg), wv=wcagVerdict(ratio,L.size,L.weight);
+  document.getElementById('labVerdicts').innerHTML = `
+    <div class="verdict">
+      <div class="hd"><b>APCA · WCAG 3 candidate</b>
+        <span class="n">Lc ${Math.abs(lc).toFixed(1)} <span class="tag ${v.tag}">${v.word}</span></span></div>
+      <p>Needs <b>Lc ${v.need}</b> at ${L.size}px / weight ${L.weight}.
+         ${Math.abs(lc)>=v.need
+           ? 'Legible at this size. Larger and heavier text needs less contrast, which is exactly what WCAG 2.1 fails to model.'
+           : 'Below the threshold for this size. Increase the size or weight, or darken the text.'}</p>
+      <div class="thresh">
+        ${[[96,'Logotype / display'],[36,'Large headline'],[24,'Sub-heading'],[16,'Body text']]
+          .map(([px,lab])=>{const need=apcaMin(px,L.weight);
+            return `<div><span>${lab} · ${px}px</span><b>Lc ${need}</b>
+              <span class="tag ${Math.abs(lc)>=need?'ok':'bad'}">${Math.abs(lc)>=need?'ok':'no'}</span></div>`;}).join('')}
+      </div>
+    </div>
+    <div class="verdict">
+      <div class="hd"><b>WCAG 2.1 · the legacy formula</b>
+        <span class="n">${ratio.toFixed(2)}:1 <span class="tag ${wv.pass?'ok':'bad'}">${wv.pass?'Passes':'Fails'}</span></span></div>
+      <p>Needs <b>${wv.need}:1</b> (${wv.large?'large text':'normal text'}).
+         This formula treats every light-on-light pair harshly and ignores size beyond one crude
+         threshold — where the two disagree, trust APCA.</p>
+    </div>`;
+}
+
+function renderRamps(){
+  document.getElementById('ramps').innerHTML = Object.entries(RAMP_BASES).map(([n,base])=>`
+    <div style="margin-bottom:20px">
+      <div style="display:flex;gap:9px;align-items:baseline;margin-bottom:7px">
+        <b style="font-size:13px">${n}</b>
+        <span style="font-family:var(--ui-mono);font-size:10.5px;color:var(--ui-muted)">${base.toUpperCase()}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--ui-line);border-radius:6px;overflow:hidden">
+        ${rampOf(base).map(([l,c])=>{
+          const ink = wcag(c,'#000')>wcag(c,'#fff') ? '#000':'#fff';
+          return `<button data-ramp="${c}" title="Click to copy ${c}" style="border:0;cursor:pointer;
+            background:${c};color:${ink};padding:14px 8px;min-height:78px;text-align:left;
+            display:flex;flex-direction:column;justify-content:flex-end;gap:2px;font:inherit">
+            <b style="font-family:var(--ui-mono);font-size:10.5px">${l}</b>
+            <span style="font-family:var(--ui-mono);font-size:9px;opacity:.8">${c.toUpperCase()}</span>
+          </button>`;}).join('')}
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('[data-ramp]').forEach(b=>b.onclick=()=>{
+    navigator.clipboard?.writeText(b.dataset.ramp); toast('Copied '+b.dataset.ramp.toUpperCase());
+  });
+}
+
+function renderMatrix(){
+  const keys=Object.keys(BRAND);
+  const rows=[];
+  keys.forEach(f=>keys.forEach(b=>{ if(f!==b) rows.push([f,b]); }));
+  document.getElementById('matrix').innerHTML =
+    `<thead><tr><th>Sample</th><th>Text</th><th>On</th><th>WCAG 2.1</th><th>APCA</th><th>Good for</th></tr></thead><tbody>`+
+    rows.map(([f,b])=>{
+      const lc=Math.abs(apca(BRAND[f],BRAND[b])), r=wcag(BRAND[f],BRAND[b]);
+      let good='Decorative only';
+      if(lc>=90) good='Anything, including small body text';
+      else if(lc>=75) good='Body text and above';
+      else if(lc>=60) good='24px and above';
+      else if(lc>=45) good='Large headlines, 36px+';
+      else if(lc>=30) good='Display type and non-text';
+      return `<tr>
+        <td><span style="display:inline-block;padding:5px 11px;background:${BRAND[b]};color:${BRAND[f]};
+          border:1px solid var(--ui-line);border-radius:3px">Aa</span></td>
+        <td>${f}</td><td>${b}</td>
+        <td class="n">${r.toFixed(2)}</td>
+        <td class="n">${lc.toFixed(0)}</td>
+        <td style="color:var(--ui-muted)">${good}</td></tr>`;
+    }).join('')+`</tbody>`;
+}
+
+function renderDecisions(){
+  document.getElementById('decisions').innerHTML = DECISIONS.map(([k,label])=>`
+    <div class="dec" data-dec="${k}">
+      <div class="top"><b>${label}</b>
+        <div class="btns">
+          ${[['keep','✓'],['maybe','?'],['no','✕']].map(([v,ch])=>
+            `<button data-v="${v}" class="${S.decisions[k]===v?'on':''}" title="${v}">${ch}</button>`).join('')}
+        </div>
+      </div>
+      <textarea placeholder="Notes…" data-note="${k}">${S.notes[k]||''}</textarea>
+    </div>`).join('');
+  document.querySelectorAll('.dec .btns button').forEach(b=>b.onclick=()=>{
+    const k=b.closest('[data-dec]').dataset.dec;
+    S.decisions[k] = S.decisions[k]===b.dataset.v ? null : b.dataset.v; commit();
+  });
+  document.querySelectorAll('[data-note]').forEach(t=>t.oninput=()=>{
+    S.notes[t.dataset.note]=t.value; save();
+  });
+}
+
+/* ══════════════════════ export ══════════════════════ */
+function brief(){
+  const r=S.roles, h2=Math.round(S.base*Math.pow(S.ratio,4));
+  const dec = DECISIONS.map(([k,label])=>{
+    const v=S.decisions[k], n=S.notes[k];
+    if(!v && !n) return null;
+    const mark = v==='keep'?'KEEP':v==='no'?'REJECT':v==='maybe'?'MAYBE':'—';
+    return `| ${label} | ${mark} | ${n||''} |`;
+  }).filter(Boolean);
+  return `# MaeMüllen — design decisions
+Exported from design/styleguide.html
+
+## Direction
+Preset: **${S.preset}**
+
+## Colour roles
+| Role | Value |
+|---|---|
+${ROLE_DEFS.map(([k,l])=>`| ${l} | \`${S.roles[k].toUpperCase()}\` |`).join('\n')}
+
+## Typography
+- Heading face: **${S.head}**, weight ${S.headWeight}, tracking ${S.headTrack}em
+- Body face: **${S.body}**
+- Base size: ${S.base}px · scale ratio ${S.ratio} · h2 = ${h2}px
+
+## Buttons & shape
+- Height ${S.btnH}px · padding ${S.btnPx}px · label ${S.btnSize}px
+- Case ${S.btnCase} · tracking ${S.btnTrack}em · radius ${S.radius}px
+
+## Legibility of this scheme (APCA)
+${(()=>{const c=[['Body on page',r.ink,r.page,S.base,400],['Heading on page',r.ink,r.page,h2,S.headWeight],
+  ['Logotype on page',r.mark||r.ink,r.page,96,700],['Button label',r.primaryInk,r.primary,S.btnSize,500]];
+  return c.map(([n,f,b,px,w])=>{const lc=apca(f,b),v=apcaVerdict(lc,px,w);
+    return `- ${n} — Lc ${Math.abs(lc).toFixed(0)} (needs ${v.need}) · **${v.word}**`;}).join('\n');})()}
+
+${dec.length?`## Decisions
+| Aspect | Verdict | Notes |
+|---|---|---|
+${dec.join('\n')}`:''}
+`;
+}
+function cssTokens(){
+  const r=S.roles;
+  return `:root{
+  --bg:${r.page};
+  --surface:${r.surface};
+  --ink:${r.ink};
+  --accent:${r.primary};
+  --accent-ink:${r.primaryInk};
+  --accent-alt:${r.accent};
+  --decor:${r.decor};
+  --border:${r.line};
+  --focus-ring:${r.focus};
+
+  --font-display:${FACES[S.head]};
+  --font-body:${BODY_FACES[S.body]};
+  --head-weight:${S.headWeight};
+  --head-tracking:${S.headTrack}em;
+  --text-base:${S.base}px;
+  --scale-ratio:${S.ratio};
+
+  --radius-control:${S.radius}px;
+  --btn-height:${S.btnH}px;
+  --btn-padding-x:${S.btnPx}px;
+  --btn-text:${S.btnSize}px;
+  --btn-tracking:${S.btnTrack}em;
+}`;
+}
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1700);
+}
+async function copy(text,label){
+  try{ await navigator.clipboard.writeText(text); toast(label+' copied to clipboard'); }
+  catch{ toast('Copy blocked — open the console to grab it'); console.log(text); }
+}
+document.getElementById('exportBrief').onclick = ()=>copy(brief(),'Design brief');
+document.getElementById('exportCss').onclick  = ()=>copy(cssTokens(),'CSS tokens');
+document.getElementById('resetAll').onclick   = ()=>{
+  if(confirm('Reset every choice, decision and note?')){
+    localStorage.removeItem('mm-studio'); S=structuredClone(DEFAULT); commit();
+  }
+};
+
+/* ══════════════════════ boot ══════════════════════ */
+function commit(fast){
+  applyTheme(); renderVerdicts(); renderSpecimen(); renderLab(); save();
+  if(!fast){
+    renderPresets(); renderRoles(); renderTypeCtrls();
+    renderShapeCtrls(); renderLabControls(); renderDecisions();
+  } else {
+    // Fast path: update readouts in place, never replace a control mid-interaction.
+    document.querySelectorAll('.role').forEach(row=>{
+      const k=row.dataset.role;
+      row.querySelector('.sw').style.background=S.roles[k];
+      row.querySelector('.hex').textContent=S.roles[k].toUpperCase();
+    });
+    document.querySelectorAll('[data-out]').forEach(o=>{
+      const k=o.dataset.out; o.textContent = getPath(k) + NUM[k].unit;
+    });
+  }
+}
+renderStatic(); renderRamps(); renderMatrix(); commit();
 </script>
 </body>
 </html>
