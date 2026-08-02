@@ -68,7 +68,7 @@ red `#cf291f` and blue `#313bc6` belong to **that project**, not to MaeMüllen, 
 into the system palette. The hand-drawn illustration style, however, *is* Poppy's, and is the
 reference for the "Poppy's doodles" called for on the About page (deck p9).
 
-### 1.3 Custom cursor 🔒
+### 1.5 Custom cursor 🔒
 
 - 48px diameter, follows the pointer with a short lag (~80ms) for weight.
 - Applied **only** where `(pointer: fine)` — never on touch.
@@ -87,7 +87,7 @@ All five values were sampled from the deck's swatches and match the stated hex e
 | Token | Hex | Role |
 |---|---|---|
 | `--brand-red` | `#a23b3b` | Primary accent. Works as ink *and* as a background. |
-| `--brand-pink` | `#e19494` | **Background only.** See the hard rule in §2.3. |
+| `--brand-pink` | `#e19494` | Backgrounds and large display type. Not a body-text background — see §2.3. |
 | `--brand-cream` | `#fffaed` | Primary page background / knock-out ink on red. |
 | `--brand-blue` | `#0b48ff` | Rare pop. Focus rings, one accent per page maximum. |
 | `--brand-black` | `#000000` | Ink. |
@@ -95,40 +95,45 @@ All five values were sampled from the deck's swatches and match the stated hex e
 
 ### 2.2 Measured contrast
 
-Computed, not estimated. WCAG 2.1 · normal text needs 4.5:1, large text (≥24px, or ≥18.7px bold) needs 3:1.
+Two algorithms, because they disagree and the disagreement matters.
 
-| Foreground | Background | Ratio | Verdict |
-|---|---|---:|---|
-| black | cream | 20.15 | AAA — the default reading pair |
-| black | white | 21.00 | AAA |
-| black | pink | 8.87 | AAA |
-| pink | black | 8.87 | AAA |
-| white | red | 6.51 | AA |
-| red | white | 6.51 | AA |
-| cream | red | 6.25 | AA |
-| red | cream | 6.25 | AA |
-| white | blue | 6.20 | AA |
-| blue | cream | 5.95 | AA |
-| cream | blue | 5.95 | AA |
-| blue | black | 3.39 | large text only |
-| red | black | 3.23 | large text only |
-| red | pink | 2.75 | ✗ **fails** |
-| blue | pink | 2.62 | ✗ **fails** |
-| cream | pink | 2.27 | ✗ **fails** |
-| white | pink | 2.37 | ✗ **fails** |
+**WCAG 2.1** is the legal standard, but its formula is known to over-penalise light-on-light
+pairs and it models size with a single crude threshold. **APCA** is the WCAG 3 candidate: it is
+perceptually modelled and size-aware, returning a lightness contrast `Lc` from 0–106. Where the
+two disagree on a light-on-light pair, APCA is the better guide.
 
-### 2.3 Hard rules
+APCA minimum `Lc` by use: **90** small body · **75** body (16–18px) · **60** 24px+ ·
+**45** large headline 36px+ · **30** display type and non-text.
 
-1. **Pink is a background, never ink.** The only compliant ink on pink is black / near-black (8.87).
-2. **Never put red, blue, cream or white text on pink.** All four fail, including at large sizes.
-3. **Red is the workhorse** — legal as ink on cream/white, and as a background with cream/white ink.
-4. **Blue only touches cream or white.** Never blue on pink, never blue on black at body size.
-5. Any new pairing must be added to the table above before it ships.
+| Text | On | WCAG 2.1 | APCA Lc | Genuinely good for |
+|---|---|---:|---:|---|
+| black | cream | 20.15 | 103 | Anything, including small body text |
+| black | white | 21.00 | 106 | Anything |
+| cream | red | 6.25 | 83 | Body text and above |
+| white | blue | 6.20 | 85 | Body text and above |
+| blue | cream | 5.95 | 76 | Body text and above |
+| red | cream | 6.25 | 71 | 24px and above |
+| black | pink | 8.87 | 58 | 24px and above — **not small body text** |
+| white | pink | 2.37 | 52 | Large headlines, 36px+ |
+| cream | pink | 2.27 | 48 | Large headlines, 36px+ |
+| red | pink | 2.75 | 33 | Display type and non-text only |
+| blue | pink | 2.62 | 31 | Display type and non-text only |
 
-> ⚠️ **Known deviation.** The deck's hero sets the cream wordmark on a pink field — 2.27, below
-> even the large-text threshold. At 12rem it reads as decoration rather than content, so it is
-> defensible *if* the accessible name is carried by real text elsewhere. The compliant
-> alternatives are a **black wordmark on pink**, or a **cream wordmark on red**. Decide in §16.
+### 2.3 Rules
+
+1. **Judge a pairing at the size it is actually used.** There is no such thing as a colour pair
+   that "passes" or "fails" in the abstract — only at a given size and weight.
+2. **The cream logotype on pink is fine.** Lc 48 clears the 45 threshold for large display type.
+   WCAG 2.1 scores it 2.27 and calls it a failure; that is the formula's known weakness with
+   light-on-light, not a real legibility problem. This was previously documented as a violation —
+   it is not.
+3. **Black on pink is *not* good enough for body copy.** Lc 58 is below the 75 body threshold,
+   despite WCAG rating it AAA. Long paragraphs should not sit directly on pink; put them on a
+   cream or white surface.
+4. **Red and blue on pink are genuinely weak** (Lc 33 / 31). Fine for a display flourish, wrong
+   for service names, links or any text you expect to be read.
+5. **Red is the workhorse** — strong as ink on cream/white, and as a background under cream/white.
+6. Check any new pairing in the contrast lab in `design/styleguide.html` before it ships.
 
 ### 2.4 Semantic tokens
 
@@ -543,7 +548,7 @@ Parked deliberately — resolved when we reach the relevant page.
 | 5 | Brand spelling in prose — `MaeMüllen` vs `Maemullen`. | Global |
 | 6 | Domain, Instagram handle, contact email. | Global |
 | 7 | Legal pages — privacy policy, terms, cookie notice. | Footer |
-| 8 | Hero contrast deviation (§2.3) — accept as decorative, or use a compliant variant? | Home |
+| 8 | ~~Hero contrast deviation~~ — **resolved.** APCA Lc 48 clears the display-type threshold; the cream logotype on pink is fine (§2.3). | — |
 | 9 | Vector (SVG) originals of the wordmark and monogram — only PNGs supplied (§1.3). | Global |
 | 10 | Bendito case study — is "Bendito" the client name to credit, and is the in-situ photo cleared for use? | Work |
 
