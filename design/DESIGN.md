@@ -18,13 +18,22 @@ Colours are *not* settled; only the structure below is.
 | # | Decision | Detail |
 |---|---|---|
 | S1 | **Header is its own surface** | Coloured independently of the page. Own background, ink and border tokens. §8.1 |
-| S2 | **Logotype is centred in the header** | Nav links split either side — About / Services / Packages, then Work / Enquire. §8.1 |
+| S2 | **Logotype is centred in the header** | Nav links split three and three — About / Services / Packages, then Portfolio / Work / Enquire. §8.1 |
 | S3 | **Marquee is its own surface** | Sits directly under the header, coloured independently of both header and page. §8.2 |
 | S4 | **No second logotype on the page** | The logotype appears in the header only. The page body opens on the statement block, not a repeated wordmark. §4.1 of `docs/SITEMAP.md` |
 
 Stated colour *intent* at the time of the decision — a starting point, still open:
-header pink `#e19494` · marquee royal blue `#0b48ff` · page cream `#fffaed` ·
-logotype cream `#fffaed`. Loaded as the **"As briefed"** preset in the studio.
+
+| Element | Colour |
+|---|---|
+| Header bar | pink `#e19494` |
+| Logotype | cream `#fffaed` |
+| Nav links | cream `#fffaed` — deliberately matching the logotype |
+| Marquee bar | cream `#fffaed` |
+| Marquee text | royal blue `#0b48ff` |
+| Page | cream `#fffaed` |
+
+Loaded as the **"As briefed"** preset in the studio.
 
 ---
 
@@ -107,7 +116,7 @@ All five values were sampled from the deck's swatches and match the stated hex e
 | `--brand-red` | `#a23b3b` | Primary accent. Works as ink *and* as a background. |
 | `--brand-pink` | `#e19494` | Backgrounds and large display type. Not a body-text background — see §2.3. |
 | `--brand-cream` | `#fffaed` | Primary page background / knock-out ink on red. |
-| `--brand-blue` | `#0b48ff` | Rare pop. Focus rings, one accent per page maximum. |
+| `--brand-blue` | `#0b48ff` | Marquee text on cream. Focus rings. Rare pop elsewhere. |
 | `--brand-black` | `#000000` | Ink. |
 | `--brand-white` | `#ffffff` | Surface. |
 
@@ -219,13 +228,17 @@ Instrument Serif headings read markedly lighter beside it — which can be a del
 (bold mark, delicate headings) or can read as a mismatch. Playfair at 700–900 echoes the mark far
 more closely. Compare both against the real wordmark at the top of the one-pager before deciding.
 
-**Body** 🎚 — the deck specifies **Helvetica World**, which is a paid Monotype licence and not
-practical as a webfont. Substitutes:
+**Body** 🎚 — the deck specifies **Helvetica World**. That is a **paid Monotype family**; web use
+needs a commercial licence (pageview-based or subscription). **We are not using it, and it is not
+loaded in the studio mockup** — the fonts actually loaded are Inter, DM Sans, Instrument Serif,
+Playfair Display and Cormorant Garamond.
 
 | Candidate | Licence | Notes |
 |---|---|---|
-| **Inter** | Free (OFL) | Default. Screen-optimised, huge language coverage, closest free Helvetica. |
-| Neue Haas Grotesk | Commercial | The authentic Helvetica revival if budget allows. |
+| **Inter** | Free (OFL) | **Recommended.** Screen-optimised, huge language coverage, closest free Helvetica. Renders identically on every platform. |
+| DM Sans | Free (OFL) | Slightly warmer and more geometric than Inter. |
+| "System / Helvetica" | Free, but inconsistent | ⚠️ Resolves to `-apple-system, "Helvetica Neue", Arial`. Looks like Helvetica Neue on a Mac, but **Windows visitors get Arial** — so the site renders differently by platform. Fine for mockups, risky to ship. |
+| Neue Haas Grotesk / Helvetica Now | Commercial | The authentic Helvetica revivals, if there is budget. |
 
 Loaded via `next/font` behind `--font-display` and `--font-body` so a swap touches one file.
 
@@ -400,18 +413,28 @@ Settled with Laura & Poppy. **Do not re-open during development.**
 - The header is **its own surface**, coloured independently of the page. It does not inherit
   `--bg`; it has `--nav-bg`, `--nav-ink` and `--nav-border` of its own.
 - The **logotype is centred** in the bar.
-- Nav links are **split either side** of it — About / Services / Packages on the left,
-  Work / Enquire on the right.
+- Nav links are **split three and three** either side of it — About / Services / Packages on the
+  left, Portfolio / Work / Enquire on the right — so the bar is visually balanced.
 - Sticky on scroll · hairline bottom border · active item underlined · `aria-current="page"`.
 
 Default sizing (open to adjustment, not to restructuring): bar 66px, logotype 150px wide,
 links 10.5px uppercase at 0.16em tracking.
 
-> ⚠️ **Consequence of a pink header.** Pink cannot carry small text. Black on pink is Lc 58 —
-> nav links at 10.5px need Lc 90, so they read as **too low**. Black on pink only reaches
-> "passes" at roughly **24px bold**, and "borderline" at 18px bold. If the header stays pink,
-> the nav type has to get considerably larger and heavier than a conventional nav, or the bar
-> needs a darker colour. Check it live in the studio before committing.
+> ⚠️ **Consequence of a pink header — unresolved.** Pink cannot carry nav-sized text, whatever
+> colour the ink is. Measured smallest passing size on `#e19494`:
+>
+> | Ink | Lc | Weight 400–500 | Weight 600–700 |
+> |---|---:|---|---|
+> | cream `#fffaed` (current) | 48 | 36px | 24px |
+> | black `#000000` | 58 | 36px | 24px |
+>
+> A conventional nav runs 10–13px, so neither option passes as briefed. Three ways out:
+> **(a)** make nav links ~24px semibold — unusual but bold and possibly on-brand;
+> **(b)** darken the header bar — cream on red `#a23b3b` is **Lc 83** and passes at any nav size
+> (from 9px at weight 600), so a red bar solves it outright while keeping cream links;
+> **(c)** accept it as a considered exception — the nav is six familiar words, not prose.
+>
+> This is a real decision, not a technicality. It is the one open item blocking the header.
 
 ### 8.2 Services marquee 🔒 — structure decided
 

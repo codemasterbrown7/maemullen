@@ -46,7 +46,16 @@ the `#social-media` service block link into it.
 
 ## 2. Navigation model
 
-**Primary nav:** Home · About · Services · Packages · Work · Enquire, plus an Instagram icon.
+**Primary nav** 🔒 — balanced three either side of the centred logotype:
+
+| Left | | Right |
+|---|---|---|
+| About · Services · Packages | **MaeMüllen** | Portfolio · Work · Enquire |
+
+`OPEN:` **Are "Portfolio" and "Work" two different pages?** Deck p8 lists them as one item —
+*"CASE STUDIES / PORTFOLIO"* — and §1 of this document currently maps both to `/work`. Either
+they split (Portfolio = a visual gallery, Work = written case studies), or one gets renamed.
+Needs deciding before the Work page is built.
 
 - The wordmark (top-left or centred, per the Round 4 header decision) always links to `/`.
 - The services marquee is a *secondary* route into `/services` — deck p4:
