@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MaeMüllen — Styleguide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --red:#a23b3b; --pink:#e19494; --cream:#fffaed; --blue:#0b48ff;
+  --black:#000; --white:#fff;
+  --paper:#f7f7f8; --card:#fff; --rule:#e3e3e6; --muted:#6b6b73; --doc-ink:#17171a;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+body{margin:0;background:var(--paper);color:var(--doc-ink);font-family:var(--sans);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;line-height:1.15;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:.75rem}
+.muted{color:var(--muted)}
+.sheet{max-width:1180px;margin:0 auto;background:var(--card)}
+
+/* ---------- cover ---------- */
+.cover{display:grid;grid-template-columns:1fr}
+@media(min-width:820px){.cover{grid-template-columns:1.15fr .85fr}}
+.cover-l{padding:64px 56px}
+.cover-r{background:var(--red);color:var(--cream);padding:64px 56px;
+  display:flex;flex-direction:column;justify-content:space-between;min-height:280px}
+.cover-l h1{font-size:44px;letter-spacing:-.02em;line-height:1.05}
+.cover-l h1 span{color:var(--red)}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- sections ---------- */
+section{padding:56px}
+section + section{border-top:1px solid var(--rule)}
+.sec-label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:28px;display:flex;gap:12px;align-items:baseline}
+.sec-label b{color:var(--doc-ink);font-weight:600}
+.lede{max-width:70ch;margin-bottom:36px;color:var(--muted)}
+
+/* ---------- option cards (the comparison) ---------- */
+.opt{border:1px solid var(--rule);margin-bottom:40px}
+.opt-head{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;
+  padding:22px 28px;border-bottom:1px solid var(--rule)}
+.opt-num{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.opt-head h3{font-size:22px;letter-spacing:-.01em}
+.opt-head p{flex:1 1 320px;font-size:13.5px;color:var(--muted)}
+
+.opt-grid{display:grid;grid-template-columns:1fr}
+@media(min-width:960px){.opt-grid{grid-template-columns:1fr 1fr}}
+
+.opt-spec{padding:28px;border-bottom:1px solid var(--rule)}
+@media(min-width:960px){.opt-spec{border-bottom:0;border-right:1px solid var(--rule)}}
+
+.roles{display:grid;gap:10px;margin-bottom:26px}
+.role{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center}
+.role .chip{width:44px;height:44px;border:1px solid rgb(0 0 0 / .12)}
+.role .name{font-size:13px;font-weight:600}
+.role .use{font-size:12px;color:var(--muted);line-height:1.4}
+.role .hex{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px}
+.sg-btn{display:inline-flex;align-items:center;justify-content:center;height:42px;
+  padding:0 22px;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid transparent;cursor:default;font-family:var(--sans)}
+.sg-btn.primary{background:var(--o-primary);color:var(--o-primary-ink)}
+.sg-btn.primary.pressed{background:var(--o-primary-press)}
+.sg-btn.secondary{background:transparent;color:var(--o-ink);border-color:var(--o-ink)}
+.sg-btn.secondary.pressed{background:var(--o-ink);color:var(--o-page)}
+.btn-note{font-size:12px;color:var(--muted);margin-top:4px}
+.warn{margin-top:14px;padding:10px 14px;background:#fff6f5;border-left:3px solid var(--red);
+  font-size:12.5px;line-height:1.5}
+
+/* ---------- vibe preview ---------- */
+.preview{background:var(--o-page);color:var(--o-ink);min-height:420px;
+  display:flex;flex-direction:column}
+.pv-nav{display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:56px;border-bottom:1px solid var(--o-line)}
+.pv-nav img{height:15px;width:auto;filter:var(--o-mark)}
+.pv-nav ul{display:flex;gap:16px;list-style:none;margin:0;padding:0}
+.pv-nav li{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
+.pv-marq{border-bottom:1px solid var(--o-line);background:var(--o-surface);
+  padding:9px 24px;font-size:10.5px;color:var(--o-ink);overflow:hidden;white-space:nowrap}
+.pv-body{flex:1;padding:34px 24px;display:flex;flex-direction:column;gap:18px}
+.pv-body .mark{width:min(100%,340px);height:auto;filter:var(--o-mark)}
+.pv-state{font-size:11.5px;line-height:1.45;text-transform:uppercase;text-align:justify;
+  max-width:40ch;letter-spacing:.02em}
+.pv-cta{align-self:flex-start;background:var(--o-primary);color:var(--o-primary-ink);
+  padding:11px 20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
+.pv-foot{background:var(--o-decor);height:34px}
+
+/* ---------- ramps ---------- */
+.ramp-block{margin-bottom:34px}
+.ramp-title{display:flex;gap:12px;align-items:baseline;margin-bottom:4px}
+.ramp-title h4{font-size:16px}
+.ramp-desc{font-size:13px;color:var(--muted);max-width:62ch;margin-bottom:14px}
+.ramp{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--rule)}
+.ramp .step{padding:14px 10px;min-height:104px;display:flex;flex-direction:column;
+  justify-content:flex-end;gap:2px}
+.ramp .step b{font-size:11px;font-family:var(--mono)}
+.ramp .step span{font-size:9.5px;font-family:var(--mono);opacity:.75}
+.rules{margin-top:12px;font-size:12.5px;color:var(--muted);display:grid;gap:5px}
+.rules li{margin-left:16px}
+
+/* ---------- type ---------- */
+.type-opt{border:1px solid var(--rule);padding:26px 28px;margin-bottom:18px}
+.type-opt .head{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;margin-bottom:18px}
+.type-opt .head h4{font-size:17px}
+.type-opt .head .lic{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.type-opt .head p{flex:1 1 300px;font-size:12.5px;color:var(--muted)}
+.specimen{border-top:1px solid var(--rule);padding-top:16px;display:grid;gap:12px}
+.spec-row{display:grid;grid-template-columns:1fr;gap:4px}
+@media(min-width:760px){.spec-row{grid-template-columns:150px 1fr;gap:20px;align-items:baseline}}
+.spec-meta{font-family:var(--mono);font-size:10.5px;color:var(--muted);line-height:1.5}
+.mark-compare{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:14px 0 18px;border-bottom:1px solid var(--rule);margin-bottom:16px}
+.mark-compare img{height:34px;width:auto;filter:brightness(0)}
+.mark-compare .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.num{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
+.dots{display:flex;gap:5px}
+.dots i{width:13px;height:13px;border-radius:50%;display:block;border:1px solid rgb(0 0 0 / .14)}
+.badge{display:inline-block;padding:1px 7px;font-size:10px;letter-spacing:.07em;
+  text-transform:uppercase;border:1px solid currentColor;white-space:nowrap}
+.pass{color:#0a7a3d}.large{color:#8a6a00}.fail{color:#b3261e;font-weight:600}
+.swatch-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.sw{border:1px solid var(--rule)}
+.sw .fill{height:78px}
+.sw .meta{padding:9px 11px}
+.sw .meta b{display:block;font-size:12.5px}
+footer{padding:34px 56px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- ================= COVER ================= -->
+<div class="cover">
+  <div class="cover-l">
+    <p class="eyebrow">Brand styleguide</p>
+    <h1>Mae<span>Müllen</span></h1>
+    <p class="muted" style="margin-top:14px;max-width:44ch">
+      The rules the website is built to. Pick one type option and one colour option;
+      everything after that follows from them.</p>
+  </div>
+  <div class="cover-r">
+    <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Version 0.1</div>
+    <div>
+      <img src="../public/brand/wordmark-cream-trimmed.png" alt="MaeMüllen" style="width:100%;max-width:300px;height:auto">
+      <p style="margin-top:14px;font-size:12px;opacity:.85">Derived from the wireframe deck<br>and the supplied logo files</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= HOW TO USE ================= -->
+<section>
+  <div class="sec-label"><b>00</b><span>How to use this document</span></div>
+  <p class="lede">
+    Two decisions to make, in this order. <b>Part 1</b> gives you four complete colour directions —
+    the brand colours are fixed by the deck, so what changes is which colour does which
+    <em>job</em>: the page, the buttons, the accent. <b>Part 2</b> compares three heading
+    typefaces. <b>Part 3</b> is the shared detail — ramps, scale, states, contrast — that applies
+    whichever you pick.
+  </p>
+  <p class="lede" style="margin-bottom:0">
+    Once you choose, these become the rules and nothing in the build strays from them.
+  </p>
+</section>
+
+<!-- ================= PART 1 — COLOUR DIRECTIONS ================= -->
+<section>
+  <div class="sec-label"><b>01</b><span>Part 1 · Choose a colour direction</span></div>
+  <p class="lede">
+    Same six brand colours in all four. What differs is the role each one plays — and that changes
+    the whole feel. Each card shows the roles, the buttons, and a preview so you can read the vibe
+    rather than imagine it.
+  </p>
+  <div id="options"></div>
+</section>
+
+<!-- ================= PART 2 — TYPOGRAPHY ================= -->
+<section>
+  <div class="sec-label"><b>02</b><span>Part 2 · Choose a heading typeface</span></div>
+  <p class="lede">
+    The logotype is a supplied image, so this face is only for <em>headings</em> — it has to sit
+    beside the wordmark, not match it. Your "Mae" is set heavy, which is the thing to judge
+    against: a light heading face reads as deliberate contrast, or as a mismatch.
+  </p>
+  <div class="mark-compare">
+    <img src="../public/brand/wordmark-cream-trimmed.png" alt="MaeMüllen wordmark">
+    <span class="lbl">← the supplied mark, for reference</span>
+  </div>
+  <div id="typefaces"></div>
+</section>
+
+<!-- ================= PART 3 — FOUNDATIONS ================= -->
+<section>
+  <div class="sec-label"><b>03</b><span>Part 3 · Brand palette</span></div>
+  <p class="lede">Fixed by the deck. I sampled the supplied logo files and all values match exactly.</p>
+  <div class="swatch-strip" id="palette"></div>
+</section>
+
+<section>
+  <div class="sec-label"><b>04</b><span>Colour ramps &amp; usage rules</span></div>
+  <p class="lede">
+    Tints and shades derived from each brand colour, for hovers, borders, tinted panels and
+    disabled states. The <b>500</b> step is always the true brand value — never invent a new one.
+  </p>
+  <div id="ramps"></div>
+</section>
+
+<section>
+  <div class="sec-label"><b>05</b><span>Type scale</span></div>
+  <p class="lede">Fluid sizes. Display styles are set tight; body is set loose for reading.</p>
+  <table id="scale"></table>
+</section>
+
+<section>
+  <div class="sec-label"><b>06</b><span>Buttons &amp; states</span></div>
+  <p class="lede">
+    Three tiers. Every interactive element carries all five states — including a visible focus
+    ring, which is never removed.
+  </p>
+  <table id="states"></table>
+</section>
+
+<section>
+  <div class="sec-label"><b>07</b><span>Spacing</span></div>
+  <p class="lede">4px base. Nothing off-scale — if a value is missing, extend the scale rather than improvise.</p>
+  <div id="spacing"></div>
+</section>
+
+<section>
+  <div class="sec-label"><b>08</b><span>Contrast — computed, not estimated</span></div>
+  <p class="lede">
+    Calculated live in the browser from the hex values above. WCAG 2.1: body text needs 4.5:1,
+    large text (≥24px) needs 3:1. <b>This is the constraint that shapes the options in Part 1.</b>
+  </p>
+  <table id="contrast"></table>
+</section>
+
+<footer>
+  MaeMüllen styleguide v0.1 · written spec in <span class="mono">design/DESIGN.md</span> ·
+  page-by-page wireframe in <span class="mono">docs/SITEMAP.md</span>
+</footer>
+</div>
+
+<script>
+/* ============ colour helpers ============ */
+const hex2rgb = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+const rgb2hex = c => '#'+c.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+const mix = (h,t,amt) => rgb2hex(hex2rgb(h).map((v,i)=>v+(hex2rgb(t)[i]-v)*amt));
+const lum = h => { const c=hex2rgb(h).map(v=>v/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));
+  return .2126*c[0]+.7152*c[1]+.0722*c[2]; };
+const ratio = (a,b) => { const l=[lum(a),lum(b)].sort((x,y)=>y-x); return (l[0]+.05)/(l[1]+.05); };
+const bestInk = bg => ratio('#000000',bg) >= ratio('#ffffff',bg) ? '#000000' : '#ffffff';
+
+const RED='#a23b3b', PINK='#e19494', CREAM='#fffaed', BLUE='#0b48ff', BLACK='#000000', WHITE='#ffffff';
+
+/* ============ PART 1 — colour direction options ============ */
+const OPTIONS = [
+  {
+    n:'01', name:'Editorial Cream',
+    note:'Cream page, black text, red for action, blue used sparingly. Calm and gallery-like — the safest reading of the deck, and the most flexible for long pages of text.',
+    page:CREAM, surface:WHITE, ink:BLACK, line:'rgb(0 0 0 / .14)',
+    primary:RED, primaryInk:CREAM, accent:BLUE, decor:PINK, mark:'brightness(0)',
+    roles:[
+      [CREAM,'Page','Every page background'],
+      [WHITE,'Surface','Cards, panels, form fields'],
+      [BLACK,'Ink','All body copy and headings'],
+      [RED,'Primary','Buttons, links, active states'],
+      [BLUE,'Accent','Focus rings, one pop per page'],
+      [PINK,'Decorative','Large fills, image mats'],
+    ],
+  },
+  {
+    n:'02', name:'Bold Pink',
+    note:'Pink as a full-bleed brand field, exactly as the deck’s hero mock. The most distinctive and the most fashion-led — but it forces a blockier layout (see the warning).',
+    page:PINK, surface:CREAM, ink:BLACK, line:'rgb(0 0 0 / .18)',
+    primary:RED, primaryInk:CREAM, accent:BLACK, decor:CREAM, mark:'brightness(0)',
+    roles:[
+      [PINK,'Page','Every page background'],
+      [CREAM,'Surface','Cards, panels, form fields'],
+      [BLACK,'Ink','The only compliant ink on pink'],
+      [RED,'Primary','Buttons — as blocks, never text'],
+      [BLACK,'Accent','Focus rings, underlines'],
+      [CREAM,'Decorative','Bands, mats, dividers'],
+    ],
+    warn:'Red text on pink is 2.75:1 and fails. In this direction red can only appear as a filled block with cream text on it — so the design becomes blockier and more graphic. That is a consequence of the palette, not a style preference.',
+  },
+  {
+    n:'03', name:'Red Statement',
+    note:'Cream base broken up by full-bleed red sections with cream text. Rich and warm, with the strongest sense of occasion — closest to the wax-seal, invitation idea in the deck.',
+    page:CREAM, surface:RED, ink:BLACK, line:'rgb(0 0 0 / .14)',
+    primary:RED, primaryInk:CREAM, accent:PINK, decor:RED, mark:'brightness(0)',
+    roles:[
+      [CREAM,'Page','Base background between sections'],
+      [RED,'Surface','Full-bleed feature sections'],
+      [BLACK,'Ink','Body on cream · cream reversed on red'],
+      [RED,'Primary','Buttons on cream sections'],
+      [PINK,'Accent','Secondary tint, hovers'],
+      [BLUE,'Reserved','Focus rings only'],
+    ],
+  },
+  {
+    n:'04', name:'Electric',
+    note:'Cream and black, with royal blue doing the work red usually would. Modern and unexpected — and it is the blue Poppy actually reached for in the Bendito menu, so it has precedent in the real work.',
+    page:CREAM, surface:WHITE, ink:BLACK, line:'rgb(0 0 0 / .14)',
+    primary:BLUE, primaryInk:WHITE, accent:RED, decor:PINK, mark:'brightness(0)',
+    roles:[
+      [CREAM,'Page','Every page background'],
+      [WHITE,'Surface','Cards, panels, form fields'],
+      [BLACK,'Ink','All body copy and headings'],
+      [BLUE,'Primary','Buttons, links, active states'],
+      [RED,'Accent','Section marks, secondary CTAs'],
+      [PINK,'Decorative','Large fills, image mats'],
+    ],
+  },
+];
+
+document.getElementById('options').innerHTML = OPTIONS.map(o => {
+  const press = mix(o.primary, BLACK, .18);
+  const vars = `--o-page:${o.page};--o-surface:${o.surface};--o-ink:${o.ink};--o-line:${o.line};
+    --o-primary:${o.primary};--o-primary-ink:${o.primaryInk};--o-primary-press:${press};
+    --o-decor:${o.decor};--o-mark:${o.mark}`;
+  return `
+  <article class="opt" style="${vars}">
+    <div class="opt-head">
+      <span class="opt-num">${o.n}</span>
+      <h3>${o.name}</h3>
+      <p>${o.note}</p>
+    </div>
+    <div class="opt-grid">
+      <div class="opt-spec">
+        <div class="roles">
+          ${o.roles.map(([c,name,use])=>`
+            <div class="role">
+              <span class="chip" style="background:${c}"></span>
+              <span><span class="name">${name}</span><br><span class="use">${use}</span></span>
+              <span class="hex">${c.toUpperCase()}</span>
+            </div>`).join('')}
+        </div>
+        <div class="btn-row">
+          <span class="sg-btn primary">Enquire now</span>
+          <span class="sg-btn primary pressed">Pressed</span>
+        </div>
+        <div class="btn-row">
+          <span class="sg-btn secondary">View work</span>
+          <span class="sg-btn secondary pressed">Pressed</span>
+        </div>
+        <p class="btn-note">Primary ${o.primary.toUpperCase()} on ${o.primaryInk.toUpperCase()} —
+          ${ratio(o.primary,o.primaryInk).toFixed(2)}:1</p>
+        ${o.warn?`<div class="warn"><b>Constraint.</b> ${o.warn}</div>`:''}
+      </div>
+
+      <div class="preview">
+        <div class="pv-nav">
+          <img src="../public/brand/wordmark-cream-trimmed.png" alt="">
+          <ul><li>About</li><li>Services</li><li>Work</li><li>Enquire</li></ul>
+        </div>
+        <div class="pv-marq">Social media management &nbsp;•&nbsp; Content days &nbsp;•&nbsp; TikTok management &nbsp;•&nbsp; PR &amp; events &nbsp;•&nbsp; Design &amp; illustration</div>
+        <div class="pv-body">
+          <img class="mark" src="../public/brand/wordmark-cream-trimmed.png" alt="">
+          <p class="pv-state">MaeMüllen is a creative studio where social, content and design come together.</p>
+          <span class="pv-cta">Enquire now</span>
+        </div>
+        <div class="pv-foot"></div>
+      </div>
+    </div>
+  </article>`;
+}).join('');
+
+/* ============ PART 2 — typefaces ============ */
+const FACES = [
+  { name:'Instrument Serif', stack:"'Instrument Serif',Didot,serif", lic:'Free · OFL', weight:400,
+    note:'High contrast, distinctive italic, least over-used. One light weight only — noticeably lighter than the wordmark.' },
+  { name:'Playfair Display', stack:"'Playfair Display',Didot,serif", lic:'Free · OFL', weight:700,
+    note:'Variable to 900, so it can be set heavy enough to echo the wordmark’s weight. Very widely used.' },
+  { name:'Didot / commercial', stack:"Didot,'Bodoni 72','Playfair Display',serif", lic:'Paid', weight:400,
+    note:'Closest to the wordmark’s own character. Shown here via macOS Didot; the real equivalents are Canela, Ogg or PP Editorial New.' },
+];
+document.getElementById('typefaces').innerHTML = FACES.map(f=>`
+  <div class="type-opt">
+    <div class="head">
+      <h4>${f.name}</h4><span class="lic">${f.lic}</span><p>${f.note}</p>
+    </div>
+    <div class="specimen">
+      <div class="spec-row">
+        <span class="spec-meta">Display · 56px<br>weight ${f.weight} · lh 1.0</span>
+        <div style="font-family:${f.stack};font-weight:${f.weight};font-size:56px;line-height:1;letter-spacing:-.02em">Selected work</div>
+      </div>
+      <div class="spec-row">
+        <span class="spec-meta">Heading · 30px<br>weight ${f.weight} · lh 1.15</span>
+        <div style="font-family:${f.stack};font-weight:${f.weight};font-size:30px;line-height:1.15">Let’s make something worth remembering.</div>
+      </div>
+      <div class="spec-row">
+        <span class="spec-meta">Italic · 26px</span>
+        <div style="font-family:${f.stack};font-weight:${f.weight};font-size:26px;font-style:italic">A creative studio, thoughtfully built</div>
+      </div>
+    </div>
+  </div>`).join('');
+
+/* ============ PART 3 — palette ============ */
+const PALETTE = [
+  ['Red',RED,'Primary accent — works as ink and as a background'],
+  ['Pink',PINK,'Background only — see contrast rules'],
+  ['Cream',CREAM,'Page background · reversed ink on red'],
+  ['Royal blue',BLUE,'Rare pop · focus rings'],
+  ['Black',BLACK,'Ink'],
+  ['White',WHITE,'Surface'],
+];
+document.getElementById('palette').innerHTML = PALETTE.map(([n,h,u])=>`
+  <div class="sw">
+    <div class="fill" style="background:${h};${h===WHITE?'border-bottom:1px solid var(--rule)':''}"></div>
+    <div class="meta"><b>${n}</b><span class="mono muted">${h.toUpperCase()}</span>
+      <p class="muted" style="font-size:11.5px;margin-top:5px;line-height:1.4">${u}</p></div>
+  </div>`).join('');
+
+/* ============ ramps ============ */
+const RAMPS = [
+  { name:'Red', base:RED, desc:'The workhorse. Legal as ink on cream and white, and as a background with cream or white on it.',
+    rules:['500 is the only value for buttons and links.','700 is the hover/pressed state.','100–50 for tinted panels and table stripes.','Never place red on pink.'] },
+  { name:'Pink', base:PINK, desc:'A background colour, not an ink colour. Black is the only compliant text on it.',
+    rules:['Use 500 for large fields and image mats.','Never set cream, white, red or blue text on it.','100–50 work as subtle section tints under black text.'] },
+  { name:'Royal blue', base:BLUE, desc:'The rare pop. One deliberate use per page at most, plus focus rings.',
+    rules:['Only ever on cream or white.','Never on pink; never on black at body size.','Reserve 500 for focus rings so the meaning stays consistent.'] },
+  { name:'Neutral', base:'#8a8a90', desc:'Greys derived for borders, muted text, disabled states and placeholder blocks.',
+    rules:['700 for muted body text.','300 for hairline borders.','100 for disabled fills.'] },
+];
+const STEPS = [['50',.92],['100',.82],['300',.45],['500',0],['700',-.22],['900',-.48]];
+document.getElementById('ramps').innerHTML = RAMPS.map(r=>`
+  <div class="ramp-block">
+    <div class="ramp-title"><h4>${r.name}</h4><span class="mono muted">${r.base.toUpperCase()}</span></div>
+    <p class="ramp-desc">${r.desc}</p>
+    <div class="ramp">
+      ${STEPS.map(([label,amt])=>{
+        const c = amt>=0 ? mix(r.base,WHITE,amt) : mix(r.base,BLACK,-amt);
+        return `<div class="step" style="background:${c};color:${bestInk(c)}">
+          <b>${label}${label==='500'?' ·':''}</b><span>${c.toUpperCase()}</span></div>`;
+      }).join('')}
+    </div>
+    <ul class="rules">${r.rules.map(x=>`<li>${x}</li>`).join('')}</ul>
+  </div>`).join('');
+
+/* ============ type scale ============ */
+const SCALE = [
+  ['Display XL','clamp(3.5rem, 13vw, 12rem)','0.85 / −0.02em','Hero, entry animation','ink'],
+  ['Display L','clamp(2.75rem, 8vw, 6rem)','0.9 / −0.02em','Page titles','ink'],
+  ['Display M','clamp(2rem, 5vw, 3.5rem)','1.0 / −0.01em','Section titles','ink'],
+  ['Heading L','clamp(1.75rem, 3.5vw, 2.5rem)','1.1','h2','ink'],
+  ['Heading M','clamp(1.375rem, 2.2vw, 1.75rem)','1.2','h3','ink'],
+  ['Statement','clamp(1.25rem, 2.6vw, 2rem)','1.35 / justified caps','One block per page, max 4 lines','ink'],
+  ['Body L','1.125rem','1.6','Intro paragraphs','ink'],
+  ['Body','1rem','1.65 / max 68ch','Default','ink'],
+  ['Body S','0.875rem','1.6','Captions, meta','muted'],
+  ['Label','0.8125rem','1.4 / 0.08em caps','Buttons, form labels','muted'],
+  ['Eyebrow','0.6875rem','1.2 / 0.18em caps','Section eyebrows, nav','muted'],
+];
+document.getElementById('scale').innerHTML =
+  `<thead><tr><th>Style</th><th>Size</th><th>Line height / tracking</th><th>Use</th><th>Colour</th></tr></thead><tbody>`+
+  SCALE.map(([n,s,l,u,c])=>`<tr><td><b>${n}</b></td><td class="num">${s}</td><td class="num">${l}</td>
+    <td class="muted">${u}</td><td><div class="dots"><i style="background:${c==='ink'?BLACK:'#6b6b73'}"></i></div></td></tr>`).join('')+
+  `</tbody>`;
+
+/* ============ button states ============ */
+const STATES = [
+  ['Default','Primary fill, label in the reversed ink'],
+  ['Hover','Fill darkens one ramp step (700). No movement.'],
+  ['Focus-visible','2px focus ring, 3px offset — <b>in addition to</b> hover, never instead of it'],
+  ['Active','translateY(1px)'],
+  ['Disabled','40% opacity, cursor not-allowed, no hover'],
+];
+document.getElementById('states').innerHTML =
+  `<thead><tr><th>State</th><th>Treatment</th></tr></thead><tbody>`+
+  STATES.map(([s,t])=>`<tr><td><b>${s}</b></td><td class="muted">${t}</td></tr>`).join('')+
+  `<tr><td><b>Sizes</b></td><td class="muted">Small 36px · Medium 44px · Large 52px. Touch targets never below 44px.</td></tr>`+
+  `<tr><td><b>Tiers</b></td><td class="muted">Primary (solid) · Secondary (outline) · Tertiary — the bracket style <span class="mono">[ EXPLORE OUR WORLD ]</span> lifted from the deck</td></tr>`+
+  `</tbody>`;
+
+/* ============ spacing ============ */
+document.getElementById('spacing').innerHTML =
+  [4,8,12,16,20,24,32,40,48,64,80,96,128,160,192].map(s=>`
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:7px">
+      <span class="mono muted" style="min-width:11ch">space-${s/4} · ${s}px</span>
+      <span style="height:12px;width:${s}px;background:${RED}"></span>
+    </div>`).join('');
+
+/* ============ contrast ============ */
+const C={red:RED,pink:PINK,cream:CREAM,blue:BLUE,black:BLACK,white:WHITE};
+const PAIRS=[['black','cream'],['black','white'],['black','pink'],['pink','black'],
+  ['white','red'],['red','white'],['cream','red'],['red','cream'],['white','blue'],
+  ['blue','cream'],['cream','blue'],['blue','black'],['red','black'],
+  ['red','pink'],['blue','pink'],['cream','pink'],['white','pink']];
+document.getElementById('contrast').innerHTML =
+  `<thead><tr><th>Sample</th><th>Text</th><th>On</th><th>Ratio</th><th>Verdict</th></tr></thead><tbody>`+
+  PAIRS.map(([f,b])=>{
+    const r=ratio(C[f],C[b]);
+    const cls=r>=4.5?'pass':(r>=3?'large':'fail');
+    const txt=r>=7?'AAA':(r>=4.5?'AA':(r>=3?'Large only':'Fails'));
+    return `<tr>
+      <td><span style="display:inline-block;padding:5px 12px;background:${C[b]};color:${C[f]};border:1px solid var(--rule)">Aa sample</span></td>
+      <td>${f}</td><td>${b}</td><td class="num">${r.toFixed(2)}</td>
+      <td><span class="badge ${cls}">${txt}</span></td></tr>`;
+  }).join('')+`</tbody>`;
+</script>
+</body>
+</html>

@@ -526,7 +526,7 @@ what lets the typeface and palette decisions land later without touching page co
 3. Every interactive element has all five states from §6.1.
 4. Every animation has a reduced-motion path.
 5. Content lives in `content/`, not in JSX.
-6. New component → add it to `design/design-system.html` in the same commit.
+6. New component → add it to `design/styleguide.html` in the same commit.
 
 ---
 
