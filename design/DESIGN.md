@@ -6,7 +6,25 @@ This document is the single source of truth for how the MaeMüllen site looks an
 Nothing in a component should be a hard-coded colour, size or duration — everything resolves
 to a token defined here and implemented in `app/globals.css`.
 
-**Status key** — 🔒 locked by the source deck · 🎚 choose in the design-system one-pager · ❓ open, to resolve with Laura & Poppy
+**Status key** — 🔒 locked · 🎚 choose in `design/styleguide.html` · ❓ open, to resolve with Laura & Poppy
+
+---
+
+## 0. Locked structure
+
+Agreed with Laura & Poppy. These are **settled — do not ask again during development.**
+Colours are *not* settled; only the structure below is.
+
+| # | Decision | Detail |
+|---|---|---|
+| S1 | **Header is its own surface** | Coloured independently of the page. Own background, ink and border tokens. §8.1 |
+| S2 | **Logotype is centred in the header** | Nav links split either side — About / Services / Packages, then Work / Enquire. §8.1 |
+| S3 | **Marquee is its own surface** | Sits directly under the header, coloured independently of both header and page. §8.2 |
+| S4 | **No second logotype on the page** | The logotype appears in the header only. The page body opens on the statement block, not a repeated wordmark. §4.1 of `docs/SITEMAP.md` |
+
+Stated colour *intent* at the time of the decision — a starting point, still open:
+header pink `#e19494` · marquee royal blue `#0b48ff` · page cream `#fffaed` ·
+logotype cream `#fffaed`. Loaded as the **"As briefed"** preset in the studio.
 
 ---
 
@@ -375,19 +393,34 @@ Placeholders are never used as labels.
 
 ## 8. Navigation
 
-### 8.1 Header 🎚
+### 8.1 Header 🔒 — structure decided
 
-Two directions, both in the deck — resolved in Round 4 of the decision ladder:
+Settled with Laura & Poppy. **Do not re-open during development.**
 
-- **A — Centred bar (Nude Social):** full-width dark bar, wordmark centred, nav split left/right,
-  uppercase `--text-eyebrow`.
-- **B — Left wordmark (Imi):** wordmark top-left, nav top-right on `--bg`, plus the services
-  marquee band directly beneath.
+- The header is **its own surface**, coloured independently of the page. It does not inherit
+  `--bg`; it has `--nav-bg`, `--nav-ink` and `--nav-border` of its own.
+- The **logotype is centred** in the bar.
+- Nav links are **split either side** of it — About / Services / Packages on the left,
+  Work / Enquire on the right.
+- Sticky on scroll · hairline bottom border · active item underlined · `aria-current="page"`.
 
-Shared: sticky on scroll, 72px tall (64px on mobile), hairline bottom border, active item
-underlined, `aria-current="page"`.
+Default sizing (open to adjustment, not to restructuring): bar 66px, logotype 150px wide,
+links 10.5px uppercase at 0.16em tracking.
 
-### 8.2 Services marquee 🔒
+> ⚠️ **Consequence of a pink header.** Pink cannot carry small text. Black on pink is Lc 58 —
+> nav links at 10.5px need Lc 90, so they read as **too low**. Black on pink only reaches
+> "passes" at roughly **24px bold**, and "borderline" at 18px bold. If the header stays pink,
+> the nav type has to get considerably larger and heavier than a conventional nav, or the bar
+> needs a darker colour. Check it live in the studio before committing.
+
+### 8.2 Services marquee 🔒 — structure decided
+
+The marquee is **its own surface**, coloured independently of both the header and the page
+(`--marquee-bg`, `--marquee-ink`). It sits directly beneath the header.
+
+Behaviour spec follows below and is unchanged.
+
+### 8.2.1 Marquee behaviour 🔒
 
 A horizontally scrolling band of service names separated by `•`, sitting under the header on the
 home page. From the deck: *"maemullen below moving constantly stops with cursor links to our
@@ -554,9 +587,11 @@ Parked deliberately — resolved when we reach the relevant page.
 
 ## 16. Decision log
 
-| Round | Decision | Status |
+| # | Decision | Status |
 |---|---|---|
-| 1 | Entry experience — envelope / kinetic type / both | **In progress** |
-| 2 | Display typeface — Instrument Serif / Playfair Display / commercial | Pending |
-| 3 | Palette mood — A cream-led / B pink-led | Pending |
-| 4 | Header — A centred bar / B left wordmark + marquee | Pending |
+| S1–S4 | Page structure — header surface, centred logotype, marquee surface, no second logotype | ✅ **Decided** — see §0 |
+| C1 | Colour roles — header, marquee, page, logotype, primary, accent | 🎚 Open. Intent captured as the "As briefed" preset |
+| C2 | Nav link legibility on a pink header (§8.1 warning) | ⚠️ Needs resolving if the header stays pink |
+| T1 | Heading typeface — Instrument Serif / Playfair Display / commercial | 🎚 Open |
+| T2 | Body typeface — Inter or a paid Helvetica | 🎚 Open |
+| E1 | Entry experience — envelope / kinetic type / both | Not started |

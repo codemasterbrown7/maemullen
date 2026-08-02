@@ -90,14 +90,18 @@ variants get built and compared:
 `OPEN:` The envelope artwork itself. The deck says "made by ai". Not yet supplied — placeholder
 until we have it, or we draw it to match Poppy's line style (see the Bendito artwork).
 
-### 3.2 Header
+### 3.2 Header 🔒 — decided
 
-Round 4 decision — two directions, both in the deck. Spec in `DESIGN.md` §8.1.
+Its own surface, independent of the page. **Logotype centred**, nav links split either side:
+About / Services / Packages · logotype · Work / Enquire. Full spec in `DESIGN.md` §8.1.
 
-### 3.3 Services marquee
+Note the legibility warning there if the header stays pink — pink cannot carry small text.
 
-Deck p4. Full spec in `DESIGN.md` §8.2 — 40s loop, pauses on hover **and** focus-within, duplicate
-track `aria-hidden`, stops under reduced motion.
+### 3.3 Services marquee 🔒 — decided
+
+**Its own surface**, coloured independently of both header and page, sitting directly beneath the
+header. Deck p4. Full spec in `DESIGN.md` §8.2 — 40s loop, pauses on hover **and** focus-within,
+duplicate track `aria-hidden`, stops under reduced motion.
 
 Items (drawn from MaeMüllen's actual services, not the reference site's):
 Social media management · Content days · TikTok management · PR & events ·
@@ -118,9 +122,9 @@ Deck p3–p7.
 
 | # | Section | Content | Status |
 |---|---|---|---|
-| 1 | Header | Wordmark + nav | Round 4 |
-| 2 | Marquee | Services, scrolling → `/services` | 🔒 |
-| 3 | Hero | Wordmark, full-bleed | 🔒 asset supplied |
+| 1 | Header | Centred logotype, nav split either side. **Own surface.** | 🔒 structure decided |
+| 2 | Marquee | Services, scrolling → `/services`. **Own surface.** | 🔒 structure decided |
+| 3 | Hero | Statement block + CTAs — **no logotype here** | 🔒 structure decided |
 | 4 | Moving collage | Drifting overlapping photo tiles | ⚠ needs photography |
 | 5 | About summary | Verbatim below | 🔒 |
 | 6 | Services teaser | Numbered `001…` list → `/services` | 🔒 structure |
@@ -128,8 +132,9 @@ Deck p3–p7.
 | 8 | CTA band | → `/enquire` | 🔒 |
 | 9 | Footer | | 🔒 |
 
-**Hero.** Deck p3 shows the cream wordmark on a pink field. See the contrast caveat in
-`DESIGN.md` §2.3 — as supplied this is 2.27:1. The `<h1>` must carry real text regardless.
+**Hero — no second logotype.** Settled with Laura & Poppy (`DESIGN.md` §0, S4): the logotype
+appears in the header only. The page opens directly on the statement block. The `<h1>` is real
+text, since the header logotype is an image.
 
 **About summary** — deck p6, verbatim. Set the first paragraph as the statement block
 (`DESIGN.md` §3.3):

@@ -142,18 +142,28 @@ input[type=range]{accent-color:var(--ui-accent)}
   -webkit-mask:url('../public/brand/monogram-trimmed.png') no-repeat center/contain;
   mask:url('../public/brand/monogram-trimmed.png') no-repeat center/contain;}
 
-.t-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:0 26px;height:66px;border-bottom:1px solid var(--t-line)}
-.t-nav .mark{width:150px;height:24px}
+/* Nav bar is its own surface, independent of the page (structural decision).
+   Logotype sits centred between two nav groups. */
+.t-nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
+  padding:0 26px;height:var(--t-nav-h);
+  background:var(--t-nav);color:var(--t-nav-ink);
+  border-bottom:1px solid var(--t-nav-line)}
+.t-nav .mark{width:var(--t-nav-mark-w);height:calc(var(--t-nav-mark-w) * .163)}
 .t-nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
-.t-nav a{color:inherit;text-decoration:none;font-size:10.5px;letter-spacing:.16em;
-  text-transform:uppercase;padding:4px 0;border-bottom:1px solid transparent}
+.t-nav ul.right{justify-content:flex-end}
+.t-nav a{color:inherit;text-decoration:none;font-size:var(--t-nav-size);
+  letter-spacing:var(--t-nav-track);text-transform:uppercase;padding:4px 0;
+  border-bottom:1px solid transparent}
 .t-nav a:hover{border-bottom-color:currentColor}
-.t-marq{background:var(--t-surface);border-bottom:1px solid var(--t-line);
+
+/* Marquee is its own surface too. */
+.t-marq{background:var(--t-marquee);color:var(--t-marquee-ink);
+  border-bottom:1px solid var(--t-marquee-line);
   padding:11px 26px;font-size:11.5px;overflow:hidden;white-space:nowrap}
+
+/* No second logotype on the page — the hero opens on the statement. */
 .t-hero{padding:52px 26px 42px}
-.t-hero .mark{width:min(100%,620px);height:96px}
-.t-state{margin-top:26px;max-width:42ch;text-transform:uppercase;text-align:justify;
+.t-state{max-width:42ch;text-transform:uppercase;text-align:justify;
   font-size:calc(var(--t-base) * 1.15);line-height:1.4;letter-spacing:.015em}
 .t-sec{padding:34px 26px;border-top:1px solid var(--t-line)}
 .t-h2{font-family:var(--t-head);font-weight:var(--t-head-weight);
@@ -266,6 +276,13 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px}
   </div>
 
   <div class="grp">
+    <h3>Header bar</h3>
+    <div id="navCtrls"></div>
+    <p class="hint">Structure is fixed: logotype centred, nav split either side, no second
+      logotype on the page. Only the sizing and colours are open.</p>
+  </div>
+
+  <div class="grp">
     <h3>Buttons &amp; shape</h3>
     <div id="shapeCtrls"></div>
   </div>
@@ -301,15 +318,16 @@ table.mini{width:100%;border-collapse:collapse;font-size:12px}
     <div class="bh"><b>Live page</b><span>Real links and buttons — hover, click and tab through them</span></div>
     <div class="theme" id="livePage">
       <nav class="t-nav">
-        <span class="mark"></span>
-        <ul>
-          <li><a href="#">About</a></li><li><a href="#">Services</a></li>
-          <li><a href="#">Packages</a></li><li><a href="#">Work</a></li><li><a href="#">Enquire</a></li>
+        <ul class="left">
+          <li><a href="#">About</a></li><li><a href="#">Services</a></li><li><a href="#">Packages</a></li>
+        </ul>
+        <a href="#" aria-label="MaeMüllen — home"><span class="mark"></span></a>
+        <ul class="right">
+          <li><a href="#">Work</a></li><li><a href="#">Enquire</a></li>
         </ul>
       </nav>
       <div class="t-marq" id="marq"></div>
       <div class="t-hero">
-        <span class="mark"></span>
         <p class="t-state">MaeMüllen is a creative studio where social, content and design come together.</p>
         <div class="btnbar" style="margin-top:28px">
           <button class="btn btn-primary">Enquire now</button>
@@ -462,10 +480,15 @@ const RAMP_BASES = { Red:BRAND.Red, Pink:BRAND.Pink, Blue:BRAND.Blue, Neutral:'#
 
 /* ══════════════════════ state ══════════════════════ */
 const ROLE_DEFS = [
+  ['nav','Nav bar','Header background — its own surface'],
+  ['navInk','Nav links','Link text in the header'],
+  ['mark','Logotype','Centred wordmark in the nav'],
+  ['navLine','Nav border','Rule under the header'],
+  ['marquee','Marquee bar','Scrolling band background'],
+  ['marqueeInk','Marquee text','Service names in the band'],
   ['page','Page','Every page background'],
   ['surface','Surface','Cards, panels, bands'],
   ['ink','Ink','Body copy and headings'],
-  ['mark','Logotype','Wordmark and monogram'],
   ['primary','Primary','Buttons, links, active'],
   ['primaryInk','Primary ink','Text on primary'],
   ['accent','Accent','Section marks, seconds'],
@@ -475,16 +498,30 @@ const ROLE_DEFS = [
 ];
 
 const PRESETS = {
-  'Editorial Cream':{ page:'#fffaed',surface:'#ffffff',ink:'#000000',mark:'#000000',primary:'#a23b3b',
+  /* Laura & Poppy's stated starting point: pink nav, royal-blue marquee, cream
+     page, cream centred logotype. Colours are still open — the structure is not. */
+  'As briefed':{ nav:'#e19494',navInk:'#000000',mark:'#fffaed',navLine:'#c98080',
+    marquee:'#0b48ff',marqueeInk:'#fffaed',
+    page:'#fffaed',surface:'#ffffff',ink:'#000000',primary:'#a23b3b',
+    primaryInk:'#fffaed',accent:'#0b48ff',decor:'#e19494',line:'#e2ded1',focus:'#0b48ff' },
+  'Editorial Cream':{ nav:'#fffaed',navInk:'#000000',mark:'#000000',navLine:'#e2ded1',
+    marquee:'#ffffff',marqueeInk:'#000000',
+    page:'#fffaed',surface:'#ffffff',ink:'#000000',primary:'#a23b3b',
     primaryInk:'#fffaed',accent:'#0b48ff',decor:'#e19494',line:'#e2ded1',focus:'#0b48ff' },
   /* Cream logotype on pink is the deck's own hero. At display size APCA rates it
-     Lc 48 — comfortably above the 45 threshold for large headline type, even
-     though WCAG 2.1 scores it 2.27 and calls it a failure. */
-  'Bold Pink':{ page:'#e19494',surface:'#fffaed',ink:'#000000',mark:'#fffaed',primary:'#a23b3b',
+     Lc 48 — above the 45 threshold for large headline type, even though WCAG 2.1
+     scores it 2.27 and calls it a failure. */
+  'Bold Pink':{ nav:'#a23b3b',navInk:'#fffaed',mark:'#fffaed',navLine:'#8a3232',
+    marquee:'#fffaed',marqueeInk:'#000000',
+    page:'#e19494',surface:'#fffaed',ink:'#000000',primary:'#a23b3b',
     primaryInk:'#fffaed',accent:'#000000',decor:'#fffaed',line:'#c98080',focus:'#000000' },
-  'Red Statement':{ page:'#fffaed',surface:'#a23b3b',ink:'#000000',mark:'#a23b3b',primary:'#a23b3b',
+  'Red Statement':{ nav:'#a23b3b',navInk:'#fffaed',mark:'#fffaed',navLine:'#8a3232',
+    marquee:'#e19494',marqueeInk:'#000000',
+    page:'#fffaed',surface:'#a23b3b',ink:'#000000',primary:'#a23b3b',
     primaryInk:'#fffaed',accent:'#e19494',decor:'#a23b3b',line:'#e2ded1',focus:'#0b48ff' },
-  'Electric':{ page:'#fffaed',surface:'#ffffff',ink:'#000000',mark:'#0b48ff',primary:'#0b48ff',
+  'Electric':{ nav:'#0b48ff',navInk:'#ffffff',mark:'#ffffff',navLine:'#0b48ff',
+    marquee:'#fffaed',marqueeInk:'#000000',
+    page:'#fffaed',surface:'#ffffff',ink:'#000000',primary:'#0b48ff',
     primaryInk:'#ffffff',accent:'#a23b3b',decor:'#e19494',line:'#e2ded1',focus:'#a23b3b' },
 };
 
@@ -512,10 +549,11 @@ const DECISIONS = [
 ];
 
 const DEFAULT = {
-  preset:'Editorial Cream',
-  roles:{...PRESETS['Editorial Cream']},
+  preset:'As briefed',
+  roles:{...PRESETS['As briefed']},
   head:'Instrument Serif', headWeight:400, headTrack:-0.02,
   body:'Inter', base:16, ratio:1.25,
+  navH:66, navMarkW:150, navSize:10.5, navTrack:0.16,
   radius:0, btnH:44, btnPx:24, btnCase:'uppercase', btnTrack:0.1, btnSize:13,
   decisions:{}, notes:{},
   lab:{ fg:'#fffaed', bg:'#e19494', size:96, weight:400 },
@@ -548,6 +586,15 @@ function applyTheme(){
   root.setProperty('--t-surface', r.surface);
   root.setProperty('--t-ink', r.ink);
   root.setProperty('--t-mark', r.mark || r.ink);
+  root.setProperty('--t-nav', r.nav || r.page);
+  root.setProperty('--t-nav-ink', r.navInk || r.ink);
+  root.setProperty('--t-nav-line', r.navLine || r.line);
+  root.setProperty('--t-marquee', r.marquee || r.surface);
+  root.setProperty('--t-marquee-ink', r.marqueeInk || r.ink);
+  root.setProperty('--t-nav-h', S.navH+'px');
+  root.setProperty('--t-nav-mark-w', S.navMarkW+'px');
+  root.setProperty('--t-nav-size', S.navSize+'px');
+  root.setProperty('--t-nav-track', S.navTrack+'em');
   root.setProperty('--t-primary', r.primary);
   root.setProperty('--t-primary-ink', r.primaryInk);
   root.setProperty('--t-primary-hover', mix(r.primary, relLum(r.primary)>.4?BLACK:WHITE, .18));
@@ -649,6 +696,10 @@ const NUM = {
   btnPx     :{min:12, max:48, step:2,   unit:'px',label:'Button padding'},
   btnSize   :{min:10, max:18, step:1,   unit:'px',label:'Button text size'},
   btnTrack  :{min:0,  max:.24,step:.01, unit:'em',label:'Button tracking'},
+  navH      :{min:52, max:110,step:2,   unit:'px',label:'Nav bar height'},
+  navMarkW  :{min:90, max:340,step:5,   unit:'px',label:'Logotype width'},
+  navSize   :{min:9,  max:16, step:.5,  unit:'px',label:'Nav link size'},
+  navTrack  :{min:0,  max:.3, step:.01, unit:'em',label:'Nav link tracking'},
   'lab.size'  :{min:10,max:160,step:1,  unit:'px',label:'Font size'},
   'lab.weight':{min:300,max:900,step:100,unit:'', label:'Font weight'},
 };
@@ -690,6 +741,10 @@ function renderTypeCtrls(){
     selectHTML('body', S.body, Object.keys(BODY_FACES)) +
     sliderHTML('base') + sliderHTML('ratio');
 }
+function renderNavCtrls(){
+  document.getElementById('navCtrls').innerHTML =
+    sliderHTML('navH') + sliderHTML('navMarkW') + sliderHTML('navSize') + sliderHTML('navTrack');
+}
 function renderShapeCtrls(){
   document.getElementById('shapeCtrls').innerHTML =
     sliderHTML('radius') + sliderHTML('btnH') + sliderHTML('btnPx') +
@@ -705,9 +760,11 @@ function renderVerdicts(){
   const r=S.roles;
   const h2 = Math.round(S.base*Math.pow(S.ratio,4));
   const checks = [
+    ['Logotype on nav',     r.mark, r.nav,        Math.round(S.navMarkW*.163), 700],
+    ['Nav links',           r.navInk, r.nav,      S.navSize, 500],
+    ['Marquee text',        r.marqueeInk, r.marquee, 11.5, 400],
     ['Body on page',        r.ink, r.page,        S.base, 400],
     ['Heading on page',     r.ink, r.page,        h2,     S.headWeight],
-    ['Logotype on page',    r.mark || r.ink, r.page, 96,   700],
     ['Button label',        r.primaryInk, r.primary, S.btnSize, 500],
     ['Service name',        r.primary, r.page,    Math.round(S.base*1.05), 500],
     ['Body on surface',     r.ink, r.surface,     S.base, 400],
@@ -873,13 +930,24 @@ function brief(){
   return `# MaeMüllen — design decisions
 Exported from design/styleguide.html
 
+## Locked structure
+These are settled — do not re-ask during development.
+- Header is its **own surface**, independent of the page background.
+- Logotype sits **centred** in the header, nav links split either side.
+- Scrolling services marquee sits directly under the header, as its **own surface**.
+- **No second logotype on the page** — the page opens on the statement block.
+
 ## Direction
 Preset: **${S.preset}**
 
 ## Colour roles
 | Role | Value |
 |---|---|
-${ROLE_DEFS.map(([k,l])=>`| ${l} | \`${S.roles[k].toUpperCase()}\` |`).join('\n')}
+${ROLE_DEFS.map(([k,l])=>`| ${l} | \`${(S.roles[k]||'').toUpperCase()}\` |`).join('\n')}
+
+## Header
+- Bar height ${S.navH}px · logotype ${S.navMarkW}px wide
+- Nav links ${S.navSize}px · tracking ${S.navTrack}em · uppercase
 
 ## Typography
 - Heading face: **${S.head}**, weight ${S.headWeight}, tracking ${S.headTrack}em
@@ -891,8 +959,13 @@ ${ROLE_DEFS.map(([k,l])=>`| ${l} | \`${S.roles[k].toUpperCase()}\` |`).join('\n'
 - Case ${S.btnCase} · tracking ${S.btnTrack}em · radius ${S.radius}px
 
 ## Legibility of this scheme (APCA)
-${(()=>{const c=[['Body on page',r.ink,r.page,S.base,400],['Heading on page',r.ink,r.page,h2,S.headWeight],
-  ['Logotype on page',r.mark||r.ink,r.page,96,700],['Button label',r.primaryInk,r.primary,S.btnSize,500]];
+${(()=>{const c=[
+  ['Logotype on nav',r.mark,r.nav,Math.round(S.navMarkW*.163),700],
+  ['Nav links',r.navInk,r.nav,S.navSize,500],
+  ['Marquee text',r.marqueeInk,r.marquee,11.5,400],
+  ['Body on page',r.ink,r.page,S.base,400],
+  ['Heading on page',r.ink,r.page,h2,S.headWeight],
+  ['Button label',r.primaryInk,r.primary,S.btnSize,500]];
   return c.map(([n,f,b,px,w])=>{const lc=apca(f,b),v=apcaVerdict(lc,px,w);
     return `- ${n} — Lc ${Math.abs(lc).toFixed(0)} (needs ${v.need}) · **${v.word}**`;}).join('\n');})()}
 
@@ -905,9 +978,24 @@ ${dec.join('\n')}`:''}
 function cssTokens(){
   const r=S.roles;
   return `:root{
+  /* Header — its own surface, logotype centred */
+  --nav-bg:${r.nav};
+  --nav-ink:${r.navInk};
+  --nav-border:${r.navLine};
+  --nav-height:${S.navH}px;
+  --nav-mark-width:${S.navMarkW}px;
+  --nav-link-size:${S.navSize}px;
+  --nav-link-tracking:${S.navTrack}em;
+
+  /* Services marquee — its own surface */
+  --marquee-bg:${r.marquee};
+  --marquee-ink:${r.marqueeInk};
+
+  /* Page */
   --bg:${r.page};
   --surface:${r.surface};
   --ink:${r.ink};
+  --logotype:${r.mark};
   --accent:${r.primary};
   --accent-ink:${r.primaryInk};
   --accent-alt:${r.accent};
@@ -949,7 +1037,7 @@ document.getElementById('resetAll').onclick   = ()=>{
 function commit(fast){
   applyTheme(); renderVerdicts(); renderSpecimen(); renderLab(); save();
   if(!fast){
-    renderPresets(); renderRoles(); renderTypeCtrls();
+    renderPresets(); renderRoles(); renderTypeCtrls(); renderNavCtrls();
     renderShapeCtrls(); renderLabControls(); renderDecisions();
   } else {
     // Fast path: update readouts in place, never replace a control mid-interaction.
