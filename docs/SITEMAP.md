@@ -52,10 +52,11 @@ the `#social-media` service block link into it.
 |---|---|---|
 | About · Services · Packages | **MaeMüllen** | Portfolio · Work · Enquire |
 
-`OPEN:` **Are "Portfolio" and "Work" two different pages?** Deck p8 lists them as one item —
-*"CASE STUDIES / PORTFOLIO"* — and §1 of this document currently maps both to `/work`. Either
-they split (Portfolio = a visual gallery, Work = written case studies), or one gets renamed.
-Needs deciding before the Work page is built.
+`OPEN:` **Are "Portfolio" and "Work" two different pages?** — **deferred by decision.** Deck p8
+lists them as one item, *"CASE STUDIES / PORTFOLIO"*. For now: build `/work` only, and point the
+Portfolio nav item at it so the 3+3 balance holds. Settle the split when we build that page —
+either Portfolio becomes a visual gallery separate from the written case studies, or one gets
+renamed.
 
 - The wordmark sits **centred in the header** (locked, `DESIGN.md` §0) and always links to `/`.
 - The services marquee is a *secondary* route into `/services` — deck p4:
