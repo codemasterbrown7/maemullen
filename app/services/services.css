@@ -29,11 +29,20 @@
    mirror images. Three things break the symmetry, and they are the point:
      · --svc-offset drops some bodies down their row and leaves others level
      · only four of the seven carry vertical edge type
-     · only 005 has a photograph, and it sits opposite the copy
+     · the photographs opposite the copy come in uneven counts — 2, 3, 1, 3, 2,
+       3, 1 — at unequal sizes and unequal offsets
    A perfect zigzag reads as a template. Do not "tidy" these into a pattern.
 
    What IS mirrored: a section whose copy sits on the right aligns right, mark
    included, so the `[ 00x ]` sits at the outer edge on both sides.
+
+   WHICH SIDE 001 STARTS ON IS NOT A FREE CHOICE. The list runs copy-right first
+   and alternates from there, which is the mirror of how it was first built, and
+   the reason is at the other end of the page: seven alternating sections decide
+   which margin the line is in when it arrives at "Let's work together", and the
+   underline starts at the far left. Starting on the other side left the line
+   cutting straight across the page to reach its own last stroke. See the note
+   on `threadX` in content/services.ts.
 
    THE LINE — components/ui/scroll-thread. It is not placed with coordinates; it
    measures the `data-thread` elements and routes between them, so "it never
@@ -292,6 +301,20 @@
     align-items: start;
   }
 
+  /* EVERY child is pinned to row 1, and this is load-bearing rather than tidy.
+     Auto-placement only ever moves its cursor FORWARDS: in a `--right` section
+     the body claims column 3, and the next child — which asks for column 2 —
+     cannot be placed behind the cursor, so it silently drops to a second row.
+     The result is a section as tall as its two halves stacked, with a void the
+     height of the copy above the pictures. It never showed before only because
+     the single `.svc__plate` on the page happened to sit in a `--left` section. */
+  .svc__edge,
+  .svc__body,
+  .svc__scatter,
+  .svc__plate {
+    grid-row: 1;
+  }
+
   .svc__item--left .svc__edge {
     grid-column: 1;
   }
@@ -344,6 +367,10 @@
   }
   .svc__cta {
     padding-top: var(--space-20);
+    /* The desktop bottom padding is measured off the stroke that rules under
+       the heading, and down here there is no stroke — 40px under bare words
+       reads as the band running out rather than ending. */
+    padding-bottom: var(--space-16);
   }
 }
 
@@ -471,34 +498,240 @@
   color: var(--svc-ink);
 }
 
+/* ── Dotted photographs ────────────────────────────────────────────────────
+   Small plates scattered down the empty half of each section — the treatment
+   from the references the client sent: hard-edged rectangles floating in a big
+   pale field, no frame, no shadow, no caption, and never the same size twice.
+
+   THE ONE RULE THAT MAKES IT WORK IS INEQUALITY. Every plate declares its own
+   width, its own step across the lane and its own drop down it, in
+   content/services.ts. Equalise any of the three and this stops being a scatter
+   and becomes a gallery column — which is the thing the references are not. The
+   counts per section are uneven for the same reason (2, 3, 1, 3, 2, 3, 1); a
+   plate under every heading in the same spot would read as a template.
+
+   No filter, per the standing ruling: the client's photography is shown as
+   shot. Restraint belongs in the type and the layout.
+
+   They sit in the SAME grid column the line runs down, so the stroke passes
+   behind them — content is z-index 1, the thread's host is 0. That is the
+   Bendito plate's behaviour, which was signed off, rather than a new one.
+
+   The lane is the widest a plate can be, so `w` is a request, not a promise:
+   `calc(100% - var(--snap-x))` subtracts the step across the lane from the room
+   left in it, and `min()` takes whichever is smaller. Without that guard a
+   16rem plate pushed 50% across a 20rem lane at 900px would hang out over the
+   copy in the other half. */
+.svc__scatter {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--space-10), 5vw, var(--space-24));
+  margin-top: var(--space-12);
+  min-width: 0;
+}
+
+.svc__snap {
+  margin: 0;
+  display: flex;
+  min-width: 0;
+  gap: var(--space-2);
+}
+
+.svc__snap-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── The annotation ────────────────────────────────────────────────────────
+   Every plate carries one, and the reason is the client's: bare plates "look a
+   bit out of place … they are just floating" (2026-08-04). All four references
+   they sent annotate the picture the same way — a Roman numeral, then a short
+   label — so this is one treatment in two placements, not two treatments.
+
+   ROMAN, not Arabic. `[ 001 ]`–`[ 007 ]` is the index of the seven services;
+   a second run of `[ 01 ]`s beside the pictures would read as a competing one.
+   I–XV runs across the whole page in document order, so the plates are their
+   own sequence rather than a count that restarts under every heading.
+
+   Set one step below the `[ 00x ]` marks — 10px against their 11 — because
+   these caption a picture and those number a service. Same face, same tracking:
+   it is the same register, quieter. */
+.svc__snap-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--svc-ink);
+}
+
+/* `edge` — up the outer side of the picture, AWAY from the copy, so it never
+   crowds the text half. Direction follows the page's existing rule (see the
+   vertical edge type above): left edges read bottom-to-top, right edges
+   top-to-bottom — which is also what both portfolio references do. Alignment
+   follows the reading direction, so the line always starts at the picture's
+   near corner rather than floating in the middle of its side. */
+.svc__snap--edge .svc__snap-note {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.svc__item--left .svc__snap--edge {
+  flex-direction: row;
+  align-items: flex-start;
+}
+.svc__item--right .svc__snap--edge {
+  /* Reversed in CSS rather than in the markup: the picture stays first in the
+     DOM, where a caption after its image belongs. */
+  flex-direction: row-reverse;
+  align-items: flex-end;
+}
+.svc__item--right .svc__snap--edge .svc__snap-note {
+  transform: rotate(180deg);
+}
+
+/* The picture takes whatever the annotation leaves. `--snap-w` is the width of
+   the WHOLE plate, so a caption never widens one past the room measured for it. */
+.svc__snap--edge .svc__snap-img {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+}
+
+/* `foot` — the Nude Social line: numeral hard left, label hard right, under the
+   picture. Goes on the widest plate in each section, because this needs width;
+   under a 10rem plate the two ends meet in the middle and stop reading as two. */
+.svc__snap--foot {
+  flex-direction: column;
+}
+.svc__snap--foot .svc__snap-note {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+@media (min-width: 900px) {
+  /* The empty half — the same column .svc__plate would take. No section
+     currently declares both an `image` and `plates`; one that did would simply
+     get two rows in this column, which is why they are separate elements. */
+  .svc__item--left .svc__scatter {
+    grid-column: 3;
+  }
+  .svc__item--right .svc__scatter {
+    grid-column: 2;
+  }
+
+  .svc__scatter {
+    margin-top: 0;
+  }
+
+  /* `x` steps across the lane from its OUTER edge — the page's edge, not the
+     copy's. It used to be a plain `margin-left`, which was the same thing while
+     the lanes sat on the right; once the page was mirrored it stopped being,
+     and every plate with a big step was shoved up against the copy instead of
+     out towards the margin. The width guard is unchanged: it is the room left
+     in the lane after the step, whichever end the step is measured from. */
+  .svc__snap {
+    width: min(var(--snap-w, 12rem), calc(100% - var(--snap-x, 0%)));
+    margin-left: auto;
+    margin-right: var(--snap-x, 0%);
+    margin-top: calc(var(--snap-y, 0) * var(--space-10));
+  }
+}
+
+/* Single column, so there is no lane to step across and the `x` offsets would
+   only shove every plate the same way. The stagger comes from alternating which
+   edge they hang off instead — and they stay small, because a photograph at
+   full width here would outweigh the service it belongs to. Unlike the edge
+   type and the ornaments, these do NOT go: they are content, not decoration. */
+@media (max-width: 899px) {
+  .svc__snap {
+    width: min(var(--snap-w, 12rem), 62%);
+  }
+  .svc__snap:nth-child(even) {
+    margin-left: auto;
+  }
+}
+
 /* ── CTA band ──────────────────────────────────────────────────────────────
    The site's single conversion goal, and where the line finishes: a second
    knot in the top right, then a stroke ruled under the heading. Left-aligned in
    the same column as everything above it — a centred block here would be the
    only symmetric thing on the page. */
-/* The top padding is the second knot's room. "Let's work together" set at
-   5.5vw is close to 950px wide, so a knot beside it would sit ON it — the
-   separation has to be vertical, not horizontal. */
+/* The top padding is the second knot's room, and it is the ONLY room it gets —
+   see the height below. "Let's work together" set at 5.5vw is close to 950px
+   wide, so a knot beside it would sit ON it; the separation has to be vertical,
+   not horizontal. */
 .svc__cta {
-  padding: clamp(var(--space-16), 22vw, 21rem) var(--gutter) var(--space-32);
+  /* Bounded by the room the band actually has, not by taste. The vw terms are
+     the binding ones and they were tuned at the NARROW end: the heading is set
+     in vw while the band's max-width is fixed, so the share of the band the
+     words take up GROWS as the viewport shrinks, and a width that clears the
+     last letter at 1440 hangs off the edge of the screen at 1024. */
+  --svc-flourish-w: min(28rem, 26vw);
+  --svc-flourish-h: min(16rem, 18vw);
+  /* The flourish's room and nothing more. DERIVED from the flourish's height
+     rather than stated on its own, because everything this padding was ever
+     doing was holding the knot: `--svc-flourish-h + 0.5rem` IS the knot's box
+     (see the ornament below), so the remainder is the only free number here —
+     the cream between the section hairline above and the top of the tangle.
+     Sized so that, less the 0.5rem the ornament is lifted by and the half of
+     the 14px stroke that hangs outside its box, about 32px of it shows. It was
+     a clamp on the viewport before, which came out at 76px at 1440 and drifted
+     with the width; asked to close up, and the gap is now the same at every
+     width because it is measured off the shape rather than off the screen. */
+  --svc-cta-room: calc(var(--svc-flourish-h) + var(--space-12));
+
+  /* The bottom padding matches: the rule under the words overshoots the flex
+     line by ~8px, so `--space-10` leaves the same ~32px of cream under the
+     stroke as there is over the knot. Same reasoning as the top — it was
+     `--space-32`, which put 120px of nothing between the last mark on the page
+     and the footer's hairline. */
+  padding: var(--svc-cta-room) var(--gutter) var(--space-10);
+  /* The CTA sits BESIDE the heading, on its baseline, in the gap between the
+     end of the words and the right margin — asked for directly. Wrapping is the
+     fallback, not the plan: the heading refuses to shrink (see `flex: none`
+     below), so when there is no room left for the label it drops to a line of
+     its own and the band reads exactly as it did stacked. */
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-flow: row wrap;
+  align-items: baseline;
+  /* The gap is ~11.6% of the viewport in the layout this was approved from, and
+     it has to stay proportional: the heading is set in vw, so a fixed gap that
+     clears the line's hook at 1440 has the label sitting ON it at 1024. The
+     14rem ceiling is the point past 1440 where the band stops growing and the
+     free space beside the words becomes a constant — let the gap keep growing
+     there and the label falls off the end of the band instead. */
+  column-gap: clamp(var(--space-8), 11vw, 14rem);
+  row-gap: var(--space-32);
 }
 
-/* The closing knot sits LEFT, opposite the side the line arrives on, so it can
-   leave heading down the left margin and rule the underline left to right. On
-   the right it had to either draw the rule backwards or double a second line
-   back underneath it. */
+/* THE FLOURISH IS AT THE END OF THE UNDERLINE, past the last letter, because
+   that is the order the gesture reads in: the line rules under the words and
+   then runs on. It used to sit ahead of them on the left, which meant the
+   tangle was drawn first and the rule finished the page.
+
+   Pinned to the band's own right margin rather than hung off the end of the
+   heading. Hanging it off the heading is the more obvious way to say "at the end
+   of the words" and it is the wrong one: the heading shrink-wraps, so nothing
+   then bounds the tangle against the right edge of the SCREEN, and at 1024 it
+   ran straight off it. Anchored to the margin the right edge is guaranteed, and
+   the left edge still lands on the end of the words, because the words come
+   within a few percent of filling the band at every width. */
 .svc__ornament--cta {
-  /* Indented from the gutter so it clears the `[ 008 ]` mark. It still sits on
-     the left half — the underline approach reaches past it into the margin. */
-  left: 12%;
-  right: auto;
-  top: var(--space-10);
+  left: auto;
+  right: var(--gutter);
+  /* Bottom edge just above the heading's cap line, so the stroke turns UP off
+     the end of the rule into it. `--svc-cta-room` IS the heading's top, being
+     the band's top padding, so this is exact rather than eyeballed. Below the
+     rule belongs to whatever comes next on the page; a tangle down there reads
+     as that thing's decoration instead. */
+  top: calc(var(--svc-cta-room) - var(--svc-flourish-h) - 0.5rem);
   bottom: auto;
-  width: min(46%, 540px);
-  height: clamp(260px, 28vw, 420px);
+  width: var(--svc-flourish-w);
+  height: var(--svc-flourish-h);
 }
 
 /* fit-content is load-bearing, not cosmetic: the thread rules a line the width
@@ -508,6 +741,11 @@
 .svc__cta-heading {
   width: fit-content;
   max-width: 100%;
+  /* No shrinking. As a flex item the heading would otherwise give up width to
+     make room for the label, which would wrap the words at viewports where they
+     fit today — and the underline is drawn to this box, so its length would go
+     with them. Fixed at its natural width, the LABEL yields instead. */
+  flex: none;
   margin: var(--space-6) 0 0;
   font-family: var(--font-swiss);
   font-weight: 700;
@@ -518,8 +756,14 @@
   text-wrap: balance;
 }
 
-/* Far enough below the heading to clear the underline and the hook that leads
-   into it. The thread dips to about 80px under the heading; this sits at 128. */
-.svc__cta-link {
-  margin-top: var(--space-32);
+/* Larger than the `[ 00x ]` marks and the section links, which are all 11px:
+   this is the one thing on the page anyone is meant to click, and beside a 72px
+   heading the annotation size read as a footnote. Still mono, still tracked
+   wide — the contrast against the display type is the point, so it goes up a
+   register, not into the register above.
+
+   Compound selector because `.svc .mm-cta-bracket` above sets 11px for every
+   bracket on the page and would otherwise win on specificity. */
+.svc .mm-cta-bracket.svc__cta-link {
+  font-size: 14px;
 }

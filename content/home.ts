@@ -14,9 +14,11 @@ export const statement =
 
 /**
  * The second sentence of `statement`, on its own. For layouts where the first
- * sentence would only repeat the headline — /v2 sets "where social, content &
- * design come together" at display size, so saying it again underneath is dead
- * copy. Still verbatim deck p6.
+ * sentence would only repeat the headline — the deleted /v2 draft set "where
+ * social, content & design come together" at display size, so saying it again
+ * underneath was dead copy. Nothing renders this today; it is kept because it is
+ * verbatim deck p6 and the next page that sets the statement as a headline will
+ * want it.
  */
 export const statementTail =
   "We create thoughtful, distinctive work that helps brands show up with personality and purpose.";
@@ -124,10 +126,17 @@ export type HeroImage = {
   align: "start" | "end";
 };
 
+/**
+ * The left frame is the tulle portrait, swapped in for the cowhide chair at the
+ * client's request (2026-08-02). It lived on its own as `heroPairV3` while three
+ * landing-page drafts ran side by side; with the other two deleted on
+ * 2026-08-04 there is one pair again. The chair shot is still at
+ * /studio/hero-01.jpg if it is ever wanted back.
+ */
 export const heroPair: HeroImage[] = [
   {
-    src: "/studio/hero-01.jpg",
-    alt: "A tub chair upholstered in brown-and-white cowhide, photographed from above on a polished concrete floor",
+    src: "/studio/hero-tulle.jpg",
+    alt: "A figure standing behind gathered layers of fine tulle, face and shoulder softened by the mesh",
     caption: "A female-founded creative studio",
     align: "start",
   },
@@ -137,22 +146,6 @@ export const heroPair: HeroImage[] = [
     caption: "Social · Content · Design",
     align: "end",
   },
-];
-
-/**
- * The v3 pair. Same arrangement and same captions as `heroPair`; the left frame
- * swaps the cowhide chair for the tulle portrait at the client's request
- * (2026-08-02). Kept as its own export rather than edited in place so `/` still
- * renders the version that was signed off, and the two can be compared.
- */
-export const heroPairV3: HeroImage[] = [
-  {
-    src: "/studio/hero-tulle.jpg",
-    alt: "A figure standing behind gathered layers of fine tulle, face and shoulder softened by the mesh",
-    caption: "A female-founded creative studio",
-    align: "start",
-  },
-  heroPair[1],
 ];
 
 /**

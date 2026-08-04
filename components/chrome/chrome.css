@@ -148,6 +148,19 @@
   gap: var(--space-6);
 }
 
+/* The handle, once confirmed, is the one link out to the profile — the post
+   strip above deliberately does not repeat it. `inherit` keeps it at the
+   footer's muted grey until hover, so the line stays one even weight rather
+   than sprouting a darker word in the middle of it. */
+.mmc__footer-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.mmc__footer-link:hover {
+  color: var(--mmc-blue);
+}
+
 /* ── Quality floor ───────────────────────────────────────────────────────── */
 .mmc a:focus-visible {
   outline: 2px solid var(--mmc-blue);

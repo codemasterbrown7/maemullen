@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { InstagramStrip } from "@/components/chrome/InstagramStrip";
 import { GooeyMarquee } from "@/components/ui/gooey-marquee";
 import { services } from "@/content/home";
-import { footer, nav, siteName } from "@/content/site";
+import { footer, instagramUrl, nav, siteName } from "@/content/site";
+import { asset } from "@/lib/asset";
 import "./chrome.css";
 
 /**
@@ -39,7 +41,7 @@ export function ChromeHeader({ current }: { current?: string }) {
 
         <Link href="/" className="mmc__wordmark">
           <img
-            src="/assets/brand/wordmark-ink.png"
+            src={asset("/assets/brand/wordmark-ink.png")}
             alt={`${siteName} — home`}
             className="mmc__wordmark-img"
           />
@@ -68,13 +70,32 @@ export function ChromeMarquee({ adjacent = false }: { adjacent?: boolean }) {
   );
 }
 
+/**
+ * The rule that used to sit on the <footer> now sits on the line itself, so the
+ * post strip can slot in above it without the two borders stacking. With no
+ * strip configured this renders exactly what it always did.
+ */
 export function ChromeFooter() {
   return (
-    <footer className="mmc__footer">
-      <span>{footer.copyright}</span>
-      <div className="mmc__footer-group">
-        <span>{footer.instagram ?? footer.instagramPlaceholder}</span>
-        <span>{footer.email ?? footer.emailPlaceholder}</span>
+    <footer>
+      <InstagramStrip />
+      <div className="mmc__footer">
+        <span>{footer.copyright}</span>
+        <div className="mmc__footer-group">
+          {footer.instagram && instagramUrl ? (
+            <a
+              className="mmc__footer-link"
+              href={instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {footer.instagram}
+            </a>
+          ) : (
+            <span>{footer.instagramPlaceholder}</span>
+          )}
+          <span>{footer.email ?? footer.emailPlaceholder}</span>
+        </div>
       </div>
     </footer>
   );

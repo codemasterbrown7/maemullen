@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { FluidCursor } from "@/components/ui/fluid-cursor";
 import { siteDescription, siteName } from "@/content/site";
+import { asset } from "@/lib/asset";
 
 /**
  * Switzer — the client's chosen face for website copy, supplied 2026-08-02 and
@@ -78,7 +79,21 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: `${siteName} — creative studio`,
   description: siteDescription,
-  icons: { icon: "/brand/monogram-trimmed.png" },
+  /* Through asset(): Next resolves <Link> and /_next/* against basePath on its
+     own, but a metadata URL is a string it passes through untouched, so on
+     GitHub Pages' /maemullen/ this would otherwise point at the domain root. */
+  icons: { icon: asset("/brand/monogram-trimmed.png") },
+  /**
+   * NOT INDEXED, deliberately, while the site is a review link. Four of the six
+   * pages in the header are stubs, and a search engine that crawls now caches
+   * "In progress" against the studio's name for as long as it feels like it.
+   *
+   * This is one line to reverse when the site is finished and ready to be
+   * found. A robots.txt would not do the job here: crawlers read it from the
+   * domain root, which on a project Pages site belongs to the account, not to
+   * this repo — so the meta tag is the only mechanism that actually applies.
+   */
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({

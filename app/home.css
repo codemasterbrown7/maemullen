@@ -1,9 +1,14 @@
 /* ============================================================================
-   /v3 — "vibe of v2, structure of v1."
+   The landing page.
 
-   Everything is scoped under .v3 so it cannot leak into / or /v2. Selectors are
-   single-class BEM throughout, no element selectors, so nothing here can be
-   cancelled out by a later rule of equal weight.
+   Built as /v3 — "vibe of v2, structure of v1" — and chosen over the two
+   earlier drafts on 2026-08-04, at which point it moved to / and they were
+   deleted. The class prefix changed from .v3 to .home in the same pass;
+   nothing else about the design moved.
+
+   Everything is scoped under .home. Selectors are single-class BEM throughout,
+   no element selectors, so nothing here can be cancelled out by a later rule of
+   equal weight.
 
    THE DESIGN PLAN, and why each part is a choice rather than a default:
 
@@ -35,14 +40,14 @@
    type around them stays quiet and out of their way.
    ============================================================================ */
 
-.v3 {
-  --v3-ground: var(--brand-cream);
-  --v3-ink: var(--brand-black);
-  --v3-blue: var(--brand-blue);
-  --v3-rule: rgb(0 0 0 / 0.2);
+.home {
+  --home-ground: var(--brand-cream);
+  --home-ink: var(--brand-black);
+  --home-blue: var(--brand-blue);
+  --home-rule: rgb(0 0 0 / 0.2);
 
-  background: var(--v3-ground);
-  color: var(--v3-ink);
+  background: var(--home-ground);
+  color: var(--home-ink);
   font-family: var(--font-body);
   min-width: 320px;
 }
@@ -51,7 +56,7 @@
    rest — so the fold lands exactly at the bottom of the photographs whatever
    the marquee's padding does later. svh, not vh, so mobile browsers don't hide
    the bottom edge behind the collapsing URL bar. */
-.v3__fold {
+.home__fold {
   display: flex;
   flex-direction: column;
   height: 100svh;
@@ -63,7 +68,7 @@
    is only what is specific to this page. */
 
 /* ── The pair — full-bleed, butted together, straight to the fold ──────── */
-.v3__pair {
+.home__pair {
   flex: 1;
   min-height: 0;
   display: grid;
@@ -73,13 +78,13 @@
 /* Two portrait photos side by side on a phone are ~180px wide each — too narrow
    to read as anything. Stacked, each takes half the height and both still fit. */
 @media (min-width: 700px) {
-  .v3__pair {
+  .home__pair {
     grid-template-rows: none;
     grid-template-columns: 1fr 1fr;
   }
 }
 
-.v3__cell {
+.home__cell {
   position: relative;
   margin: 0;
   overflow: hidden;
@@ -87,7 +92,7 @@
 }
 /* No filter. The photographs are the client's own work and are shown as shot —
    an earlier pass desaturated them and that was rejected outright. */
-.v3__cell-img {
+.home__cell-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -97,7 +102,7 @@
 /* Captions are cream on photography, and photography is not a colour you
    control — the tulle frame in particular is almost white at the bottom. The
    gradient covers only the bottom strip, so it costs the image almost nothing. */
-.v3__cell-scrim {
+.home__cell-scrim {
   position: absolute;
   inset: auto 0 0 0;
   height: 42%;
@@ -105,7 +110,7 @@
   pointer-events: none;
 }
 
-.v3__caption {
+.home__caption {
   position: absolute;
   bottom: var(--space-6);
   left: var(--space-6);
@@ -118,15 +123,15 @@
   text-transform: uppercase;
   text-wrap: balance;
 }
-.v3__caption--start {
+.home__caption--start {
   text-align: left;
 }
-.v3__caption--end {
+.home__caption--end {
   text-align: right;
 }
 /* Stacked, both captions read better from the same edge. */
 @media (max-width: 699px) {
-  .v3__caption--end {
+  .home__caption--end {
     text-align: left;
   }
 }
@@ -144,7 +149,7 @@
    Spreading them further apart only widens the dead gap; what actually fixes it
    is making both columns bigger, so the fix is a larger plate and a wider
    measure rather than more space between them. */
-.v3__intro {
+.home__intro {
   max-width: 96rem;
   margin: 0 auto;
   padding: var(--space-section) clamp(var(--space-6), 4vw, var(--space-20));
@@ -158,7 +163,7 @@
 /* The cut-out sits straight on the page with no frame, lifted by a shadow that
    traces its own silhouette — drop-shadow follows the alpha channel, box-shadow
    would draw the rectangle. No pattern field behind it. */
-.v3__plate {
+.home__plate {
   margin: 0;
   justify-self: center;
   max-width: 100%;
@@ -167,7 +172,7 @@
    3:8-ish crop, so at full column width they tower over the copy beside them and
    add most of a screen to the block — and this page is meant to cost one short
    scroll, not two. Height-capped, the two sides balance. */
-.v3__plate-img {
+.home__plate-img {
   display: block;
   width: auto;
   height: auto;
@@ -175,7 +180,7 @@
   max-height: min(78vh, 760px);
   filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3)) drop-shadow(0 20px 28px rgb(0 0 0 / 0.22));
 }
-.v3__copy {
+.home__copy {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -183,7 +188,7 @@
 
 /* Small label, set in Switzer at the reference's 13px / +0.5px — the role its
    own body face fills. It is a label, not a heading, so nothing is bold. */
-.v3__eyebrow {
+.home__eyebrow {
   margin: 0;
   font-family: var(--font-body);
   font-size: 13px;
@@ -215,7 +220,7 @@
 
    Measure is in ch, not em: caps are wider, and an em measure runs about ten
    characters long. ~33ch reproduces the reference's line breaks. */
-.v3__body {
+.home__body {
   margin: var(--space-5) 0 0;
   font-family: var(--font-swiss);
   font-size: clamp(1rem, 1.25vw, 1.35rem);
@@ -228,12 +233,12 @@
      width from a larger size, not from running the lines longer. */
   max-width: 38ch;
 }
-.v3__eyebrow + .v3__body {
+.home__eyebrow + .home__body {
   margin-top: var(--space-6);
 }
 /* The reference sets its buttons one step below body — 12px, same face, no
    bold — so the block reads as one system rather than a control bolted on. */
-.v3__cta {
+.home__cta {
   margin-top: var(--space-10);
   font-family: var(--font-body);
   font-size: 12px;
@@ -242,20 +247,20 @@
 }
 /* .mm-cta-bracket is the locked signature from deck p7 (DESIGN.md §6.3) and
    already resolves to --ink, which is correct here. Only the hover is new. */
-.v3 .mm-cta-bracket:hover {
-  color: var(--v3-blue);
+.home .mm-cta-bracket:hover {
+  color: var(--home-blue);
 }
 
 /* ── Quality floor ─────────────────────────────────────────────────────── */
-.v3 a:focus-visible {
-  outline: 2px solid var(--v3-blue);
+.home a:focus-visible {
+  outline: 2px solid var(--home-blue);
   outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .v3 *,
-  .v3 *::before,
-  .v3 *::after {
+  .home *,
+  .home *::before,
+  .home *::after {
     transition-duration: 0.01ms !important;
   }
 }

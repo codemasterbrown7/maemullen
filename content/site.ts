@@ -30,10 +30,47 @@ export const nav: { left: NavItem[]; right: NavItem[] } = {
   ],
 };
 
+/**
+ * The Instagram account the footer post strip pulls from.
+ *
+ * OPEN (SITEMAP.md §6, Q6): `beholdFeedId` is still unset, so the post strip
+ * renders nothing yet — the footer handle below works regardless. Each value
+ * fails to a visible placeholder rather than to a wrong guess.
+ *
+ * `beholdFeedId` is the id out of the feed URL behold.so returns once the
+ * account is connected there — `https://feeds.behold.so/<id>`. Either the bare
+ * id or the whole URL works; the strip trims it. Note the `services.behold.so/
+ * link/…` address is NOT this — that one is the one-time Facebook OAuth link
+ * that connects the account in the first place. Behold holds the
+ * Meta credentials and refreshes the access token, which is the whole reason we
+ * went that way: Instagram's own Basic Display API was shut down in December
+ * 2024, and the Graph API that replaced it needs a token rotated every 60 days
+ * or the footer silently empties. The id is a public read-only endpoint, not a
+ * secret, so it belongs here with the rest of the site's content rather than in
+ * an env var.
+ */
+export const instagram = {
+  /** Confirmed by the client 2026-08-04. */
+  handle: "@maemullenagency" as string | null,
+  /**
+   * Supplied by the client 2026-08-04, and verified against the live endpoint:
+   * it serves `maemullenagency` and every post carries the `sizes.medium` copy
+   * InstagramStrip asks for. Stored as the bare id — the component also accepts
+   * the whole `https://feeds.behold.so/…` URL the dashboard hands out.
+   */
+  beholdFeedId: "wIRxEfAZzc2fMy8676K0" as string | null,
+};
+
+/** Profile URL, tolerant of the handle being stored with or without its @. */
+export const instagramUrl = instagram.handle
+  ? `https://www.instagram.com/${instagram.handle.replace(/^@/, "")}/`
+  : null;
+
 export const footer = {
-  /** OPEN (SITEMAP.md §6, Q6): Instagram handle and contact email are not
-   *  yet confirmed — rendered as clearly-marked placeholders until then. */
-  instagram: null as string | null,
+  /** OPEN (SITEMAP.md §6, Q6): contact email is not yet confirmed — rendered as
+   *  a clearly-marked placeholder until then. The handle is read off `instagram`
+   *  above so the footer line and the post strip can never disagree. */
+  instagram: instagram.handle,
   email: null as string | null,
   instagramPlaceholder: "Instagram — handle TBC",
   emailPlaceholder: "Email — address TBC",

@@ -378,10 +378,32 @@ needs a real mailing-list integration and a privacy statement · budget-range fi
 
 ---
 
-### 4.7 `404`
+### 4.7 `404` — ✅ built
 
 Wordmark, a short line in the brand voice, and a link home. Low effort, but it should not look
 like a default.
+
+`app/not-found.tsx`, rendered by `components/InProgress.tsx`.
+
+---
+
+### 4.8 The unbuilt pages — ✅ stubbed 2026-08-04
+
+`/about`, `/packages`, `/work` and `/enquire` all exist as real pages that say what is coming,
+rather than returning the host's 404. Four of the six links in the header lead to one of them, so
+on a live site the alternative was a header that mostly breaks.
+
+One component — `components/InProgress.tsx`, copy in `content/soon.ts` — wearing /services'
+masthead: mono mark, the page name set huge, the scroll-drawn knot, then a contents list of what
+will be on the page set on **hairlines instead of solid rules**, a contents page for something not
+printed yet. It shares its layout with the 404, minus the contents block.
+
+**Those contents lists must not preview an OPEN question.** `/packages` therefore names no tier
+(Q1 and Q2 below), and `/work` names only Bendito, the one project with a confirmed name and
+cleared assets. The `standfirst` lines are the only copy on this site not taken from the deck,
+because the deck has nothing to say about pages that do not exist — treat them as placeholders.
+
+Each stub is a single ~20-line file that is **deleted outright** when its real page is built.
 
 ---
 
@@ -421,3 +443,24 @@ is blocked, and nothing can ship looking finished when it isn't.
 | 13 | Real client name behind "airbnb"; case-study copy | Work |
 | 14 | Where enquiry submissions are delivered | Enquire |
 | 15 | Is a cart / shop ever needed? | IA |
+
+---
+
+## 7. Deployment
+
+Static export (`output: "export"`) on GitHub Pages, published by `.github/workflows/deploy.yml`
+on every push to `main`.
+
+| | |
+|---|---|
+| URL | `codemasterbrown7.github.io/maemullen/` |
+| Sub-path | `basePath: "/maemullen"`, from `NEXT_PUBLIC_BASE_PATH` in the workflow. Raw `src` strings go through `lib/asset.ts`, which Next cannot prefix on its own |
+| Indexing | **`noindex, nofollow`** sitewide, set in `app/layout.tsx`. Deliberate while four of six pages are stubs — one line to reverse |
+| Instagram strip | Fetched at BUILD time and frozen into the HTML. The workflow runs daily so it does not go stale |
+| Enquiry form | There is no server. Q14 above is now a blocker rather than a detail: it needs a third-party endpoint, or a host that runs code |
+
+Moving to a custom domain: drop `NEXT_PUBLIC_BASE_PATH` from the workflow, add `public/CNAME`.
+
+**`public/assets/IMG_67*.jpg` — 6.8 MB of unreferenced originals** that every deploy still
+carries. `public/scatter/*.webp` (920 KB for all fifteen) is what the site actually serves. They
+are tracked, so deleting them frees the deploy but not the history.

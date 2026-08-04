@@ -1,0 +1,98 @@
+# Builds the site as a static export and publishes it to GitHub Pages.
+#
+# There is no server on Pages, so `next build` runs with `output: "export"`
+# (next.config.ts) and everything is prerendered to HTML at build time. Two
+# consequences worth knowing before debugging something that "should" be live:
+#
+#   · The Instagram strip in the footer is fetched from behold.so during THIS
+#     job and frozen into the HTML. It cannot refresh itself afterwards, which
+#     is why this workflow also runs on a daily schedule below.
+#   · The enquiry form, when it is built, will need a third-party endpoint.
+#     There is nothing here that can receive a POST.
+#
+# First run needs Pages switched on by hand: repo Settings → Pages → Build and
+# deployment → Source: "GitHub Actions". Once that is set it never needs
+# touching again.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+  # So a deploy can be forced without an empty commit — Actions tab → this
+  # workflow → "Run workflow". Also how to refresh the Instagram strip on demand.
+  workflow_dispatch:
+
+  # Rebuilds daily so the footer's Instagram posts do not go stale. 06:17 UTC is
+  # deliberately off the hour: GitHub's scheduler is busiest on the hour and
+  # delays jobs queued there.
+  #
+  # NOTE GitHub disables scheduled workflows in a repository with no commits for
+  # 60 days, and emails the owner before it does. If the strip ever freezes, this
+  # is the first thing to check.
+  schedule:
+    - cron: "17 6 * * *"
+
+# What the deploy needs, and nothing else: read the code, write a Pages
+# deployment, and mint the OIDC token deploy-pages authenticates with.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. `cancel-in-progress: false` because a half-finished
+# Pages deployment is worse than a queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Next 16 requires 20+. Pinned to a major rather than to "latest" so a
+          # Node release cannot break a deploy that nobody triggered.
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build the static export
+        env:
+          # THE SUB-PATH THE SITE IS SERVED FROM. A project repo lives at
+          # <user>.github.io/<repo>/, so every URL it emits needs this prefix.
+          # next.config.ts feeds it to `basePath`, and lib/asset.ts prefixes the
+          # raw `src` strings Next cannot see inside.
+          #
+          # Moving to a custom domain: delete these two lines and add a CNAME
+          # file to public/. Nothing else changes.
+          NEXT_PUBLIC_BASE_PATH: /maemullen
+        run: npm run build
+
+      - name: Prepare the artifact
+        run: |
+          # Without this, Pages runs Jekyll over the output and Jekyll ignores
+          # every directory beginning with an underscore — which is all of
+          # _next/, i.e. every stylesheet, font and script on the site.
+          touch out/.nojekyll
+          # macOS folder metadata, published by accident otherwise.
+          find out -name '.DS_Store' -delete
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

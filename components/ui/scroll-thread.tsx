@@ -5,9 +5,8 @@ import "./scroll-thread.css";
 
 /**
  * One line that draws itself as the page scrolls — an ornament at the top, a
- * single strand down the page with one loop-the-loop in it, a second ornament
- * at the foot, and a last stroke that finishes by underlining whatever it is
- * pointed at.
+ * single strand down the page with one loop-the-loop in it, a stroke that rules
+ * under whatever it is pointed at, and a last flourish off the end of it.
  *
  * WHY IT MEASURES THE PAGE INSTEAD OF USING FIXED COORDINATES. The first
  * version was hand-placed waypoints in an abstract grid, and it crossed text —
@@ -22,6 +21,14 @@ import "./scroll-thread.css";
  *     data-thread-exit="50"   the compass bearing, in page space, that the
  *                             knot should be heading when it stops — point it
  *                             at wherever the line goes next
+ *     data-thread-loops="7"   how many loops it wanders through. This is the
+ *                             busy/simple dial: it is the only thing deciding
+ *                             whether the shape reads as a flourish or as a
+ *                             scribble, so it is set per instance
+ *     data-thread-shape="fit" spread the loops out until the tangle fills the
+ *                             box, instead of keeping its natural proportions.
+ *                             See KNOT_SHAPES — the default is the masthead's
+ *                             and is not to be tuned
  *   data-thread="flower"      draw a five-petal flower in this box instead,
  *     data-thread-phase="122" rotated by this many degrees — pick the angle
  *                             that puts a GAP where the line arrives and leaves
@@ -29,8 +36,14 @@ import "./scroll-thread.css";
  *     data-thread-x="0.8"     this fraction of the page width — point it at the
  *                             half the copy is NOT in
  *     data-thread-loop="right" and put one loop-the-loop in that run
- *   data-thread="underline"   swing below, hook back, and rule under this
- *                             element left to right. Always last.
+ *   data-thread="underline"   drop down the margin beside this element, rule
+ *                             under it left to right, and turn back up off the
+ *                             end of it
+ *
+ * DOCUMENT ORDER IS DRAW ORDER — the elements are read with one
+ * querySelectorAll, so where a thing sits in the markup is when the pen gets to
+ * it. That is why the closing knot follows the heading rather than preceding it:
+ * the line rules under the words and then runs on into the flourish.
  *
  * "knot" and "flower" are interchangeable per instance: the client has now
  * preferred each of them in turn, so both stay and the markup picks.
@@ -144,25 +157,69 @@ function flowerPoints(box: Box, phase: number): Pt[] {
  *   · `spread` is 143°, which fans the loops by about 106° a time. That does
  *     not divide the circle evenly, so they never land in a tidy rosette.
  *   · the base DRIFTS between loops, which is what turns a rosette into a knot.
- *     The drift has to stay well under each loop's own reach or the loops
- *     stretch into pinched slivers and it reads as a scribble; about a third is
- *     the useful range.
+ *     Below about a twentieth of a unit the loops all radiate from effectively
+ *     one spot, and loops off one spot are a rosette — which is the flower, a
+ *     shape this page moved away from. Past about a third of a loop's own reach
+ *     they stretch into pinched slivers and it reads as a scribble, which has
+ *     been rejected twice.
  *
  * The drift is also what forces the chaining in the loop below — see there.
  *
  * This was the shape before the flower, and it is the shape the client came
  * back to. The two are interchangeable per instance from the markup — see the
  * `data-thread` values in the header comment.
+ *
+ * `petals` IS THE BUSY/SIMPLE DIAL and it is per instance. Four is a bow and was
+ * called too simple; seven is the pair on this page.
+ *
+ * TWO SHAPES, AND THE SPLIT IS DELIBERATE. The masthead knot is settled — it has
+ * been through the flower and back and the client has asked twice not to have it
+ * touched. `natural` is exactly what it has always been drawn with, and nothing
+ * tuned for the closing knot may reach it: that is the whole reason these numbers
+ * are a per-instance table rather than module constants, because as constants a
+ * change made for the foot of the page silently redrew the top of it.
  */
-function knotPoints(box: Box, flip: boolean, exitDeg: number): Pt[] {
-  const petals = 7;
-  const spread = 143 * DEG;
-  const samplesPerPetal = 30;
+const KNOT_SPREAD = 143 * DEG;
+const KNOT_SAMPLES = 30;
+const KNOT_DRIFT_MIN = 0.05;
+const KNOT_DRIFT_MAX = 0.18;
 
-  const baseAt = (i: number): Pt => [
-    0.32 + (0.34 * i) / petals,
-    0.5 + 0.12 * Math.sin(i * 1.6 + 0.3),
-  ];
+type KnotShape = {
+  /** Total distance the base walks over the whole chain, or solved from the box. */
+  drift: number | "fit";
+  /** Mean loop length and its swing either side, both absolute. */
+  reach: number;
+  vary: number;
+  /** Vertical wander of the base. */
+  wobble: number;
+  /**
+   * Length of the two END loops as a fraction of the middle ones. They are the
+   * only loops with nothing drawn across them, so at full length they read as
+   * two big open lobes with a tangle parked between them — and the lower of the
+   * two sets the shape's bottom edge, which held the closing knot up away from
+   * the words. 1 leaves them alone.
+   */
+  taper: number;
+};
+
+const KNOT_SHAPES: Record<string, KnotShape> = {
+  /** THE MASTHEAD. Settled, and not to be tuned — see above. */
+  natural: { drift: 0.34, reach: 0.484, vary: 0.143, wobble: 0.12, taper: 1 },
+  /**
+   * THE CLOSING KNOT. `fit` walks the base out until the tangle is as wide,
+   * relative to its height, as the box it has been given: `fitToBox` scales
+   * uniformly, so whatever the shape does not use of its box comes out as dead
+   * cream along one axis, and a compact tangle in a wide shallow box sat in the
+   * middle of it with a wedge of nothing beside it.
+   */
+  fit: { drift: "fit", reach: 0.55, vary: 0.066, wobble: 0.13, taper: 0.72 },
+};
+
+/** The chain itself, in unit space, at a given per-loop drift. */
+function knotChain(petals: number, drift: number, shape: KnotShape): Pt[] {
+  const spread = KNOT_SPREAD;
+
+  const baseAt = (i: number): Pt => [drift * i, shape.wobble * Math.sin(i * 1.6 + 0.3)];
 
   const raw: Pt[] = [];
   let p = baseAt(0);
@@ -181,18 +238,54 @@ function knotPoints(box: Box, flip: boolean, exitDeg: number): Pt[] {
     // same overall shape.
     if (exit) theta = Math.atan2(exit[1], exit[0]) + spread;
 
-    const len = 0.55 * (0.88 + 0.26 * Math.sin(i * 1.7 + 0.9));
+    // Shortening the end loops packs the mass into the middle, which is where a
+    // knot's mass belongs — see `taper` on KnotShape.
+    const taper = shape.taper + (1 - shape.taper) * Math.sin((Math.PI * (i + 0.5)) / petals);
+    const len = taper * (shape.reach + shape.vary * Math.sin(i * 1.7 + 0.9));
     const c1: Pt = [p[0] + Math.cos(theta - spread) * len, p[1] + Math.sin(theta - spread) * len];
     const c2: Pt = [p[0] + Math.cos(theta + spread) * len, p[1] + Math.sin(theta + spread) * len];
     const next = baseAt(i + 1);
 
-    for (let k = 1; k <= samplesPerPetal; k++) {
-      raw.push(cubicAt(p, c1, c2, next, k / samplesPerPetal));
+    for (let k = 1; k <= KNOT_SAMPLES; k++) {
+      raw.push(cubicAt(p, c1, c2, next, k / KNOT_SAMPLES));
     }
 
     exit = [next[0] - c2[0], next[1] - c2[1]];
     p = next;
   }
+
+  return raw;
+}
+
+const extent = (pts: readonly Pt[]) =>
+  [
+    Math.max(...pts.map((q) => q[0])) - Math.min(...pts.map((q) => q[0])),
+    Math.max(...pts.map((q) => q[1])) - Math.min(...pts.map((q) => q[1])),
+  ] as const;
+
+function knotPoints(
+  box: Box,
+  flip: boolean,
+  exitDeg: number,
+  petals: number,
+  shape: KnotShape,
+): Pt[] {
+  // Solved rather than estimated, because drifting the base also swings every
+  // loop after it — a single correction off the undrifted rosette undershot by
+  // about a third and the loops piled up into a ball. Three passes lands inside
+  // a tenth of a percent; it is arithmetic over ~200 points and runs once per
+  // measure, not per frame. Held between the rosette floor and the scribble
+  // ceiling, so a box the shape cannot honestly fill keeps its slack instead.
+  let drift = shape.drift === "fit" ? KNOT_DRIFT_MIN : shape.drift / petals;
+  if (shape.drift === "fit") {
+    const aspect = box.width / box.height;
+    for (let pass = 0; pass < 3; pass++) {
+      const [w, h] = extent(knotChain(petals, drift, shape));
+      drift = Math.min(Math.max(drift + (aspect * h - w) / petals, KNOT_DRIFT_MIN), KNOT_DRIFT_MAX);
+    }
+  }
+
+  const raw = knotChain(petals, drift, shape);
 
   // STOP DRAWING WHERE IT IS ALREADY HEADING THE RIGHT WAY.
   //
@@ -213,7 +306,7 @@ function knotPoints(box: Box, flip: boolean, exitDeg: number): Pt[] {
   const want = ((flip ? 180 - exitDeg : exitDeg) * DEG + Math.PI * 4) % (Math.PI * 2);
   let cut = raw.length - 1;
   let best = Infinity;
-  for (let i = raw.length - samplesPerPetal; i < raw.length - 1; i++) {
+  for (let i = raw.length - KNOT_SAMPLES; i < raw.length - 1; i++) {
     const angle = Math.atan2(raw[i + 1][1] - raw[i][1], raw[i + 1][0] - raw[i][0]);
     const diff = Math.abs(((angle - want + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
     if (diff < best) {
@@ -283,7 +376,12 @@ function bowConnector(points: Pt[], at: number, hostWidth: number): void {
  * the same transform but is allowed outside it. That is how the lead-out can
  * extend past the box without shrinking the shape it grows out of.
  */
-function fitToBox(raw: readonly Pt[], box: Box, flip: boolean, fitCount = raw.length): Pt[] {
+function fitToBox(
+  raw: readonly Pt[],
+  box: Box,
+  flip: boolean,
+  fitCount = raw.length,
+): Pt[] {
   const pts = flip ? raw.map((q) => [-q[0], q[1]] as Pt) : raw;
   const measured = pts.slice(0, fitCount);
   const xs = measured.map((q) => q[0]);
@@ -335,8 +433,11 @@ function loopPoints(p: Pt, side: 1 | -1, radius: number): Pt[] {
 /**
  * CENTRIPETAL Catmull-Rom through every point, converted to cubic béziers, so
  * the curve passes exactly through them rather than being pulled off them.
- * Points from `straightFrom` on are emitted as straight lines instead — that is
- * the underline, and a smoothed underline is a sag.
+ * Segments inside `straight` are emitted as lines instead — that is the
+ * underline, and a smoothed underline is a sag. It is a RANGE rather than a tail
+ * because the rule is no longer the last thing the line does: it now finishes
+ * with a flourish past the end of the words, so the straight run has curve on
+ * both sides of it.
  *
  * The parameterisation is the whole point. Plain Catmull-Rom advances its
  * parameter by 1 per point, which assumes the points are evenly spaced — and
@@ -352,15 +453,19 @@ function loopPoints(p: Pt, side: 1 | -1, radius: number): Pt[] {
  * then bends towards the next point. It also removes the need for the arm cap
  * this used to carry, which was a crude approximation of the same idea.
  */
-function toPath(points: readonly Pt[], straightFrom: number): string {
+function toPath(points: readonly Pt[], straight: readonly [number, number] | null): string {
   if (points.length < 2) return "";
 
   const at = (i: number) => points[Math.min(Math.max(i, 0), points.length - 1)];
-  const end = straightFrom >= 0 ? straightFrom : points.length - 1;
 
   let d = `M ${round(at(0)[0])} ${round(at(0)[1])}`;
 
-  for (let i = 0; i < end; i++) {
+  for (let i = 0; i < points.length - 1; i++) {
+    if (straight && i >= straight[0] && i < straight[1]) {
+      d += ` L ${round(at(i + 1)[0])} ${round(at(i + 1)[1])}`;
+      continue;
+    }
+
     const [p0, p1, p2, p3] = [at(i - 1), at(i), at(i + 1), at(i + 2)];
 
     // Knot spacing. The `|| 1e-6` is a divide-by-zero guard for coincident
@@ -392,10 +497,6 @@ function toPath(points: readonly Pt[], straightFrom: number): string {
       ` ${round(p2[0])} ${round(p2[1])}`;
   }
 
-  for (let i = end + 1; i < points.length; i++) {
-    d += ` L ${round(points[i][0])} ${round(points[i][1])}`;
-  }
-
   return d;
 }
 
@@ -418,7 +519,10 @@ function buildPath(host: HTMLElement, selector: string) {
   // start at. Both need bowing: one is the line leaving the shape, the other
   // the line arriving at it, and a spline draws both as ruler-straight runs.
   const bowAt: number[] = [];
-  let straightFrom = -1;
+  let straight: [number, number] | null = null;
+  // Where the words that get underlined END, in host coordinates. The closing
+  // stretch waits for this to be properly on screen — see the draw loop.
+  let reveal: number | null = null;
 
   for (const el of Array.from(document.querySelectorAll<HTMLElement>(selector))) {
     const box = rel(el);
@@ -428,7 +532,13 @@ function buildPath(host: HTMLElement, selector: string) {
       if (points.length) bowAt.push(points.length - 1);
       points.push(
         ...(kind === "knot"
-          ? knotPoints(box, el.dataset.threadFlip === "1", Number(el.dataset.threadExit ?? 50))
+          ? knotPoints(
+              box,
+              el.dataset.threadFlip === "1",
+              Number(el.dataset.threadExit ?? 50),
+              Number(el.dataset.threadLoops ?? 7),
+              KNOT_SHAPES[el.dataset.threadShape ?? "natural"] ?? KNOT_SHAPES.natural,
+            )
           : flowerPoints(box, Number(el.dataset.threadPhase ?? 122))),
       );
       bowAt.push(points.length - 1);
@@ -463,45 +573,110 @@ function buildPath(host: HTMLElement, selector: string) {
 
       points.push([x, box.top + box.height * 0.85]);
     } else if (kind === "underline") {
+      // NO BOW ON THE WAY IN. `bowConnector` pushes towards the middle of the
+      // page, and on a run already heading down and left into the margin that
+      // push is downwards — which is what carried the approach across the front
+      // of the heading instead of past it. Drop any bow registered by whatever
+      // came before; the descent below is deliberately straight anyway.
+      if (bowAt.length && bowAt[bowAt.length - 1] === points.length - 1) bowAt.pop();
+
       const rule = box.top + box.height + 16;
-      // Out into the margin BESIDE the heading, straight down past it, then
-      // hook right into the rule — so the underline is drawn left to right, the
-      // direction the gesture reads in, and the approach never crosses the
-      // words. The knot that precedes this one sits on the left for exactly
-      // this reason: coming from the right meant either ruling backwards or
-      // doubling a second line back underneath, which read as a mistake.
-      // Two points, at different x — NOT a vertical lane between two corners.
-      // Same-x points either side of the heading drew a big rounded rectangle
-      // out at the edge of the viewport, which read as a box rather than as a
-      // stroke.
-      points.push([Math.max(box.left - 78, 10), box.top + box.height * 0.62]);
-      points.push([Math.max(box.left - 40, 6), rule + 18]);
-      straightFrom = points.length;
-      points.push([box.left - 4, rule]);
-      points.push([box.left + box.width + 18, rule]);
+
+      // Down a lane in the margin BESIDE the heading, a quarter turn into the
+      // rule, along under the words, and a second quarter turn back up off the
+      // end of them. Left to right, the direction the gesture reads in, and
+      // nothing ever passes over the words.
+      //
+      // WHY THE CORNERS ARE EXPLICIT ARCS. The first version was two waypoints
+      // with the spline left to invent the turn. It came out as a teardrop
+      // hooked on the end of the line, and because the last smoothed point was
+      // also the first point of the straight rule, the curve arrived at an angle
+      // and the join showed as a notch. Both were called out. A quarter circle
+      // fixes the class of problem rather than the instance: it leaves heading
+      // exactly along the rule, so there is no kink available to it, and its
+      // radius is a stated number instead of an accident of where the
+      // neighbouring waypoints happened to fall. The same argument applies at
+      // the far end now that the line carries on past the words.
+      const lane = Math.max(box.left - 84, 18);
+      // Big enough to read as a curve against a 14px stroke, never so big that
+      // the turn finishes to the right of the first letter and the rule starts
+      // short of the word it is underlining.
+      const radius = Math.min(44, Math.max(box.left - lane - 6, 20));
+      // `skipFirst` on the exit arc, whose first point is the rule's own end —
+      // a repeated point is a zero-length segment and a divide-by-zero in the
+      // spline's knot spacing.
+      const arc = (cx: number, cy: number, from: number, to: number, skipFirst = false) => {
+        for (let k = skipFirst ? 1 : 0; k <= 14; k++) {
+          const a = (from + (to - from) * (k / 14)) * DEG;
+          points.push([cx + Math.cos(a) * radius, cy + Math.sin(a) * radius]);
+        }
+      };
+
+      // TWO points at the same x before the turn, so the descent is genuinely
+      // vertical by the time it gets there. A corner rounded off a diagonal is
+      // just a bend; a corner on a vertical reads as a corner.
+      points.push([lane, box.top - box.height * 0.5]);
+      points.push([lane, rule - radius * 1.7]);
+      arc(lane + radius, rule - radius, 180, 90);
+
+      // The entry arc's last point ends the smoothed run and starts the straight
+      // one, already pointing along the rule; the exit arc's first point ends it.
+      const from = points.length - 1;
+      const end = box.left + box.width + 18;
+      points.push([end, rule]);
+      straight = [from, points.length - 1];
+
+      // Up off the end of the words and into the flourish. Turning UP rather
+      // than down because everything below the rule belongs to the next thing
+      // on the page, and a stroke that dives under it reads as an underline for
+      // that instead.
+      arc(end, rule - radius, 90, 0, true);
+
+      reveal = box.top + box.height;
     }
   }
 
   if (points.length < 2) return null;
 
   // Back to front, so the splices do not shift the indices still to come. The
-  // underline's straight tail moves with them.
+  // underline's straight run moves with them.
   for (let i = bowAt.length - 1; i >= 0; i--) {
     const at = bowAt[i];
     const before = points.length;
     bowConnector(points, at, hostRect.width);
-    if (points.length > before && straightFrom > at) straightFrom += 1;
+    if (points.length > before && straight) {
+      straight = [straight[0] + (straight[0] > at ? 1 : 0), straight[1] + (straight[1] > at ? 1 : 0)];
+    }
   }
 
   return {
     width: hostRect.width,
     height: hostRect.height,
-    d: toPath(points, straightFrom),
+    d: toPath(points, straight),
+    reveal,
   };
 }
 
 /** How far along the path each of N+1 evenly spaced samples sits vertically. */
 const SAMPLES = 900;
+
+/**
+ * How fast the pen may draw the closing stretch, as a fraction of the whole
+ * path per second. On /services that stretch is about a sixth of the line, so
+ * this is roughly "the rule and the flourish take a second and a quarter",
+ * against the third of a second they took when nothing bounded them. See the
+ * note in the draw loop.
+ */
+const TAIL_SPEED = 0.13;
+
+/**
+ * How far down the screen the underlined words may sit before the closing
+ * stretch is allowed to start — 0.75 puts all of them on screen with a quarter
+ * of the viewport still showing underneath. Reachable at every sensible window
+ * height: at the foot of this page the words come to rest around 62% of a
+ * 1000px viewport and 73% of a 1400px one.
+ */
+const TAIL_REVEAL = 0.75;
 
 function sampleDepths(path: SVGPathElement): number[] {
   const total = path.getTotalLength();
@@ -516,9 +691,12 @@ interface ScrollThreadProps {
   /** Elements carrying `data-thread`, in document order. */
   selector?: string;
   /**
-   * Where the pen sits, as a fraction of the viewport height. 0.88 puts it a
-   * little above the bottom edge — far enough in to watch it draw, not so far
-   * that the line arrives before the section it belongs to.
+   * Where the pen sits, as a fraction of the viewport height. It was 0.88, which
+   * pinned it inside the bottom eighth of the screen for the whole page —
+   * technically "always visible" and in practice always in the same sliver of
+   * peripheral vision, which is what "it is always in the last 25%" was about.
+   * Just past the middle keeps the tip in the part of the screen anyone is
+   * actually looking at, and gives the line room to be seen arriving.
    */
   sweep?: number;
   className?: string;
@@ -526,14 +704,17 @@ interface ScrollThreadProps {
 
 export function ScrollThread({
   selector = "[data-thread]",
-  sweep = 0.88,
+  sweep = 0.62,
   className = "",
 }: ScrollThreadProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const [geometry, setGeometry] = useState<{ width: number; height: number; d: string } | null>(
-    null,
-  );
+  const [geometry, setGeometry] = useState<{
+    width: number;
+    height: number;
+    d: string;
+    reveal: number | null;
+  } | null>(null);
 
   // Measure. Nothing renders until this has run, which is right for a
   // decoration: better absent for a frame than in the wrong place.
@@ -583,6 +764,7 @@ export function ScrollThread({
     }
 
     const depths = sampleDepths(path);
+    const reveal = geometry.reveal;
 
     // The furthest point along the path that is still above the sweep line.
     // Scanning backwards makes this monotonic in `y`: as the line descends the
@@ -595,9 +777,55 @@ export function ScrollThread({
       return 0;
     };
 
+    // WHERE THE LINE RUNS OUT OF PAGE TO BE DRAWN OVER. Everything from the
+    // path's lowest point onwards — here, the rule under the heading and the
+    // flourish that comes off the end of it — sits at or above that one y, so
+    // the sweep unlocks the whole lot the moment it crosses it. On this page
+    // that is 17% of the line's length falling due inside the last 200px of
+    // scroll. Found rather than guessed: it is exactly the run of samples that
+    // share the deepest point, so it stays right if the ending is re-routed.
+    const deepest = Math.max(...depths);
+    let tailFrom = 0;
+    while (tailFrom < SAMPLES && depths[tailFrom] <= deepest - 1) tailFrom++;
+    const tailStart = tailFrom / SAMPLES;
+
+    // THE CLOSING STRETCH IS NOT DRIVEN BY THE SWEEP LINE. Everything else is:
+    // scroll a section into view and the line beside it draws. But the rule and
+    // the flourish do not belong to a section — they belong to the words being
+    // underlined, and the sweep crossing those words is the wrong cue. The
+    // heading is 72px tall near the very foot of the page, so the sweep reaches
+    // it while it is still peeking in at the bottom edge of the screen: a
+    // fraction more scroll and the whole finish had already happened, before
+    // anyone had properly seen what it was underlining.
+    //
+    // So it waits for the words instead — all of them on screen, with room to
+    // spare underneath — and then runs to the end on its own clock. That also
+    // means the finish no longer depends on the page being long enough for the
+    // sweep to reach the deepest point of the path, which it only just was.
+    // Where the words actually come to rest at the foot of the page, so the
+    // threshold can never be set somewhere the page cannot scroll to. On a tall
+    // enough window there is not much page left under the heading and it never
+    // rises past three quarters of the viewport — asking for that would leave
+    // the line permanently unfinished. Reads scrollHeight, so it is computed on
+    // mount and on resize rather than on every scroll.
+    let revealAt = TAIL_REVEAL;
+    const measureReveal = () => {
+      if (reveal === null) return;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const hostTop = host.getBoundingClientRect().top + window.scrollY;
+      const atFoot = (hostTop + reveal - maxScroll) / window.innerHeight;
+      revealAt = Math.max(TAIL_REVEAL, atFoot + 0.02);
+    };
+    measureReveal();
+
     const targetNow = () => {
       const rect = host.getBoundingClientRect();
-      return drawnAt(-rect.top + window.innerHeight * sweep);
+      const swept = drawnAt(-rect.top + window.innerHeight * sweep);
+      if (reveal === null) return swept;
+      if (rect.top + reveal <= window.innerHeight * revealAt) return 1;
+      // Held at the mouth of the tail until then, so the pen waits where the
+      // rule is about to start rather than part way into drawing it.
+      return Math.min(swept, tailStart);
     };
 
     // EASING IS NOT DECORATION HERE, it is what makes the drawing continuous.
@@ -605,22 +833,49 @@ export function ScrollThread({
     // a hundred consecutive samples sit within a few pixels of each other
     // vertically — so a small scroll can move the answer by a tenth of the whole
     // path in one frame, which is exactly the stepping that made it feel rough.
-    // Chasing the target instead of snapping to it turns those jumps into the
-    // pen racing through a flourish, and leaves it trailing slightly behind the
-    // scroll everywhere else, which is the part that reads as fluid.
+    // Chasing the target instead of snapping to it smooths that out, and leaves
+    // the pen trailing slightly behind the scroll everywhere else, which is the
+    // part that reads as fluid.
     let current = targetNow();
     let target = current;
     let frame = 0;
+    let last = 0;
 
     path.style.strokeDashoffset = String(1 - current);
 
-    const tick = () => {
+    const tick = (now: number) => {
+      // Seconds since the last frame, clamped so a backgrounded tab does not
+      // come back and jump the pen. `last` is 0 on the first tick of a run.
+      const dt = last ? Math.min((now - last) / 1000, 0.05) : 1 / 60;
+      last = now;
+
       const diff = target - current;
       if (Math.abs(diff) < 0.0002) {
         current = target;
         frame = 0;
+        last = 0;
       } else {
-        current += diff * 0.14;
+        // Frame-rate independent: 0.14 was tuned at 60Hz and would otherwise be
+        // twice the chase on a 120Hz display.
+        let step = Math.abs(diff) * (1 - Math.pow(1 - 0.14, dt * 60));
+
+        // A CEILING ON THE PEN'S SPEED, BUT ONLY ONCE IT IS INTO THE TAIL, and
+        // the "only" is the whole point. Chased on gap alone the closing stretch
+        // went down in about a tenth of a second: the pen flicked rather than
+        // drew, and the finish read as rushed. Capping its speed spends about a
+        // second on it instead — the pace the rest of the line already moves at,
+        // and the same second however hard you flicked to get there.
+        //
+        // Capping everywhere is the obvious version and it is wrong. Elsewhere
+        // the sweep keeps advancing, so a speed limit becomes a debt the pen can
+        // never pay back: measured at a 1200px/s scroll it ended up 1277px above
+        // the sweep line, which is off the top of the screen — the exact thing
+        // this whole sweep-line design exists to prevent. In the tail there is
+        // no debt to accrue, because there is no more page for the sweep to move
+        // through.
+        if (current >= tailStart) step = Math.min(step, TAIL_SPEED * dt);
+
+        current += Math.sign(diff) * step;
         frame = requestAnimationFrame(tick);
       }
       path.style.strokeDashoffset = String(1 - current);
@@ -630,14 +885,18 @@ export function ScrollThread({
       target = targetNow();
       if (!frame) frame = requestAnimationFrame(tick);
     };
+    const onResize = () => {
+      measureReveal();
+      schedule();
+    };
 
     window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
 
     return () => {
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("resize", onResize);
     };
   }, [geometry, sweep]);
 

@@ -1,0 +1,92 @@
+/* ============================================================================
+   Instagram post strip — the latest posts, as a band above the footer rule.
+
+   Its own file rather than a block in chrome.css, because chrome.css only loads
+   on pages that render SiteChrome and this strip also has to work under
+   components/SiteFooter.tsx on /. For the same reason nothing here reads a
+   --mmc-* variable: those are scoped to .mmc and would resolve to nothing on /.
+   Everything below comes from design/tokens.css, which is global.
+
+   No background is declared, so the band takes whatever ground the page it sits
+   on has. No reset ships in globals.css either (see the note at the top of it),
+   so the list has to zero its own margin, padding and marker.
+   ============================================================================ */
+
+.mm-ig {
+  border-top: 1px solid rgb(0 0 0 / 0.2);
+  padding: var(--space-8) var(--gutter);
+}
+
+/* Set to .mmc__footer exactly — same size, weight and tracking — so the strip
+   and the footer line under it read as one system rather than two. */
+.mm-ig__label {
+  margin: 0 0 var(--space-4);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(0 0 0 / 0.55);
+}
+
+.mm-ig__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
+}
+
+.mm-ig__item {
+  margin: 0;
+}
+
+/* The square is the link's own box, so a post whose crop is portrait or
+   landscape still tiles flush with its neighbours. */
+.mm-ig__link {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  /* Holds the square open while the image loads, so the footer below it never
+     jumps. */
+  background: rgb(0 0 0 / 0.06);
+}
+
+.mm-ig__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+.mm-ig__link:hover .mm-ig__img {
+  opacity: 0.72;
+}
+
+/* Always exactly one row. The column count steps down and the posts that would
+   have wrapped are dropped instead, because a second row of two orphans reads
+   as a mistake — and because a footer earns its height. Fewer posts are fetched
+   than the widest layout shows, never more, so nothing here hides a post that
+   a wider screen would not also have shown. */
+@media (max-width: 860px) {
+  .mm-ig__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .mm-ig__item:nth-child(n + 5) {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  .mm-ig__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .mm-ig__item:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+/* .mmc a:focus-visible covers the chrome, but / is not inside .mmc. */
+.mm-ig__link:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 3px;
+}

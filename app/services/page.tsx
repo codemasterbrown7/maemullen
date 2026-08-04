@@ -4,6 +4,7 @@ import { ChromeFooter, ChromeHeader } from "@/components/chrome/SiteChrome";
 import { ScrollThread } from "@/components/ui/scroll-thread";
 import { serviceEntries, servicesDescription, servicesPage } from "@/content/services";
 import { siteName } from "@/content/site";
+import { asset } from "@/lib/asset";
 import "./services.css";
 
 export const metadata: Metadata = {
@@ -25,10 +26,21 @@ export const metadata: Metadata = {
  *
  * THE LINE. components/ui/scroll-thread draws itself as you scroll: a knot of
  * loops in the masthead, one strand down the page with a single loop-the-loop
- * in it, a second knot at the foot, and a last stroke that rules under "Let's
- * work together". The two knots deliberately run BEHIND the display type — that
- * is where the reference gets its scale — while the strand between them crosses
- * nothing at all.
+ * in it, a stroke that rules under "Let's work together", and a closing flourish
+ * off the end of that rule.
+ *
+ * THE ORDER IS THE POINT AT THE FOOT: rule first, flourish after. It ran the
+ * other way round — tangle, then rule — and the note was that underlining and
+ * then flourishing reads better, which it does: the rule is the statement and
+ * the knot is the sign-off.
+ *
+ * The masthead knot deliberately runs BEHIND the display type — that is where
+ * the reference gets its scale, and a 160px word can carry a stroke across it.
+ * The closing one does NOT: it sits past the last letter and above the rule,
+ * because down there the same treatment landed on a 79px line and on the rule
+ * underneath it at once. That knot is also the only one tuned: the masthead's
+ * shape is settled and everything about it is defaulted, so nothing done for the
+ * foot of the page can reach it.
  *
  * It is not placed by coordinates: it reads the real layout through the
  * `data-thread` attributes below and routes itself through the empty lane,
@@ -162,12 +174,63 @@ export default function ServicesPage() {
                 )}
               </div>
 
+              {/* Photographs dotted down the section's empty half — small,
+                  unequal, hard-edged, no frame. They go in the same grid column
+                  the line runs down, so the stroke passes behind them exactly
+                  as it did behind the Bendito plate. Sizes and offsets come from
+                  content/services.ts; there are no coordinates here.
+
+                  Every one is annotated, because bare plates read as floating.
+                  Two placements, and the difference is only where the type sits:
+                  `edge` runs "I — LABEL" up the outer side of the picture,
+                  `foot` splits the numeral and the label to opposite ends of a
+                  line beneath it. Both are one register — Roman numeral, then a
+                  short label — so the page gains a treatment, not a system. */}
+              {service.plates && (
+                <div className="svc__scatter">
+                  {service.plates.map((plate) => (
+                    <figure
+                      key={plate.src}
+                      className={`svc__snap svc__snap--${plate.note.place}`}
+                      style={{
+                        ["--snap-w" as string]: `${plate.w}rem`,
+                        ["--snap-x" as string]: `${plate.x ?? 0}%`,
+                        ["--snap-y" as string]: plate.y ?? 0,
+                      }}
+                    >
+                      <img
+                        src={asset(plate.src)}
+                        alt={plate.alt}
+                        className="svc__snap-img"
+                        width={plate.dim[0]}
+                        height={plate.dim[1]}
+                        loading="lazy"
+                        decoding="async"
+                      />
+
+                      <figcaption className="svc__snap-note">
+                        {plate.note.place === "foot" ? (
+                          <>
+                            <span>{plate.note.n}</span>
+                            <span>{plate.note.label}</span>
+                          </>
+                        ) : (
+                          /* An em dash rather than two spans: set vertically,
+                             the two halves have to read as one line. */
+                          `${plate.note.n} — ${plate.note.label}`
+                        )}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              )}
+
               {service.image && (
                 /* Caption beside the plate rather than under it, running
                    vertically — the design's own treatment for photography. */
                 <figure className="svc__plate">
                   <img
-                    src={service.image.src}
+                    src={asset(service.image.src)}
                     alt={service.image.alt}
                     className="svc__plate-img"
                     width={943}
@@ -182,23 +245,25 @@ export default function ServicesPage() {
         </ol>
 
         <section className="svc__cta" aria-labelledby="svc-cta-heading">
-          {/* Before the heading in the DOM, because the line is built in
-              document order and the flourish has to be drawn before the stroke
-              that finishes under the words. It is positioned, so where it sits
-              on screen is unaffected. Mirrored, because the line arrives from
-              the upper RIGHT: unflipped, the knot starts at its left end and
-              the approach has to cross the whole shape to reach it, which is
-              what made this one look scribbled the first time round. */}
-          <div
-            className="svc__ornament svc__ornament--cta"
-            data-thread="knot"
-            data-thread-flip="1"
-            data-thread-exit="130"
-          />
-
           <h2 id="svc-cta-heading" className="svc__cta-heading" data-thread="underline">
             {servicesPage.cta.heading}
           </h2>
+
+          {/* DOCUMENT ORDER IS DRAW ORDER, and this now comes AFTER the heading:
+              the line rules under the words and only then runs on into the
+              flourish. Asked for directly. It is positioned, so following the
+              heading in the markup does not put it below the heading on screen.
+
+              NOT mirrored, unlike the version that sat on the left of the words:
+              the line arrives from below now, which is the end the knot starts
+              at anyway. */}
+          <div
+            className="svc__ornament svc__ornament--cta"
+            data-thread="knot"
+            data-thread-exit="300"
+            data-thread-loops="7"
+            data-thread-shape="fit"
+          />
 
           <Link href={servicesPage.cta.href} className="mm-cta-bracket svc__cta-link">
             {servicesPage.cta.label}
