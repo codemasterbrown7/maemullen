@@ -76,7 +76,7 @@ export default function ServicesPage() {
           {/* Empty by design: the room the opening ornament is drawn into. It
               is an element rather than a coordinate so it moves with the
               layout. Swap data-thread to "flower" for the five-petal version. */}
-          <div className="svc__ornament" data-thread="knot" />
+          <div className="svc__ornament" data-thread="knot" data-thread-exit="50" />
         </header>
 
         {/* Plain fragment links, so the jump costs no JS and works from
@@ -193,6 +193,7 @@ export default function ServicesPage() {
             className="svc__ornament svc__ornament--cta"
             data-thread="knot"
             data-thread-flip="1"
+            data-thread-exit="130"
           />
 
           <h2 id="svc-cta-heading" className="svc__cta-heading" data-thread="underline">

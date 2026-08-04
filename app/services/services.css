@@ -72,29 +72,11 @@
 .svc__list,
 .svc__cta {
   position: relative;
+  z-index: 1;
   max-width: var(--svc-max);
   margin: 0 auto;
   box-sizing: border-box;
 }
-
-.svc__index,
-.svc__list,
-.svc__cta {
-  z-index: 1;
-}
-
-/* THE MASTHEAD IS DELIBERATELY NOT GIVEN `z-index: 1`, and that is load-bearing
-   rather than an oversight. `mix-blend-mode` on the title (below) blends it
-   against its backdrop, and the backdrop stops at the nearest ancestor that
-   forms a stacking context — so with `z-index: 1` here the title would blend
-   against an empty masthead and the line behind it would count for nothing.
-   Left at `auto` the masthead is not a stacking context, so the title's backdrop
-   is the page: the cream ground and the blue thread.
-
-   It still paints ABOVE the thread. Both are in the same painting step
-   (positioned, z-index auto-or-0) and that step is drawn in tree order — the
-   thread is rendered before this header. The header chrome is static, so it is
-   in an earlier step again and nothing here can rise over it. */
 
 /* Empty boxes. Their only job is to tell the thread where it has room. */
 .svc__ornament {
@@ -175,27 +157,6 @@
   }
 }
 
-/* INVERTED AND SEE-THROUGH. The word is not filled with ink — it is a white
-   plate in `difference`, so every letter renders the exact inverse of whatever
-   is behind it. That is one rule doing both halves of the brief: "see-through"
-   because the knot reads straight through the letterforms, "inverted" because
-   what comes through is the negative of it.
-
-   The arithmetic, which is why this needs no second colour to be chosen:
-     over cream  #fffaed → #000512, i.e. the black the rest of the page is set
-                 in. Off the line the masthead is unchanged.
-     over blue   #0b48ff → #f4b700, an amber that exists nowhere in the palette
-                 and cannot be got at any other way — it is the blue, negated.
-   So the headline is black until the thread draws itself into it on scroll, and
-   the crossings light up as they arrive.
-
-   Same idiom as the sitewide cursor (components/ui/fluid-cursor.css): a white
-   fill in `difference` that inverts whatever it passes over. When the cursor
-   crosses a lit crossing it inverts the amber straight back to brand blue,
-   which is the one place on the site the two effects meet — and they agree.
-
-   Set `color` rather than a background clip: text is the blend layer here, so
-   there is no box to knock out and nothing to keep in sync at other widths. */
 .svc__title {
   margin: 0;
   font-family: var(--font-swiss);
@@ -204,18 +165,6 @@
   line-height: 0.92;
   letter-spacing: -0.03em;
   text-transform: uppercase;
-  color: var(--brand-white);
-  mix-blend-mode: difference;
-}
-
-/* Below 900px the thread hides itself — a single column has no empty lane to
-   run down — so there is nothing behind the word to see through, and the blend
-   would leave it as #000512-on-cream for no reason. Take the plain ink back. */
-@media (max-width: 899px) {
-  .svc__title {
-    color: var(--svc-ink);
-    mix-blend-mode: normal;
-  }
 }
 
 .svc__masthead-foot {

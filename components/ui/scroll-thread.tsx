@@ -19,6 +19,9 @@ import "./scroll-thread.css";
  *   data-thread="knot"        draw a wandering knot of loops in this box;
  *     data-thread-flip="1"    mirrored, so the line arrives at its near end
  *                             rather than across the whole shape
+ *     data-thread-exit="50"   the compass bearing, in page space, that the
+ *                             knot should be heading when it stops — point it
+ *                             at wherever the line goes next
  *   data-thread="flower"      draw a five-petal flower in this box instead,
  *     data-thread-phase="122" rotated by this many degrees — pick the angle
  *                             that puts a GAP where the line arrives and leaves
@@ -151,7 +154,7 @@ function flowerPoints(box: Box, phase: number): Pt[] {
  * back to. The two are interchangeable per instance from the markup — see the
  * `data-thread` values in the header comment.
  */
-function knotPoints(box: Box, flip: boolean): Pt[] {
+function knotPoints(box: Box, flip: boolean, exitDeg: number): Pt[] {
   const petals = 7;
   const spread = 143 * DEG;
   const samplesPerPetal = 30;
@@ -191,7 +194,35 @@ function knotPoints(box: Box, flip: boolean): Pt[] {
     p = next;
   }
 
-  return fitToBox(raw, box, flip);
+  // STOP DRAWING WHERE IT IS ALREADY HEADING THE RIGHT WAY.
+  //
+  // Left to run to the end, the knot finishes pointing up and back to the left,
+  // while the line then has to leave down and to the right. Something has to
+  // absorb that reversal and there is no good answer: a uniform spline shot off
+  // in a dead straight diagonal, and a centripetal one hooked round in a 10px
+  // radius — under the 14px stroke width, so the stroke folded over itself. Both
+  // read as a bump.
+  //
+  // But the knot is a continuous curve whose tangent sweeps through every
+  // direction inside a single petal, so there is always a point in the last
+  // petal already heading where we want to go. Ending there means no reversal
+  // exists to absorb. It costs the tail of one loop out of seven.
+  //
+  // `exitDeg` is in page space; the mirror in fitToBox turns a unit-space angle
+  // θ into 180 − θ, so undo it here.
+  const want = ((flip ? 180 - exitDeg : exitDeg) * DEG + Math.PI * 4) % (Math.PI * 2);
+  let cut = raw.length - 1;
+  let best = Infinity;
+  for (let i = raw.length - samplesPerPetal; i < raw.length - 1; i++) {
+    const angle = Math.atan2(raw[i + 1][1] - raw[i][1], raw[i + 1][0] - raw[i][0]);
+    const diff = Math.abs(((angle - want + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+    if (diff < best) {
+      best = diff;
+      cut = i;
+    }
+  }
+
+  return fitToBox(raw.slice(0, cut + 1), box, flip);
 }
 
 /**
@@ -397,7 +428,7 @@ function buildPath(host: HTMLElement, selector: string) {
       if (points.length) bowAt.push(points.length - 1);
       points.push(
         ...(kind === "knot"
-          ? knotPoints(box, el.dataset.threadFlip === "1")
+          ? knotPoints(box, el.dataset.threadFlip === "1", Number(el.dataset.threadExit ?? 50))
           : flowerPoints(box, Number(el.dataset.threadPhase ?? 122))),
       );
       bowAt.push(points.length - 1);
