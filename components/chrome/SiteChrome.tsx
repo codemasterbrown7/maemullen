@@ -20,15 +20,25 @@ import "./chrome.css";
 
 /** v1's arrangement — three links, centred logotype, three links — in cream. */
 export function ChromeHeader({ current }: { current?: string }) {
+  /**
+   * The one link marked as the page you are on — matched by identity, not by
+   * href, so a repeated href marks only its FIRST item.
+   *
+   * Portfolio and Work both point at /work (SITEMAP §2 defers the split), and
+   * comparing hrefs lit both of them blue at once, which reads as a bug rather
+   * than as orientation. The comment here always said "only the first match";
+   * the code never did it. It went unnoticed while /services was the only page
+   * using `current`, because /services appears in the nav exactly once — the
+   * moment /work existed, the pair lit up.
+   */
+  const currentItem = [...nav.left, ...nav.right].find((item) => item.href === current);
+
   const link = (item: { label: string; href: string }) => (
     <Link
       key={item.label}
       href={item.href}
       className="mmc__nav-link"
-      // Marks the page you are already on. Only the first match, because
-      // Portfolio and Work both point at /work and highlighting a pair would
-      // read as a bug rather than as orientation.
-      aria-current={item.href === current ? "page" : undefined}
+      aria-current={item === currentItem ? "page" : undefined}
     >
       {item.label}
     </Link>
