@@ -138,13 +138,14 @@ function flowerPoints(box: Box, phase: number): Pt[] {
  * Same primitive as a flower petal — one cubic out from a base point and back —
  * with two differences, and both of them matter:
  *
- *   · `spread` is 143°, so `step` (forced to 2·spread − 180) is 106°, which does
- *     not divide the circle evenly. The loops fan round without ever landing in
- *     a tidy rosette.
+ *   · `spread` is 143°, which fans the loops by about 106° a time. That does
+ *     not divide the circle evenly, so they never land in a tidy rosette.
  *   · the base DRIFTS between loops, which is what turns a rosette into a knot.
  *     The drift has to stay well under each loop's own reach or the loops
  *     stretch into pinched slivers and it reads as a scribble; about a third is
  *     the useful range.
+ *
+ * The drift is also what forces the chaining in the loop below — see there.
  *
  * This was the shape before the flower, and it is the shape the client came
  * back to. The two are interchangeable per instance from the markup — see the
@@ -152,8 +153,7 @@ function flowerPoints(box: Box, phase: number): Pt[] {
  */
 function knotPoints(box: Box, flip: boolean): Pt[] {
   const petals = 7;
-  const spread = 143;
-  const step = 2 * spread - 180;
+  const spread = 143 * DEG;
   const samplesPerPetal = 30;
 
   const baseAt = (i: number): Pt => [
@@ -163,23 +163,31 @@ function knotPoints(box: Box, flip: boolean): Pt[] {
 
   const raw: Pt[] = [];
   let p = baseAt(0);
+  let theta = -35 * DEG;
+  let exit: Pt | null = null;
   raw.push(p);
 
   for (let i = 0; i < petals; i++) {
-    const theta = (-35 + step * i) * DEG;
+    // EACH PETAL'S DIRECTION COMES FROM THE PREVIOUS PETAL'S ACTUAL EXIT, not
+    // from stepping a fixed 2·spread − 180 degrees. Those are the same thing
+    // only when the base does not move; here it drifts, so a fixed step leaves
+    // a real angular mismatch at every join — measured at 4° to 17°, worst
+    // where a petal's arm is shortest, and the 17° one was visible as a hard
+    // corner in the middle of the knot. Chaining off the true exit tangent
+    // makes every join exactly continuous while keeping the same fan and the
+    // same overall shape.
+    if (exit) theta = Math.atan2(exit[1], exit[0]) + spread;
+
     const len = 0.55 * (0.88 + 0.26 * Math.sin(i * 1.7 + 0.9));
-    const c1: Pt = [
-      p[0] + Math.cos(theta - spread * DEG) * len,
-      p[1] + Math.sin(theta - spread * DEG) * len,
-    ];
-    const c2: Pt = [
-      p[0] + Math.cos(theta + spread * DEG) * len,
-      p[1] + Math.sin(theta + spread * DEG) * len,
-    ];
+    const c1: Pt = [p[0] + Math.cos(theta - spread) * len, p[1] + Math.sin(theta - spread) * len];
+    const c2: Pt = [p[0] + Math.cos(theta + spread) * len, p[1] + Math.sin(theta + spread) * len];
     const next = baseAt(i + 1);
+
     for (let k = 1; k <= samplesPerPetal; k++) {
       raw.push(cubicAt(p, c1, c2, next, k / samplesPerPetal));
     }
+
+    exit = [next[0] - c2[0], next[1] - c2[1]];
     p = next;
   }
 
@@ -294,15 +302,24 @@ function loopPoints(p: Pt, side: 1 | -1, radius: number): Pt[] {
 }
 
 /**
- * Catmull-Rom through every point, converted to cubic béziers, so the curve
- * passes exactly through them rather than being pulled off them. Points from
- * `straightFrom` on are emitted as straight lines instead — that is the
- * underline, and a smoothed underline is a sag.
+ * CENTRIPETAL Catmull-Rom through every point, converted to cubic béziers, so
+ * the curve passes exactly through them rather than being pulled off them.
+ * Points from `straightFrom` on are emitted as straight lines instead — that is
+ * the underline, and a smoothed underline is a sag.
  *
- * The control arms are capped against the segment they belong to. Without that
- * cap, the junction between the knot's dense samples and the page's sparse
- * waypoints throws an arm hundreds of pixels long and the curve loops out over
- * the text — plain Catmull-Rom assumes evenly spaced points and these are not.
+ * The parameterisation is the whole point. Plain Catmull-Rom advances its
+ * parameter by 1 per point, which assumes the points are evenly spaced — and
+ * these are wildly not: an ornament contributes two hundred samples a few
+ * pixels apart, then the next waypoint is most of a page away. At that junction
+ * the uniform version computes the tangent almost entirely from the far point,
+ * so the curve leaves the ornament aimed straight at it and puts a hard corner
+ * in the line. That corner is what the client spotted as a "weird bump".
+ *
+ * Advancing the parameter by the SQUARE ROOT of each gap instead fixes it at
+ * source: the two long terms in the tangent cancel and what survives is the
+ * ornament's own direction, scaled small — so the line leaves tangentially and
+ * then bends towards the next point. It also removes the need for the arm cap
+ * this used to carry, which was a crude approximation of the same idea.
  */
 function toPath(points: readonly Pt[], straightFrom: number): string {
   if (points.length < 2) return "";
@@ -314,21 +331,33 @@ function toPath(points: readonly Pt[], straightFrom: number): string {
 
   for (let i = 0; i < end; i++) {
     const [p0, p1, p2, p3] = [at(i - 1), at(i), at(i + 1), at(i + 2)];
-    const chord = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
-    const cap = chord * 0.42;
 
-    const arm = (ax: number, ay: number): Pt => {
-      const len = Math.hypot(ax, ay);
-      if (len <= cap || len === 0) return [ax, ay];
-      return [(ax / len) * cap, (ay / len) * cap];
+    // Knot spacing. The `|| 1e-6` is a divide-by-zero guard for coincident
+    // points, which the clamped `at()` produces at both ends of the path.
+    const t01 = Math.sqrt(Math.hypot(p1[0] - p0[0], p1[1] - p0[1])) || 1e-6;
+    const t12 = Math.sqrt(Math.hypot(p2[0] - p1[0], p2[1] - p1[1])) || 1e-6;
+    const t23 = Math.sqrt(Math.hypot(p3[0] - p2[0], p3[1] - p2[1])) || 1e-6;
+
+    const tangent = (axis: 0 | 1) => {
+      const m1 =
+        t12 *
+        ((p1[axis] - p0[axis]) / t01 -
+          (p2[axis] - p0[axis]) / (t01 + t12) +
+          (p2[axis] - p1[axis]) / t12);
+      const m2 =
+        t12 *
+        ((p2[axis] - p1[axis]) / t12 -
+          (p3[axis] - p1[axis]) / (t12 + t23) +
+          (p3[axis] - p2[axis]) / t23);
+      return [m1, m2];
     };
 
-    const [a1x, a1y] = arm((p2[0] - p0[0]) / 6, (p2[1] - p0[1]) / 6);
-    const [a2x, a2y] = arm((p3[0] - p1[0]) / 6, (p3[1] - p1[1]) / 6);
+    const [m1x, m2x] = tangent(0);
+    const [m1y, m2y] = tangent(1);
 
     d +=
-      ` C ${round(p1[0] + a1x)} ${round(p1[1] + a1y)},` +
-      ` ${round(p2[0] - a2x)} ${round(p2[1] - a2y)},` +
+      ` C ${round(p1[0] + m1x / 3)} ${round(p1[1] + m1y / 3)},` +
+      ` ${round(p2[0] - m2x / 3)} ${round(p2[1] - m2y / 3)},` +
       ` ${round(p2[0])} ${round(p2[1])}`;
   }
 

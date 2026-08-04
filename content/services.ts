@@ -191,20 +191,14 @@ const detail: Record<string, ServiceDetail> = {
         ],
       },
     ],
-    /* The only real service imagery that exists. The artwork PNG rather than
-       menu-in-situ.jpg: the in-situ photograph is a 19 MB 4000×6000 original
-       and has no business on a page load until it is resized. */
-    image: {
-      src: "/work/bendito/menu-artwork.png",
-      alt: "The Bendito menu — red line drawings of chillies, glasses and figures around a handwritten blue menu of dishes",
-      caption: "Bendito — menu & artwork",
-    },
+    /* The Bendito menu artwork used to plate the right half of this section.
+       Pulled at the client's request; the file is still at
+       /work/bendito/menu-artwork.png and .svc__plate still renders any entry
+       that declares an `image`, so it is one block away from coming back. */
     side: "left",
-    /* Deliberately ON the plate, not in the gap beside it. The artwork is set
-       in mix-blend-mode: darken, so the line shows through its paper but loses
-       to every red and blue stroke in the drawing — it reads as passing behind
-       the menu, and overprints where the two cross. */
-    threadX: 0.78,
+    /* Was 0.78 — tucked onto the plate. With the right half empty it joins the
+       other left-hand sections in the lane at 0.8. */
+    threadX: 0.8,
   },
 
   "pr-events": {
