@@ -39,6 +39,8 @@ import "./scroll-thread.css";
  *   data-thread="underline"   drop down the margin beside this element, rule
  *                             under it left to right, and turn back up off the
  *                             end of it
+ *   data-thread="point"       finish by swerving out and back to an arrowhead
+ *                             off the end of this element, aimed at it. Last.
  *
  * DOCUMENT ORDER IS DRAW ORDER — the elements are read with one
  * querySelectorAll, so where a thing sits in the markup is when the pen gets to
@@ -433,11 +435,10 @@ function loopPoints(p: Pt, side: 1 | -1, radius: number): Pt[] {
 /**
  * CENTRIPETAL Catmull-Rom through every point, converted to cubic béziers, so
  * the curve passes exactly through them rather than being pulled off them.
- * Segments inside `straight` are emitted as lines instead — that is the
- * underline, and a smoothed underline is a sag. It is a RANGE rather than a tail
- * because the rule is no longer the last thing the line does: it now finishes
- * with a flourish past the end of the words, so the straight run has curve on
- * both sides of it.
+ * Segments inside a `straight` range are emitted as lines instead. There are two
+ * of them: the underline, because a smoothed underline is a sag, and the barbs
+ * of the arrowhead, because a smoothed corner is not a barb. Ranges rather than
+ * a tail, because neither is the last thing the line does.
  *
  * The parameterisation is the whole point. Plain Catmull-Rom advances its
  * parameter by 1 per point, which assumes the points are evenly spaced — and
@@ -453,7 +454,7 @@ function loopPoints(p: Pt, side: 1 | -1, radius: number): Pt[] {
  * then bends towards the next point. It also removes the need for the arm cap
  * this used to carry, which was a crude approximation of the same idea.
  */
-function toPath(points: readonly Pt[], straight: readonly [number, number] | null): string {
+function toPath(points: readonly Pt[], straight: readonly (readonly [number, number])[]): string {
   if (points.length < 2) return "";
 
   const at = (i: number) => points[Math.min(Math.max(i, 0), points.length - 1)];
@@ -461,7 +462,7 @@ function toPath(points: readonly Pt[], straight: readonly [number, number] | nul
   let d = `M ${round(at(0)[0])} ${round(at(0)[1])}`;
 
   for (let i = 0; i < points.length - 1; i++) {
-    if (straight && i >= straight[0] && i < straight[1]) {
+    if (straight.some(([from, to]) => i >= from && i < to)) {
       d += ` L ${round(at(i + 1)[0])} ${round(at(i + 1)[1])}`;
       continue;
     }
@@ -519,10 +520,9 @@ function buildPath(host: HTMLElement, selector: string) {
   // start at. Both need bowing: one is the line leaving the shape, the other
   // the line arriving at it, and a spline draws both as ruler-straight runs.
   const bowAt: number[] = [];
-  let straight: [number, number] | null = null;
-  // Where the words that get underlined END, in host coordinates. The closing
-  // stretch waits for this to be properly on screen — see the draw loop.
-  let reveal: number | null = null;
+  const straight: [number, number][] = [];
+  // The underline's own y, so the arrow after it can be kept above it.
+  let ruleY = Infinity;
 
   for (const el of Array.from(document.querySelectorAll<HTMLElement>(selector))) {
     const box = rel(el);
@@ -581,6 +581,7 @@ function buildPath(host: HTMLElement, selector: string) {
       if (bowAt.length && bowAt[bowAt.length - 1] === points.length - 1) bowAt.pop();
 
       const rule = box.top + box.height + 16;
+      ruleY = rule;
 
       // Down a lane in the margin BESIDE the heading, a quarter turn into the
       // rule, along under the words, and a second quarter turn back up off the
@@ -624,15 +625,72 @@ function buildPath(host: HTMLElement, selector: string) {
       const from = points.length - 1;
       const end = box.left + box.width + 18;
       points.push([end, rule]);
-      straight = [from, points.length - 1];
+      straight.push([from, points.length - 1]);
 
       // Up off the end of the words and into the flourish. Turning UP rather
       // than down because everything below the rule belongs to the next thing
       // on the page, and a stroke that dives under it reads as an underline for
       // that instead.
       arc(end, rule - radius, 90, 0, true);
+    } else if (kind === "point") {
+      // THE LAST THING THE LINE DOES IS AIM AT THE ONE THING ON THE PAGE ANYONE
+      // IS MEANT TO CLICK. The flourish used to curl up and stop; now it carries
+      // on out to the right, swings back, and finishes as an arrowhead a
+      // thumbnail's width off the end of the label, pointing back into it.
+      const tail = points[points.length - 1];
+      if (!tail) continue;
 
-      reveal = box.top + box.height;
+      // Off the END of the label rather than any of its other edges: arriving
+      // from the right means the arrow points back along the words, the
+      // direction they read in.
+      // EVERY PART OF THIS IS A FRACTION OF THE ROOM BESIDE THE LABEL, not a
+      // fixed number of pixels. There is 240px of it at 1440 and 86px at 940 —
+      // the heading is set in vw against a capped band, so the margin collapses
+      // as the window narrows — and fixed offsets put the approach, and then the
+      // swerve, off the side of the screen. Scaled, the gesture just tightens
+      // into a hook and stays on the page.
+      const room = Math.max(60, hostRect.width - (box.left + box.width));
+      const gap = Math.min(30, room * 0.22);
+      const reach = Math.min(66, room * 0.4);
+
+      const tip: Pt = [box.left + box.width + gap, box.top + box.height * 0.55];
+
+      // THE SWERVE. Out past the tip and down first, so the line comes back at
+      // it: straight from the flourish to the label would be a leader line —
+      // correct and dead.
+      const out = Math.min(hostRect.width - 34, tip[0] + reach + 26);
+      points.push([out, tail[1] + (tip[1] - tail[1]) * 0.45]);
+      // Where the arrow comes in from, set RELATIVE TO THE TIP rather than to
+      // whatever room the swerve got, so the approach is the same shallow
+      // left-and-slightly-up at every width. Pinned to the swerve instead it
+      // steepened as the margin narrowed, until at 1024 the head was pointing up
+      // into the label from underneath.
+      // KEPT ABOVE THE UNDERLINE, and this is not a nicety. The rule is the
+      // deepest thing the line does, and the pacing, the draw order and the
+      // moment the ending comes due are all keyed off that fact — let the swerve
+      // dip a few pixels lower and it silently becomes the deepest point
+      // instead, which stretched the closing move from two seconds to over five.
+      // It is also just where the arrow belongs: below the rule is the next
+      // section.
+      points.push([tip[0] + reach, Math.min(tip[1] + 26, ruleY - 24)]);
+      points.push(tip);
+
+      // THE HEAD, drawn the way a hand draws one: on to a barb, back over the
+      // line it just made, out to the other. The retrace re-inks ground already
+      // covered, so what you see is the two barbs appearing in turn — which is
+      // the whole reason it is a stroke of the same pen rather than a shape
+      // faded in on top.
+      const before = points[points.length - 2];
+      const heading = Math.atan2(tip[1] - before[1], tip[0] - before[0]);
+      const barb = Math.min(26, room * 0.24);
+      const spread = 32 * DEG;
+      const headFrom = points.length - 1;
+      const barbAt = (a: number): Pt => [
+        tip[0] - Math.cos(a) * barb,
+        tip[1] - Math.sin(a) * barb,
+      ];
+      points.push(barbAt(heading - spread), tip, barbAt(heading + spread));
+      straight.push([headFrom, points.length - 1]);
     }
   }
 
@@ -644,8 +702,11 @@ function buildPath(host: HTMLElement, selector: string) {
     const at = bowAt[i];
     const before = points.length;
     bowConnector(points, at, hostRect.width);
-    if (points.length > before && straight) {
-      straight = [straight[0] + (straight[0] > at ? 1 : 0), straight[1] + (straight[1] > at ? 1 : 0)];
+    if (points.length > before) {
+      for (const range of straight) {
+        if (range[0] > at) range[0] += 1;
+        if (range[1] > at) range[1] += 1;
+      }
     }
   }
 
@@ -653,7 +714,6 @@ function buildPath(host: HTMLElement, selector: string) {
     width: hostRect.width,
     height: hostRect.height,
     d: toPath(points, straight),
-    reveal,
   };
 }
 
@@ -670,13 +730,15 @@ const SAMPLES = 900;
 const TAIL_SPEED = 0.13;
 
 /**
- * The closing stretch, keyed to where the underlined words sit in the viewport
- * — see the draw loop. ENTER is below the fold, RULE has them fully on screen,
- * REVEAL has them clear of the bottom with the flourish finished.
+ * The closing move accelerates the whole way: RUN_IN_SPEED as it leaves the
+ * sweep line and comes down into the corner, RULE_SPEED by the first letter,
+ * TAIL_SPEED by the last — which is the speed the flourish then keeps.
+ * TAIL_TRIGGER is how far down the screen the words may still be when it starts.
+ * See the draw loop.
  */
-const TAIL_ENTER = 1.1;
-const TAIL_RULE = 0.9;
-const TAIL_REVEAL = 0.62;
+const RUN_IN_SPEED = 0.02;
+const RULE_SPEED = 0.07;
+const TAIL_TRIGGER = 0.86;
 
 function sampleDepths(path: SVGPathElement): number[] {
   const total = path.getTotalLength();
@@ -709,12 +771,9 @@ export function ScrollThread({
 }: ScrollThreadProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const [geometry, setGeometry] = useState<{
-    width: number;
-    height: number;
-    d: string;
-    reveal: number | null;
-  } | null>(null);
+  const [geometry, setGeometry] = useState<{ width: number; height: number; d: string } | null>(
+    null,
+  );
 
   // Measure. Nothing renders until this has run, which is right for a
   // decoration: better absent for a frame than in the wrong place.
@@ -764,14 +823,40 @@ export function ScrollThread({
     }
 
     const depths = sampleDepths(path);
-    const reveal = geometry.reveal;
 
-    // The furthest point along the path that is still above the sweep line.
-    // Scanning backwards makes this monotonic in `y`: as the line descends the
-    // set of samples above it only grows, so the drawing never runs backwards
-    // even where the path loops up on itself inside a knot.
+    // How far the pen has got. Two different tests, and the split is deliberate.
+    //
+    // THE BODY asks only whether a sample is above the sweep line — the furthest
+    // one that is, wherever it falls. Inside a knot that lets the drawing run a
+    // little ahead of itself, and that is wanted: the opening tangle is already
+    // part-drawn when the page loads and fills in as you come down to it.
+    // Reverted to this after the stricter test below was applied to the whole
+    // path and took the masthead from 21% drawn at rest to 1.8% — *"the top of
+    // the page has changed… it only gets drawn after you scroll a bit."*
+    //
+    // THE ENDING is gated on the deepest point of the path instead, which is the
+    // rule. It has to be: only a prefix can be drawn, and the closing flourish
+    // sits about 370px ABOVE the rule it comes off, so on the body's test the
+    // sweep reached the flourish first and dragged the rule out with it — the
+    // whole ending went while the words were still at the bottom edge of the
+    // screen. Between the two, the tests agree everywhere anyway: measured
+    // identical at every scroll position from the masthead to the foot.
+    const reach: number[] = new Array(SAMPLES + 1);
+    for (let i = 0, deepestSoFar = -Infinity; i <= SAMPLES; i++) {
+      deepestSoFar = Math.max(deepestSoFar, depths[i]);
+      reach[i] = deepestSoFar;
+    }
     const drawnAt = (y: number) => {
-      for (let i = SAMPLES; i >= 0; i--) {
+      // THE ENDING RUNS AHEAD OF THE SWEEP LINE by `tailLead`. Held to the sweep
+      // it only started once the rule was level with the pen, two thirds up the
+      // screen, which is most of a viewport further down the page than anyone
+      // needs to go to have read the words — *"this is happening too late, some
+      // people might not scroll down that far."* Given a lead it starts while
+      // the heading is still low on the screen, and since everything past the
+      // rule is above it, the whole ending comes due together and the speeds
+      // below decide how it plays out.
+      if (y >= deepest - tailLead) return 1;
+      for (let i = tailFrom - 1; i >= 0; i--) {
         if (depths[i] <= y) return i / SAMPLES;
       }
       return 0;
@@ -784,71 +869,53 @@ export function ScrollThread({
     // that is 17% of the line's length falling due inside the last 200px of
     // scroll. Found rather than guessed: it is exactly the run of samples that
     // share the deepest point, so it stays right if the ending is re-routed.
-    const deepest = Math.max(...depths);
+    const deepest = reach[SAMPLES];
     let tailFrom = 0;
-    while (tailFrom < SAMPLES && depths[tailFrom] <= deepest - 1) tailFrom++;
+    while (tailFrom < SAMPLES && reach[tailFrom] < deepest) tailFrom++;
+    // …and where the RULE within it stops and the flourish takes over: the rule
+    // is the run lying flat at that deepest point, so it ends where the exit arc
+    // starts climbing away from it.
+    let ruleTo = tailFrom;
+    while (ruleTo < SAMPLES && depths[ruleTo + 1] >= deepest - 1) ruleTo++;
     const tailStart = tailFrom / SAMPLES;
+    const ruleThrough = ruleTo / SAMPLES;
 
-    // THE CLOSING STRETCH IS NOT DRIVEN BY THE SWEEP LINE. Everything else is:
-    // scroll a section into view and the line beside it draws. But the rule and
-    // the flourish do not belong to a section — they belong to the words being
-    // underlined, so they are drawn against how far those words have risen up
-    // the screen instead.
-    //
-    // WHY NOT JUST HOLD THE PEN AND RELEASE IT. That was the first version and
-    // it read as a stall: the sweep raced the pen down to the mouth of the rule
-    // — a measured leap from 61% to 97% of the screen in 100px of scroll — where
-    // it then sat for another 200px before the whole ending went at once. Both
-    // halves of that were called out. A threshold can only ever produce a wait
-    // followed by a rush; the fix is not a better threshold but no threshold, so
-    // the last stretch is mapped onto scroll like everything else and simply
-    // keeps moving.
-    //
-    // Three scroll positions, expressed as where the heading's baseline sits in
-    // the viewport, and the segment between each pair is linear:
-    //   ENTER  the words are a little below the fold. The line stops taking its
-    //          cue from the sweep here — before the leap, which is the point —
-    //          and covers the last of the approach as they climb into view.
-    //   RULE   the words are fully on screen. The rule is drawn under them from
-    //          here, so it happens where it can be watched.
-    //   REVEAL they are clear of the bottom of the screen, and the flourish has
-    //          finished. Clamped to somewhere the page can actually scroll to:
-    //          on a tall window there is little page left underneath and the
-    //          words never climb this far, which would strand the line unfinished.
-    // Reads scrollHeight, so it is measured on mount and on resize, not on scroll.
-    let enterAt = 0;
-    let ruleAt = 0;
-    let doneAt = 0;
-    let handover = tailStart;
-    const measureReveal = () => {
-      if (reveal === null) return;
+    // WHERE THE SWEEP LINE SITS, adjusted down if this window is tall enough
+    // that it would otherwise never reach the deepest point of the path before
+    // the page runs out of scroll — which would strand the line unfinished a
+    // few percent short. It binds only on very tall windows; at ordinary
+    // heights the requested position stands. Reads scrollHeight, so it is
+    // measured on mount and on resize rather than on every scroll.
+    let effectiveSweep = sweep;
+    // How far ahead of the sweep line the ending starts, in page pixels.
+    let tailLead = 0;
+    const measureSweep = () => {
       const view = window.innerHeight;
       const maxScroll = document.documentElement.scrollHeight - view;
       const hostTop = host.getBoundingClientRect().top + window.scrollY;
-      const wordsAt = hostTop + reveal;
-      const atFoot = (wordsAt - maxScroll) / view;
-      const done = Math.max(TAIL_REVEAL, atFoot + 0.02);
-      const rule = Math.max(TAIL_RULE, done + 0.08);
-      const enter = Math.max(TAIL_ENTER, rule + 0.12);
-      enterAt = Math.max(0, wordsAt - enter * view);
-      ruleAt = wordsAt - rule * view;
-      doneAt = wordsAt - done * view;
-      // Exactly where the sweep has the pen at the handover, so the two meet
-      // without a step.
-      handover = drawnAt(enterAt - hostTop + view * sweep);
+      // +40px so the rule is reached a little before the page runs out rather
+      // than exactly on the last pixel of scroll.
+      effectiveSweep = Math.min(
+        0.95,
+        Math.max(sweep, (deepest + 40 + hostTop - maxScroll) / view),
+      );
+      tailLead = Math.max(0, (TAIL_TRIGGER - effectiveSweep) * view);
     };
-    measureReveal();
+    measureSweep();
 
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * Math.min(Math.max(t, 0), 1);
-
+    // ONE RULE FOR THE WHOLE LINE, and that is the point. An earlier version
+    // held the pen at the mouth of the closing stretch and released it once the
+    // heading was properly on screen. It was the wrong shape of fix: a threshold
+    // can only ever produce a wait and then a rush, and it read as exactly that
+    // — the pen leapt from 61% to 97% of the screen in 100px of scroll, sat
+    // still for another 200px, then went. Both halves were called out. The
+    // ending needed no special cue in the end: dropping the sweep line to just
+    // past the middle of the screen already delays it until the words are
+    // comfortably in view, and TAIL_SPEED keeps the flourish to its own pace
+    // without anything having to stop.
     const targetNow = () => {
       const rect = host.getBoundingClientRect();
-      const swept = drawnAt(-rect.top + window.innerHeight * sweep);
-      if (reveal === null) return swept;
-      const y = window.scrollY;
-      if (y <= enterAt) return Math.min(swept, handover);
-      if (y < ruleAt) return lerp(handover, tailStart, (y - enterAt) / (ruleAt - enterAt));
-      return lerp(tailStart, 1, (y - ruleAt) / (doneAt - ruleAt));
+      return drawnAt(-rect.top + window.innerHeight * effectiveSweep);
     };
 
     // EASING IS NOT DECORATION HERE, it is what makes the drawing continuous.
@@ -863,6 +930,9 @@ export function ScrollThread({
     let target = current;
     let frame = 0;
     let last = 0;
+    // Where the pen was when the ending came due, so the run-in can be measured
+    // from it. Reset if the page is scrolled back up out of the ending.
+    let unlockAt = -1;
 
     path.style.strokeDashoffset = String(1 - current);
 
@@ -896,7 +966,53 @@ export function ScrollThread({
         // this whole sweep-line design exists to prevent. In the tail there is
         // no debt to accrue, because there is no more page for the sweep to move
         // through.
-        if (current >= tailStart) step = Math.min(step, TAIL_SPEED * dt);
+        // TWO PACES, because one reads as neither. The flourish is settled and
+        // must not move. The rule is a fifth of its length, so at the same speed
+        // it was over in a quarter of a second — *"almost instant instead of it
+        // being drawn"* — while the flourish, being longer, looked drawn at the
+        // identical rate. Slowing the rule alone gives it about a second, which
+        // is what a ruled line under a headline wants, and leaves the flourish
+        // exactly as it was. The slow pace starts before the rule rather than at
+        // it, so the last of the descent into the corner is drawn rather than
+        // flicked through on the way.
+        // Paced from the moment the ending comes due rather than from a point
+        // along the path, which is the difference between the whole closing move
+        // being drawn and the pen flicking through the last of the descent on
+        // its way to the rule. `target` only reaches 1 when the ending unlocks,
+        // so it is exactly that moment.
+        if (target >= 1) {
+          // THE WHOLE CLOSING MOVE ACCELERATES. A hand ruling a line under a
+          // headline does not travel at one rate: it comes in, builds, and is
+          // fastest as it leaves the last letter. So the pace climbs the whole
+          // way — from a crawl as it leaves the sweep line, through RULE_SPEED
+          // by the first letter, to TAIL_SPEED by the last, which is the speed
+          // the flourish then keeps. Nothing changes abruptly anywhere: each
+          // stage ends on the number the next one starts at.
+          //
+          // The run-in matters as much as the rule. Held at one rate it was a
+          // fivefold step up from the scroll-paced crawl the pen had been moving
+          // at, dropped on it the instant the ending came due — the motion
+          // snapped on rather than starting. Ramping it from RUN_IN_SPEED is
+          // what makes the descent read as the beginning of the stroke instead
+          // of the end of the waiting.
+          if (unlockAt < 0) unlockAt = current;
+          let pace: number;
+          if (current >= ruleThrough) {
+            pace = TAIL_SPEED;
+          } else if (current >= tailStart) {
+            // Squared, so the build is late — which is where a wrist flick is.
+            const t = (current - tailStart) / (ruleThrough - tailStart);
+            pace = RULE_SPEED + (TAIL_SPEED - RULE_SPEED) * t * t;
+          } else {
+            // Linear, so the descent gathers speed steadily rather than sitting
+            // slow and then lunging at the corner.
+            const t = Math.min(Math.max((current - unlockAt) / (tailStart - unlockAt), 0), 1);
+            pace = RUN_IN_SPEED + (RULE_SPEED - RUN_IN_SPEED) * t;
+          }
+          step = Math.min(step, pace * dt);
+        } else {
+          unlockAt = -1;
+        }
 
         current += Math.sign(diff) * step;
         frame = requestAnimationFrame(tick);
@@ -909,7 +1025,7 @@ export function ScrollThread({
       if (!frame) frame = requestAnimationFrame(tick);
     };
     const onResize = () => {
-      measureReveal();
+      measureSweep();
       schedule();
     };
 

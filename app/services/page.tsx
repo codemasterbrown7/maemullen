@@ -260,12 +260,20 @@ export default function ServicesPage() {
           <div
             className="svc__ornament svc__ornament--cta"
             data-thread="knot"
-            data-thread-exit="300"
+            data-thread-exit="55"
             data-thread-loops="7"
             data-thread-shape="fit"
           />
 
-          <Link href={servicesPage.cta.href} className="mm-cta-bracket svc__cta-link">
+          {/* The line finishes by aiming at this. `data-thread-exit` above turns
+              the flourish's last stroke DOWN and right instead of curling up, so
+              it has somewhere to carry on to — that bearing and the arrow are one
+              change, not two. */}
+          <Link
+            href={servicesPage.cta.href}
+            className="mm-cta-bracket svc__cta-link"
+            data-thread="point"
+          >
             {servicesPage.cta.label}
           </Link>
         </section>
