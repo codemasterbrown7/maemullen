@@ -1,0 +1,177 @@
+/* ============================================================================
+   Fluid cursor + proximity type.
+
+   Two things, one stylesheet, because they are one gesture: the drop and the
+   letters it pushes around. See fluid-cursor.tsx for how the drop forms and
+   proximity-type.ts for how the letters get here.
+
+   One cursor on every route. There is no light/dark or per-page variant and no
+   colour token to set — the drop inverts whatever is under it, so it resolves
+   itself against cream, photography and the blue marquee alike.
+   ============================================================================ */
+
+/* Registering it is worth the four lines. Typed, it is a real number rather than
+   a token to be substituted, so the engine can skip work when it does not
+   change; declared non-inheriting, setting it on one letter does not invalidate
+   style for anything nested under it. Unsupported engines fall back to an
+   ordinary inherited property and everything still works, just less cheaply. */
+@property --mm-p {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* ── The drop ───────────────────────────────────────────────────────────── */
+
+/* A 320px box that rides the lead dot, not a viewport-sized layer — the filter
+   is evaluated over its source's bounding box, and blurring the whole screen
+   sixty times a second to draw two circles is not a trade worth making.
+
+   z-index is deliberately absurd: this must sit over everything, and there is no
+   other stacking context on the site that comes close.
+
+   THE INVERSION. Painting order for an element is filter, then blend the
+   filtered result with the backdrop — so what gets inverted is the metaball
+   silhouette, after the goo has fused the two dots. `difference` against a pure
+   white fill is |backdrop - 1|, a true channel inversion.
+
+   NO RIM, AND THAT IS A DECISION, NOT AN OVERSIGHT.
+   |b - 1| equals b exactly at b = 0.5, so the drop genuinely does fade out over
+   a mid-grey ground, and the tulle photograph has areas close to it. The
+   obvious fixes were built and rejected on sight: a second tone inside the
+   silhouette (white core, mid-grey rim — no blind spot, since the two fail at
+   different values) reads as a border drawn around the drop and breaks the
+   single clean shape, and a CSS drop-shadow halo cannot help anyway, because
+   under difference it resolves to b(1-a) + a(1-b), which is 0.5 at b = 0.5 for
+   every alpha. The clean silhouette is worth more than the weakest ground.
+
+   So: if this ever looks like a bug over a grey photograph, it is not. Please
+   do not add a rim back.
+
+   NOT backdrop-filter: invert(1). It is unusable inside a filtered ancestor
+   (`filter` makes a backdrop root), so it would cost the goo and the trail dot,
+   and its blur is applied in local space — a drop stretched to 1.65x has its
+   blur stretched with it and smears exactly when it should be crispest. */
+.mm-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 320px;
+  margin: -160px 0 0 -160px;
+  z-index: 2147483000;
+  pointer-events: none;
+  filter: url(#mm-fluid-cursor);
+  mix-blend-mode: difference;
+  opacity: 0;
+  transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+}
+.mm-cursor[data-visible="true"] {
+  opacity: 1;
+}
+
+/* Pure white, and it must stay pure white: the blend is only a true inversion
+   against 1.0. Any tint here becomes a colour cast over the whole page, which
+   is why there is no custom property to override it.
+
+   One size, always. An earlier pass grew the dot over links to stand in for the
+   hand cursor that `cursor: none` takes away; the client did not want the size
+   changing, so it does not. */
+.mm-cursor__dot {
+  position: absolute;
+  top: 160px;
+  left: 160px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* Stays at the centre of the box; the box is what moves. The loop also writes a
+   transform here to draw the drop out along its heading, which is why the fill
+   has to be a plain circle and not a gradient — anything with a direction baked
+   into it would rotate with the shape. */
+.mm-cursor__dot--lead {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+}
+
+/* Offset from the lead each frame. The ratio to the lead is the thing to hold
+   if these are ever resized — 14/22 is the reference's proportion, and the
+   filter has to be retuned alongside it, because a dot that is small relative
+   to the blur loses most of its alpha and renders well under its own size. */
+.mm-cursor__dot--trail {
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+}
+
+.mm-cursor-defs {
+  position: absolute;
+}
+
+/* ── The native pointer ─────────────────────────────────────────────────── */
+
+/* Hidden only once the replacement is actually running, so a JS failure or an
+   old browser leaves a working pointer behind. `*` is needed because the UA
+   stylesheet puts cursor: pointer on links; an author rule of any specificity
+   beats it, so no !important. */
+html.mm-cursor-on,
+html.mm-cursor-on * {
+  cursor: none;
+}
+
+/* ── The letters ────────────────────────────────────────────────────────── */
+
+/* Words stay whole: each letter is an inline-block, which is a line break
+   opportunity, so without this a paragraph breaks in the middle of a word. */
+.mm-prox__w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* One custom property drives both halves of the effect.
+
+   `transform` and not `font-weight`: weight would be the more typographic move
+   and Switzer is variable, so it is available — but changing weight changes
+   advance widths, which reflows the line, and .v3__body is justified. Every
+   letter under the cursor would shove the rest of its line sideways. A transform
+   is composited and costs the layout nothing.
+
+   currentColor inside `color` resolves to the INHERITED colour, so this lerps
+   from whatever the letter already was toward the accent without JS ever having
+   to read a computed style. Black on cream, cream on photographs, all correct
+   for free. */
+.mm-prox__l {
+  display: inline-block;
+  transform: scale(calc(1 + var(--mm-p) * var(--mm-prox-grow, 0.3)));
+  color: color-mix(
+    in oklab,
+    var(--mm-prox-ink, #0b48ff) calc(var(--mm-p) * 100%),
+    currentColor
+  );
+}
+
+/* Set on the container, not the letter, so it simply inherits. Cream captions
+   sit on photography, where the blue goes muddy and stops reading — they swell
+   toward white instead. Same gesture, legible ground. Any block can opt out of
+   the accent the same way. */
+.v3__caption,
+.mm-hero-pair__caption {
+  --mm-prox-ink: #ffffff;
+}
+
+/* ── Off ────────────────────────────────────────────────────────────────── */
+
+/* Both branches are handled in CSS rather than by refusing to render, so the
+   server and the client agree on the markup and hydration stays quiet. The JS
+   checks the same two queries and never splits any text. */
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .mm-cursor {
+    display: none;
+  }
+  .mm-prox__l {
+    transform: none;
+    color: inherit;
+  }
+}
