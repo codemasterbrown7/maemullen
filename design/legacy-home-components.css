@@ -1,0 +1,628 @@
+/* Tokens first — design/tokens.css is the source of truth. */
+@import "../design/tokens.css";
+@import "tailwindcss";
+
+/* next/font self-hosts Playfair Display under a generated family name.
+   Re-point the display token at it — same locked face (DESIGN.md §3.1),
+   just served locally instead of from Google's CDN. */
+:root {
+  --font-display: var(--font-playfair), Didot, serif;
+}
+
+/* ── Bridge tokens into Tailwind so each is also a utility class ──
+   Colours and spacing bridge cleanly. Type sizes, containers and shadows
+   share names with Tailwind's own namespaces (--text-*, --container-*,
+   --shadow-*), which would be self-referential in @theme inline — those
+   are consumed as component classes below instead. */
+@theme inline {
+  --color-bg: var(--bg); /* → bg-bg */
+  --color-surface: var(--surface);
+  --color-ink: var(--ink); /* → text-ink */
+  --color-ink-muted: var(--ink-muted);
+  --color-logotype: var(--logotype);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-alt: var(--accent-alt);
+  --color-decor: var(--decor);
+  --color-line: var(--border); /* "border" alone collides with the utility name */
+  --color-focus-ring: var(--focus-ring);
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-ink: var(--nav-ink);
+  --color-nav-border: var(--nav-border);
+  --color-marquee-bg: var(--marquee-bg);
+  --color-marquee-ink: var(--marquee-ink);
+
+  /* Spacing — the token scale replaces Tailwind's multiplier entirely,
+     so off-scale values (p-7, p-9…) simply don't exist. DESIGN.md §4.1. */
+  --spacing: initial;
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-10: var(--space-10);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+  --spacing-20: var(--space-20);
+  --spacing-24: var(--space-24);
+  --spacing-32: var(--space-32);
+  --spacing-40: var(--space-40);
+  --spacing-48: var(--space-48);
+  --spacing-section: var(--space-section); /* → py-section */
+  --spacing-gutter: var(--gutter); /* → px-gutter */
+
+  --radius-pill: var(--radius-control); /* → rounded-pill */
+
+  /* Breakpoints (DESIGN.md §4.5). Media queries cannot resolve CSS
+     variables, so these are static; only sm differs from the default. */
+  --breakpoint-sm: 480px;
+}
+
+/* ── Base ── */
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: var(--head-weight);
+    letter-spacing: var(--head-tracking);
+    line-height: 1.1;
+  }
+
+  /* Type scale, DESIGN.md §3.2 — h2 is the section title step. */
+  h2 {
+    font-size: var(--text-display-md);
+  }
+  h3 {
+    font-size: var(--text-heading-lg);
+  }
+  h4 {
+    font-size: var(--text-heading-md);
+  }
+
+  /* Focus is always visible and never removed. DESIGN.md §11. */
+  :focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* ── Layout wrappers (containers, DESIGN.md §4.2) ── */
+.wrap-narrow,
+.wrap-default,
+.wrap-wide {
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  width: 100%;
+}
+.wrap-narrow {
+  max-width: calc(var(--container-narrow) + 2 * var(--gutter));
+}
+.wrap-default {
+  max-width: calc(var(--container-default) + 2 * var(--gutter));
+}
+.wrap-wide {
+  max-width: calc(var(--container-wide) + 2 * var(--gutter));
+}
+
+/* Section rhythm — top padding only, so adjacent sections sharing the
+   cream background collapse to a single unit (DESIGN.md §4.3). */
+.section {
+  padding-block-start: var(--space-section);
+}
+
+/* ── Skip link ── */
+.skip-link {
+  position: fixed;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  background: var(--surface);
+  color: var(--ink);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-control);
+  font-size: var(--text-label);
+  font-weight: var(--btn-weight);
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  transform: translateY(calc(-1 * var(--space-24)));
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ── Header — its own surface (DESIGN.md §0 S1, §8.1) ── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--nav-bg);
+  color: var(--nav-ink);
+  border-bottom: var(--border-hairline) solid var(--nav-border);
+}
+.site-header__bar {
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--gutter);
+}
+@media (min-width: 1024px) {
+  .site-header__bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+}
+.site-header__group {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .site-header__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-header__group--right {
+    justify-content: flex-end;
+  }
+}
+
+/* Accepted trade-off: cream on pink at 11px is Lc 48 vs a 90 requirement.
+   Signed off knowingly — DESIGN.md §8.1. Do not "fix". */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  height: var(--nav-height);
+  color: var(--nav-ink);
+  font-size: var(--nav-link-size);
+  font-weight: var(--nav-link-weight);
+  letter-spacing: var(--nav-link-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-link:hover,
+.nav-link[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* Logotype — recoloured via mask so it can take any token colour.
+   The aspect ratio is the intrinsic ratio of the supplied asset
+   (wordmark-cream-trimmed.png, 1501×245). */
+.wordmark {
+  display: block;
+  width: var(--nav-mark-width);
+  aspect-ratio: 1501 / 245;
+  background-color: var(--logotype);
+  mask-image: url("/brand/wordmark-cream-trimmed.png");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+/* Mobile menu toggle */
+.menu-toggle {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: var(--space-12);
+  height: var(--space-12);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--nav-ink);
+}
+.menu-toggle__line {
+  display: block;
+  width: var(--space-5);
+  height: var(--border-medium);
+  background: currentColor;
+}
+@media (min-width: 1024px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+
+/* Mobile menu — full-screen overlay on the page surface (DESIGN.md §8.3) */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  top: var(--nav-height);
+  z-index: 40;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-y: auto;
+  padding: var(--space-10) var(--gutter);
+}
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  min-height: var(--space-12);
+  padding-block: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: var(--head-weight);
+  font-size: var(--text-heading-lg);
+  color: var(--ink);
+  text-decoration: none;
+}
+.mobile-menu__link:hover,
+.mobile-menu__link[aria-current="page"] {
+  color: var(--accent);
+}
+
+/* ── Services marquee — its own surface (DESIGN.md §0 S3, §8.2) ── */
+.marquee {
+  background: var(--marquee-bg);
+  color: var(--marquee-ink);
+  border-bottom: var(--border-hairline) solid var(--border);
+  display: flex;
+  overflow: hidden;
+}
+.marquee__track {
+  display: flex;
+  flex: none;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  animation: marquee-scroll var(--marquee-duration) linear infinite;
+}
+/* Pauses on hover AND focus-within — the focus half is what makes it
+   keyboard-usable (DESIGN.md §8.2.1). */
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+.marquee__item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+/* Separator is decorative — pseudo-element, so it is not read aloud. */
+.marquee__item::after {
+  content: "•";
+  padding-inline: var(--space-5);
+}
+.marquee__link {
+  display: inline-flex;
+  align-items: center;
+  padding-block: var(--space-4);
+  color: var(--marquee-ink);
+  font-size: var(--marquee-size);
+  font-weight: var(--marquee-weight);
+  text-transform: uppercase;
+  letter-spacing: var(--btn-tracking);
+  text-decoration: none;
+}
+.marquee__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* ── Statement block (DESIGN.md §3.3) — body face, uppercase, justified ── */
+.statement {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--text-statement);
+  letter-spacing: normal;
+  line-height: 1.5;
+  text-transform: uppercase;
+  text-align: justify;
+}
+
+/* ── Buttons (DESIGN.md §6) ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--btn-height);
+  padding-inline: var(--btn-padding-x);
+  border-radius: var(--radius-control);
+  font-size: var(--btn-text);
+  font-weight: var(--btn-weight);
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+.btn:active {
+  transform: translateY(var(--press-shift));
+}
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+}
+.btn--primary:hover {
+  background: var(--accent-hover);
+}
+/* On-red variant for the CTA band: cream outline on the accent field. */
+.btn--on-accent {
+  background: transparent;
+  color: var(--accent-ink);
+  border: var(--border-hairline) solid var(--accent-ink);
+}
+.btn--on-accent:hover {
+  background: var(--accent-ink);
+  color: var(--accent);
+}
+
+/* Tertiary bracket CTA (DESIGN.md §6.3). Brackets are pseudo-elements so
+   they are not read aloud; on hover they slide outwards. */
+.cta-bracket {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--btn-height);
+  color: var(--ink);
+  font-size: var(--btn-text);
+  font-weight: var(--btn-weight);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.cta-bracket::before {
+  content: "[";
+  padding-inline-end: var(--space-2);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.cta-bracket::after {
+  content: "]";
+  padding-inline-start: var(--space-2);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.cta-bracket:hover::before {
+  transform: translateX(calc(-1 * var(--space-1)));
+}
+.cta-bracket:hover::after {
+  transform: translateX(var(--space-1));
+}
+
+/* Text link (DESIGN.md §6.4) */
+.text-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: var(--border-hairline);
+  text-underline-offset: 0.25em;
+}
+.text-link:hover {
+  text-decoration-thickness: var(--border-medium);
+}
+
+/* ── Moving collage — placeholder tiles until photography lands ── */
+.collage {
+  overflow: hidden;
+}
+.collage__track {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  animation: collage-drift var(--collage-duration) linear infinite;
+}
+.collage:hover .collage__track {
+  animation-play-state: paused;
+}
+@keyframes collage-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.collage__tile {
+  flex: none;
+  aspect-ratio: 3 / 4;
+  background: var(--decor);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-4);
+}
+.collage__tile--a {
+  height: calc(2 * var(--space-40));
+}
+.collage__tile--b {
+  height: calc(2 * var(--space-32));
+  margin-top: var(--space-10);
+  margin-left: calc(-1 * var(--space-6));
+}
+.collage__tile--c {
+  height: calc(2 * var(--space-48));
+  margin-left: var(--space-6);
+}
+.collage__tile--d {
+  height: calc(2 * var(--space-32));
+  margin-top: var(--space-16);
+  margin-left: calc(-1 * var(--space-8));
+}
+.collage__tile--e {
+  height: calc(2 * var(--space-40));
+  margin-top: var(--space-6);
+  margin-left: var(--space-6);
+}
+.placeholder-label {
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+}
+
+/* ── Services teaser rows ── */
+.service-row {
+  border-top: var(--border-hairline) solid var(--border);
+}
+.service-row:last-child {
+  border-bottom: var(--border-hairline) solid var(--border);
+}
+.service-row__link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-6);
+  padding-block: var(--space-5);
+  color: var(--ink);
+  text-decoration: none;
+}
+.service-row__number {
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.service-row__name {
+  font-family: var(--font-display);
+  font-weight: var(--head-weight);
+  letter-spacing: var(--head-tracking);
+  font-size: var(--text-heading-md);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.service-row__link:hover .service-row__name {
+  transform: translateX(var(--space-1));
+  text-decoration: underline;
+  text-decoration-thickness: var(--border-medium);
+  text-underline-offset: 0.25em;
+}
+
+/* ── Selected work cards ── */
+.work-card {
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+}
+.work-card__media {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: var(--decor);
+  overflow: hidden;
+  transition: box-shadow var(--duration-base) var(--ease-standard);
+}
+a.work-card:hover .work-card__media {
+  box-shadow: var(--shadow-lift);
+}
+.work-card__media--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-ink);
+  text-align: center;
+  padding: var(--space-4);
+}
+.work-card__title {
+  font-family: var(--font-display);
+  font-weight: var(--head-weight);
+  letter-spacing: var(--head-tracking);
+  font-size: var(--text-heading-sm);
+  margin-top: var(--space-4);
+}
+.work-card__meta {
+  color: var(--ink-muted);
+  font-size: var(--text-body-sm);
+  margin-top: var(--space-1);
+}
+
+/* ── CTA band — accent surface ── */
+.cta-band {
+  background: var(--accent);
+  color: var(--accent-ink);
+  margin-top: var(--space-section);
+}
+.cta-band__heading {
+  color: var(--accent-ink);
+}
+
+/* ── Footer ── */
+.site-footer {
+  border-top: var(--border-hairline) solid var(--border);
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--space-12);
+  color: var(--ink);
+  font-size: var(--text-eyebrow);
+  font-weight: var(--nav-link-weight);
+  letter-spacing: var(--nav-link-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.footer-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* ── Scroll reveal (DESIGN.md §9.2) — 16px rise, fires once, staggered.
+   The hidden initial state only applies when scripting is available, so
+   content is never invisible if JS fails. ── */
+@media (scripting: enabled) {
+  .reveal {
+    opacity: 0;
+    translate: 0 var(--space-4);
+    transition: opacity var(--duration-deliberate) var(--ease-entrance),
+      translate var(--duration-deliberate) var(--ease-entrance);
+    transition-delay: calc(var(--reveal-index, 0) * var(--stagger-step));
+  }
+  .reveal.is-revealed {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ── Reduced motion — global rule, DESIGN.md §9.4 ── */
+@media (prefers-reduced-motion: reduce) {
+  /* Marquee renders as a static wrapped list, heard once. */
+  .marquee__track {
+    animation: none;
+    flex-wrap: wrap;
+    padding-inline: var(--gutter);
+  }
+  .marquee__track[aria-hidden="true"],
+  .marquee__item[aria-hidden="true"] {
+    display: none;
+  }
+  /* No trailing separator on the last visible item (the next sibling is
+     the first hidden duplicate). */
+  .marquee__item:has(+ [aria-hidden="true"])::after {
+    content: none;
+  }
+  .collage__track {
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    translate: 0 0;
+    transition: none;
+  }
+  .btn,
+  .cta-bracket::before,
+  .cta-bracket::after,
+  .service-row__name {
+    transition: none;
+  }
+  .btn:active {
+    transform: none;
+  }
+}

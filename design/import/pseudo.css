@@ -1,0 +1,15 @@
+/* ── Pseudo-state styles ───────────────────────────────────────────────
+   Generated from the design file's style-hover / style-active attributes.
+   dc-runtime applies these as a class rule with every declaration marked
+   !important so it beats the element's own inline style; same here, so the
+   hover behaviour matches the design preview exactly. ── */
+.mm-nav-link:hover { color: var(--nav-ink) !important; text-decoration: underline !important; text-underline-offset: 4px !important; }
+.mm-marquee-link:hover { color: var(--marquee-ink) !important; text-decoration: underline !important; text-underline-offset: 4px !important; }
+.mm-btn-primary:hover { background: var(--accent-hover) !important; color: var(--accent-ink) !important; }
+.mm-btn-primary:active { transform: translateY(var(--press-shift)) !important; }
+.mm-link-accent:hover { color: var(--accent) !important; }
+.mm-work-card:hover { color: var(--ink) !important; }
+.mm-work-card-img:hover { transform: scale(1.03) !important; }
+.mm-btn-cream:hover { background: var(--brand-white) !important; color: var(--brand-black) !important; }
+.mm-btn-cream:active { transform: translateY(var(--press-shift)) !important; }
+.mm-footer-link:hover { color: var(--accent) !important; text-decoration: underline !important; text-underline-offset: 4px !important; }

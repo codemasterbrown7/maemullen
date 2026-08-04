@@ -1,0 +1,525 @@
+/* ============================================================================
+   /services — built on /v3's chrome, 2026-08-03.
+
+   Scoped under .svc so nothing here can reach /, /v2 or /v3. Single-class BEM
+   throughout, no element selectors, so no later rule of equal weight can cancel
+   one of these out.
+
+   COLOUR — cream ground, black type, one blue accent. Brand red is cut, as it
+   is on /v3. Blue appears exactly twice: on hover, and as the line that draws
+   itself down the page.
+
+   TYPE — three registers, which is the whole system:
+     display    TeX Gyre Heros Bold. The masthead word, the index list, and —
+                loudest thing in each section — the service's own name.
+     body       Switzer. Everything that is a sentence.
+     annotation IBM Plex Mono, 11px, +0.08em. Every `[ 00x ]`, every edge
+                caption, every bracket link. This is the register the client
+                picked out of the Claude Design page by name; its job is to make
+                the numbering read as an index rather than as decoration.
+
+   HIERARCHY INSIDE A SECTION, and why it is this way round. It was mono mark →
+   mono name → big statement, and the client's note was that the name was too
+   small and the section did not land: "its cool but i still think it needs to
+   be more clear." So the NAME is now the display line and the deck's opening
+   statement steps down to a lead. On a services page the thing a visitor is
+   scanning for is the name of the service.
+
+   ALTERNATION — sides swap down the page, but the sections are deliberately not
+   mirror images. Three things break the symmetry, and they are the point:
+     · --svc-offset drops some bodies down their row and leaves others level
+     · only four of the seven carry vertical edge type
+     · only 005 has a photograph, and it sits opposite the copy
+   A perfect zigzag reads as a template. Do not "tidy" these into a pattern.
+
+   What IS mirrored: a section whose copy sits on the right aligns right, mark
+   included, so the `[ 00x ]` sits at the outer edge on both sides.
+
+   THE LINE — components/ui/scroll-thread. It is not placed with coordinates; it
+   measures the `data-thread` elements and routes between them, so "it never
+   crosses text" holds at every width rather than only at the one this was
+   eyeballed at. The two `.svc__ornament` boxes below are empty on purpose: they
+   are the room the ornaments are drawn into.
+   ============================================================================ */
+
+.svc {
+  --svc-ink: var(--brand-black);
+  --svc-blue: var(--brand-blue);
+  --svc-rule: var(--brand-black);
+  --svc-hairline: rgb(0 0 0 / 0.18);
+  --svc-edge-col: 34px;
+  --svc-max: 85rem;
+
+  /* Asked to be thicker twice. At 14px it is a drawn mark rather than a rule —
+     which is also what lets the knots read as loops rather than as wire. */
+  --thread-weight: 14px;
+
+  background: var(--bg);
+  color: var(--svc-ink);
+  font-family: var(--font-body);
+  min-width: 320px;
+}
+
+/* The positioning context the line is measured and drawn against. */
+.svc__main {
+  position: relative;
+}
+
+/* Content sits above the line: the thread's host is z-index 0, so the stroke
+   passes behind the type wherever the two do meet. */
+.svc__masthead,
+.svc__index,
+.svc__list,
+.svc__cta {
+  position: relative;
+  z-index: 1;
+  max-width: var(--svc-max);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Empty boxes. Their only job is to tell the thread where it has room. */
+.svc__ornament {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Annotation register ───────────────────────────────────────────────────
+   The `[ 00x ]` mark. Mono, small, wide-tracked — lifted from the design
+   system's IndexMark, which is what the client pointed at. */
+.svc__mark {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--svc-ink);
+}
+
+/* The bracket CTA is the locked signature from deck p7 (DESIGN.md §6.3); this
+   only moves it into the annotation register so it matches the marks above it.
+   Hover is blue rather than globals.css's brand red, which is cut on /v3. */
+.svc .mm-cta-bracket {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+.svc .mm-cta-bracket:hover {
+  color: var(--svc-blue);
+}
+
+/* ── Vertical edge type ────────────────────────────────────────────────────
+   Left edges read bottom-to-top, right edges read top-to-bottom. That is the
+   split between the design system's own EdgeType and PhotoPlate, and it is the
+   one that keeps the eye travelling into the page rather than away from it. */
+.svc__edge {
+  margin: 0;
+  align-self: start;
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--svc-ink);
+}
+.svc__edge--up {
+  transform: rotate(180deg);
+}
+
+/* ── Masthead ──────────────────────────────────────────────────────────────
+   One word set as large as it will go, the deck's own summary sentence off to
+   the right, and below them the room the opening tangle needs. The sentence is
+   verbatim deck p6 and names every service on the page, so it does the job an
+   invented intro paragraph would have done.
+
+   The deep bottom padding is not slack — it is the tangle's box. */
+.svc__masthead {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding: clamp(var(--space-12), 7vh, var(--space-20)) var(--gutter) var(--space-16);
+}
+
+@media (min-width: 900px) {
+  .svc__masthead {
+    grid-template-columns: var(--svc-edge-col) 1fr;
+    gap: var(--space-10);
+    align-items: start;
+    /* This is the knot's room. It reads as a lot of empty masthead in the
+       markup and is not: the knot fills it. */
+    padding-bottom: clamp(var(--space-24), 13vw, 14rem);
+  }
+}
+
+.svc__title {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(3.25rem, 14vw, 10rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.svc__masthead-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4) var(--space-12);
+  margin-top: clamp(var(--space-10), 6vw, var(--space-20));
+}
+
+/* Narrow on purpose. It sits under the title in the left column, and its
+   measure is what keeps it clear of the knot filling the right. */
+.svc__standfirst {
+  margin: var(--space-8) 0 0;
+  max-width: 42ch;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* Big, and deliberately overlapping the bottom of the word — the reference gets
+   its scale from running the knot behind the headline, and boxing it into the
+   empty area below was what made it read as compact and fussy. It stays clear
+   of the small type: `left` starts past the `[ 001–007 ]` mark and `top` starts
+   below the standfirst, because 11px mono over a 14px stroke is unreadable in a
+   way a 160px headline is not. */
+.svc__ornament {
+  left: 38%;
+  right: var(--gutter);
+  top: clamp(40px, 4vw, 72px);
+  bottom: var(--space-8);
+  width: auto;
+  height: auto;
+}
+
+/* ── The index ─────────────────────────────────────────────────────────────
+   001–007 as one rule-ruled block, each row jumping to its own section. Set
+   smaller than the landing page's version by request: there it is the only list
+   on the page, here the seven sections are underneath it and it is a contents
+   page, not the main event. */
+/* The bottom padding is clearance for the line, not decoration. The thread runs
+   past this block hard against the right margin and then has to swing left into
+   001 — and because the curve's tangent is set by where it is going next, it is
+   already angling left as it passes the last row. Without this space it clipped
+   the tail of the last two rules. */
+.svc__index {
+  padding: 0 var(--gutter) var(--space-32);
+}
+
+.svc__index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--svc-rule);
+}
+
+.svc__index-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: baseline;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--svc-rule);
+  text-decoration: none;
+  color: var(--svc-ink);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+/* Beats globals.css's `a:hover { color: var(--accent) }` — a class plus a
+   pseudo-class outranks an element plus a pseudo-class. */
+.svc__index-row:hover {
+  color: var(--svc-blue);
+}
+
+.svc__index-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.svc__index-name {
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+/* The one moving part in the list: the arrow slides the same 4px the bracket
+   CTA's brackets do, so the page has one gesture rather than several. */
+.svc__index-arrow {
+  font-size: 1.125rem;
+  line-height: 1;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.svc__index-row:hover .svc__index-arrow {
+  transform: translateX(var(--space-1));
+}
+
+/* ── The seven ─────────────────────────────────────────────────────────────
+   Four columns: an edge gutter, two content halves, and a second edge gutter.
+   Which one each piece lands in is what flips the section left or right. */
+.svc__list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.svc__item {
+  padding: clamp(var(--space-16), 8vw, var(--space-32)) var(--gutter);
+  border-bottom: 1px solid var(--svc-hairline);
+  /* The index links straight into these anchors; without this the section
+     lands flush against the top of the viewport with its hairline clipped. */
+  scroll-margin-top: var(--space-8);
+}
+
+@media (min-width: 900px) {
+  .svc__item {
+    display: grid;
+    grid-template-columns:
+      var(--svc-edge-col)
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      var(--svc-edge-col);
+    gap: clamp(var(--space-8), 4vw, var(--space-16));
+    align-items: start;
+  }
+
+  .svc__item--left .svc__edge {
+    grid-column: 1;
+  }
+  .svc__item--left .svc__body {
+    grid-column: 2;
+  }
+  .svc__item--left .svc__plate {
+    grid-column: 3;
+  }
+
+  .svc__item--right .svc__plate {
+    grid-column: 2;
+  }
+  .svc__item--right .svc__body {
+    grid-column: 3;
+  }
+  .svc__item--right .svc__edge {
+    grid-column: 4;
+  }
+
+  /* The mirror. A section on the right hangs off the right edge of its column,
+     `[ 00x ]` included, so the mark always sits on the outside of the page
+     rather than always on the left. Asked for directly. */
+  .svc__item--right .svc__body {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  /* The drumbeat-breaker. Sections with an offset start further down their row
+     than their neighbours, so scanning the page does not feel like reading a
+     table. Values come from the content file, not from here. */
+  .svc__body {
+    margin-top: calc(var(--svc-offset, 0) * var(--space-10));
+  }
+}
+
+/* Vertical edge type in a 34px column is unreadable on a phone, and stacking it
+   above the copy would just be a rotated headline. It goes — and so do the
+   tangles and the line itself: a single-column layout has no empty lane for the
+   line to run down, and crossing the text is the one thing it must not do. */
+@media (max-width: 899px) {
+  .svc__edge,
+  .svc__ornament,
+  .svc .mm-thread {
+    display: none;
+  }
+  /* With no line there is nothing to leave clearance for. */
+  .svc__index {
+    padding-bottom: var(--space-12);
+  }
+  .svc__cta {
+    padding-top: var(--space-20);
+  }
+}
+
+.svc__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+/* The loudest thing in the section, and the thing a visitor is scanning for. */
+.svc__name {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* The deck's opening line. A step down from the name in size and all the way
+   down in weight — two bold things in one block is no hierarchy at all. */
+.svc__statement {
+  margin: var(--space-6) 0 0;
+  max-width: 30ch;
+  font-family: var(--font-swiss);
+  font-weight: 400;
+  font-size: clamp(1.125rem, 1.7vw, 1.5rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.svc__prose {
+  margin: var(--space-6) 0 0;
+  max-width: 46ch;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ── What each service includes ────────────────────────────────────────────
+   A spec list, not prose: set in columns with a hairline over each entry so it
+   reads as a schedule. That is what keeps it from counting as another text
+   treatment inside the section. */
+.svc__group {
+  width: 100%;
+  margin-top: var(--space-10);
+}
+
+/* Only 006 carries labels — the deck quotes and prices PR and Events
+   separately, so collapsing them into one list would lose a real distinction. */
+.svc__group-label {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.svc__includes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  column-gap: var(--space-8);
+}
+
+.svc__include {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--svc-hairline);
+  font-size: var(--text-body-sm);
+  line-height: 1.4;
+}
+
+.svc__bracket {
+  margin-top: var(--space-8);
+}
+
+/* ── The one real photograph on the page ───────────────────────────────────
+   Bendito's menu artwork under 005, with its caption running vertically beside
+   it rather than sitting underneath — the treatment the client picked out.
+
+   mix-blend-mode is doing one specific job: the scan's paper is #FEFBF1 and the
+   page is #FFFAED, near-identical, but a hard step across a 500px edge is
+   exactly where the eye catches a difference this small, and it drew a faint
+   rectangle round artwork meant to sit straight on the cream. `darken` takes
+   the per-channel minimum, so the paper resolves to within one value of the
+   page while every red and blue stroke — already darker than cream in all three
+   channels — passes through untouched. `multiply` would NOT work: it would tint
+   the paper visibly yellow, because the paper is cream rather than white. */
+.svc__plate {
+  margin: var(--space-12) 0 0;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+@media (min-width: 900px) {
+  .svc__plate {
+    margin-top: 0;
+    justify-self: end;
+  }
+}
+
+.svc__plate-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(100%, 17rem);
+  max-height: 32rem;
+  mix-blend-mode: darken;
+}
+
+.svc__plate-caption {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--svc-ink);
+}
+
+/* ── CTA band ──────────────────────────────────────────────────────────────
+   The site's single conversion goal, and where the line finishes: a second
+   knot in the top right, then a stroke ruled under the heading. Left-aligned in
+   the same column as everything above it — a centred block here would be the
+   only symmetric thing on the page. */
+/* The top padding is the second knot's room. "Let's work together" set at
+   5.5vw is close to 950px wide, so a knot beside it would sit ON it — the
+   separation has to be vertical, not horizontal. */
+.svc__cta {
+  padding: clamp(var(--space-16), 22vw, 21rem) var(--gutter) var(--space-32);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* The closing knot sits LEFT, opposite the side the line arrives on, so it can
+   leave heading down the left margin and rule the underline left to right. On
+   the right it had to either draw the rule backwards or double a second line
+   back underneath it. */
+.svc__ornament--cta {
+  /* Indented from the gutter so it clears the `[ 008 ]` mark. It still sits on
+     the left half — the underline approach reaches past it into the margin. */
+  left: 12%;
+  right: auto;
+  top: var(--space-10);
+  bottom: auto;
+  width: min(46%, 540px);
+  height: clamp(260px, 28vw, 420px);
+}
+
+/* fit-content is load-bearing, not cosmetic: the thread rules a line the width
+   of this element's box, and a block-level h2 is as wide as the container
+   whatever the words do. Shrink-wrapped, the underline is the width of the
+   words. */
+.svc__cta-heading {
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--space-6) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Far enough below the heading to clear the underline and the hook that leads
+   into it. The thread dips to about 80px under the heading; this sits at 128. */
+.svc__cta-link {
+  margin-top: var(--space-32);
+}

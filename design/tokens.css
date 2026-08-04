@@ -50,7 +50,7 @@
 
   /* ── Typography ── */
   --font-display: "Playfair Display", Didot, serif;
-  --font-body: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif; /* no -apple-system — see DESIGN.md §3.1 */
   --head-weight: 700;
   --head-tracking: -0.005em;
   --text-base: 15px;
@@ -110,6 +110,16 @@
   --container-narrow: 45rem;
   --container-default: 75rem;
   --container-wide: 90rem;
+
+  /* ── Added 2026-08-02, home-page build. Values already specified in
+        DESIGN.md prose but not yet tokenised — lifted here so components
+        stay token-only. No new design decisions. ── */
+  --focus-ring-width: 2px; /* §6.1 / §11 — focus outline */
+  --focus-ring-offset: 3px; /* §6.1 / §11 */
+  --press-shift: 1px; /* §6.1 — active-state translateY */
+  --marquee-duration: 40s; /* §8.2.1 — one full marquee loop */
+  --collage-duration: 60s; /* §10 — collage drift loop */
+  --stagger-step: 60ms; /* §9.2 — scroll-reveal stagger */
 
   /* ── Motion ── */
   --duration-fast: 160ms;

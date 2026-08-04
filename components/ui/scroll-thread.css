@@ -1,0 +1,31 @@
+/* The scroll-drawn line. The host is positioned by whoever places it; it takes
+   the full box it is given and never intercepts a click. */
+.mm-thread {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.mm-thread__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* The viewBox is the host's own pixel box, 1:1, so nothing is scaled and the
+     stroke width below is real pixels. Loops in the tangle are allowed to spill
+     a little past their box. */
+  overflow: visible;
+}
+
+/* stroke-dashoffset starts at 1 — undrawn. The component sets it on mount and
+   on every scroll; nothing renders at all until it has measured, so there is no
+   flash of a fully-drawn line. */
+.mm-thread__path {
+  stroke: var(--thread-ink, var(--brand-blue));
+  stroke-width: var(--thread-weight, 9px);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  fill: none;
+}

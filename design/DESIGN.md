@@ -63,7 +63,7 @@ not re-argued during development:
 | Item | Measured | Decision |
 |---|---|---|
 | Nav links, cream on pink at 11px | Lc 48, needs 90 | **Accepted.** Six familiar words, not prose. |
-| Body face `-apple-system, "Helvetica Neue", Arial` | — | **Accepted.** Note it renders as Helvetica Neue on macOS and **Arial on Windows**, so the site will not look identical across platforms. Swap to Inter if that becomes a problem. |
+| Body face `"Helvetica Neue", Helvetica, Arial` | — | **Accepted.** Renders as Helvetica Neue on macOS/iOS and **Arial on Windows**, so the site will not look identical across platforms. Amended 2026-08-02: `-apple-system` removed from the front of the stack — it was giving San Francisco in Safari/iOS. See §3.1. |
 
 One free improvement applied in `tokens.css`: the button label was **Borderline** at weight 500
 (Lc 83, needs 90). At **weight 600** the same colours pass outright, so `--btn-weight: 600`.
@@ -231,15 +231,30 @@ working colour — it carries the marquee.
 Chosen because the supplied logotype is set heavy: Playfair at 700 sits beside the wordmark
 without looking thin next to it. Loaded from Google Fonts.
 
-**Body — the system stack:** `-apple-system, "Helvetica Neue", Arial, sans-serif`.
+**Body — the Helvetica stack:** `"Helvetica Neue", Helvetica, Arial, sans-serif`.
 
 > The deck specified **Helvetica World**. That is a paid Monotype family requiring a commercial
-> web licence, and it is **not used anywhere** in this project. The system stack was chosen
-> instead as the closest free approximation.
+> web licence, and it is **not used anywhere** in this project. This stack was chosen instead as
+> the closest free approximation.
 >
-> ⚠️ Known consequence: this renders as **Helvetica Neue on macOS/iOS** and **Arial on Windows**,
-> so the site will not look identical on every machine. Accepted (§0). If cross-platform
-> consistency later matters, swap `--font-body` to **Inter** — one line in `tokens.css`.
+> **Amended 2026-08-02.** The stack previously began with `-apple-system`, and this section
+> claimed it rendered as Helvetica Neue on macOS/iOS. That was wrong. Measuring the rendered
+> text showed `-apple-system` resolves to **San Francisco** in Safari and on iOS — not a
+> Helvetica at all — while Chrome ignores the keyword entirely and falls through to Helvetica
+> Neue. So the body face silently differed by *browser*, not just by platform, and half the time
+> was not the approximation we had signed off. Dropping `-apple-system` was agreed with the user
+> and costs nothing: no webfont, no licence, no page weight.
+>
+> ⚠️ Remaining known consequence: **Helvetica Neue on macOS/iOS** (now in every browser) and
+> **Arial on Windows**. Arial is metrically identical to Helvetica, so layout is stable, but the
+> letterforms differ (the R leg, the G, the angled terminals). The site will still not look
+> identical on every machine. Accepted.
+>
+> If cross-platform consistency later matters, the options are a self-hosted free Helvetica
+> clone such as **Nimbus Sans** (URW, open source — verify the licence first) for Helvetica-like
+> letterforms everywhere, or a paid **Helvetica Now / Helvetica World** web licence for the real
+> thing. Inter is *not* the right substitute here: it is a different genre of grotesque and reads
+> nothing like Helvetica.
 
 **The logotype is not a font decision.** It ships as a supplied image (§1.1).
 

@@ -1,0 +1,312 @@
+/* ============================================================================
+   Gooey marquee — see the long note in gooey-marquee.tsx for how the two layers
+   produce "sharp in the middle, morphing at the ends".
+
+   The rule that matters most here: .gooey-marquee__stack--goo and
+   --clear MUST resolve to identical geometry. Every layout property lives on
+   the shared .gooey-marquee__stack class and neither modifier touches spacing.
+   Change padding or gap on one and the layers drift out of register, which
+   shows up as a permanent ghost behind every letter.
+   ============================================================================ */
+
+.gooey-marquee {
+  position: relative;
+  overflow: hidden;
+  background: var(--gm-bg, #fffaed);
+  /* Type, sparkles and bars all take this. Black on cream — the band tried
+     chrome and it did not work at this size: the reflection has to fit inside a
+     19px capital, which leaves room for one dark band and two specular lines,
+     and on a cream ground those highlights read as holes punched in the letters
+     rather than as light on metal. Chrome wants a dark field and larger type. */
+  color: var(--gm-ink, #000000);
+}
+
+.gooey-marquee__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gm-gap, 8px);
+  padding: var(--gm-pad, 13px) 0;
+}
+
+/* Behind, filtered. Transparent by necessity — a background here would make the
+   whole rectangle opaque and the alpha threshold would have nothing to bite on.
+
+   The mask is what makes the middle read as untouched type. Blur-then-threshold
+   preserves a straight edge, but NOT tight interior gaps: the stems of M, N and
+   E sit about 5px apart at this size, the blur closes them, and the filled shape
+   bulges out past the crisp letter on top. Masking the filtered layer away
+   everywhere except the ends means the centre is the clean layer and nothing
+   else, and the morph fades in gradually as it approaches each bar.
+
+   Masks apply after filters in the rendering model, so this masks the gooed
+   result rather than its input. #0000 rather than `transparent` — some engines
+   interpolate the latter through transparent *black* and leave a grey seam. */
+/* This mask is a shutter, NOT the reach of the effect — a mistake worth
+   recording, because widening it on its own made things worse rather than
+   better. Blur-then-threshold returns a straight-edged shape almost exactly
+   where it started, so wherever the goo layer has nothing to fuse WITH it is
+   just a slightly wrong copy of the crisp layer sitting behind it: filled
+   counters, the odd pair of letters welded together. Opening the shutter to
+   210px did not lengthen the melt, it just exposed 150px of those artefacts,
+   which is what the stray dots drifting out of the bars were.
+
+   What actually sets the reach is the alpha field the bars cast inward — see
+   .gooey-marquee__cap. These two numbers only have to keep up with it. */
+.gooey-marquee__stack--goo {
+  position: absolute;
+  inset: 0;
+  filter: url(#mm-gooey-marquee);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 44px,
+    #0000 210px,
+    #0000 calc(100% - 210px),
+    #000 calc(100% - 44px),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 44px,
+    #0000 210px,
+    #0000 calc(100% - 210px),
+    #000 calc(100% - 44px),
+    #000 100%
+  );
+}
+
+/* On top, untouched. This is the layer that is actually read and clicked. */
+.gooey-marquee__stack--clear {
+  position: relative;
+}
+
+/* The filter's blur is a fixed pixel value, so on small screens — where the
+   clamp has shrunk the type — the ratio goes wrong and the ends turn to mush.
+   Below this width the marquee simply runs clean. */
+@media (max-width: 700px) {
+  .gooey-marquee__stack--goo {
+    display: none;
+  }
+}
+
+.gooey-marquee__row {
+  display: flex;
+  width: max-content;
+  animation: gooey-marquee-scroll var(--gm-speed, 44s) linear infinite;
+}
+/* Second row runs the other way. Same keyframe, reversed — one declaration
+   instead of a mirrored copy that could drift out of sync with the first. */
+.gooey-marquee__row--reverse {
+  animation-direction: reverse;
+}
+
+.gooey-marquee__run {
+  display: flex;
+  align-items: center;
+}
+
+.gooey-marquee__item {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--gm-item-pad, 26px);
+  color: inherit;
+  text-decoration: none;
+  font-family: var(--gm-family, inherit);
+  font-size: var(--gm-size, clamp(0.8rem, 1.4vw, 1.2rem));
+  /* Heros ships Regular and Bold only, so this is a real cut, not a synthesised
+     weight — asking for 500 here would silently resolve to 400 anyway. */
+  font-weight: var(--gm-weight, 400);
+  /* Open enough that neighbouring letters do not fuse with each other — only
+     with the end bars, which is the whole point of the effect. */
+  letter-spacing: 0.04em;
+  line-height: 1.12;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* No hover state at all. globals.css carries a site-wide `a:hover { color:
+   var(--accent) }`, which is (0,1,1) and would tint these brand red — this
+   two-class selector is (0,2,0) and outranks it. */
+.gooey-marquee__item:hover,
+.gooey-marquee__item:focus-visible {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Absolute, not em: the sparkle sits in a display:contents wrapper so it
+   inherits the row's 16px rather than the item's font-size. At 0.5em it came
+   out 8px — small enough that the blur wiped it below the alpha threshold and
+   the separators silently vanished from the filtered layer. */
+.gooey-marquee__sparkle {
+  display: block;
+  flex: none;
+  width: var(--gm-sparkle, clamp(0.7rem, 1.25vw, 1.1rem));
+  height: var(--gm-sparkle, clamp(0.7rem, 1.25vw, 1.1rem));
+}
+
+/* ── The end bars, and the melt ────────────────────────────────────────────
+   THE BAR YOU SEE IS NOT THE WIDTH OF THIS ELEMENT. The filter cuts at about
+   half alpha, so what shows is only the part of the mask profile below that is
+   opaque enough to survive; the rest is an invisible field that reaches much
+   further in, and THAT is what does the melting.
+
+   A letter's own blurred edge sits at half alpha by definition. Drop it onto a
+   field of 0.30 and the two composite to 0.65, so the letter's visible outline
+   pushes outward and it reads as swollen; where the field is 0.38 the gaps
+   between letters clear the cut too and the word closes up and runs into the
+   bar. Further in the field thins to nothing and the type is untouched.
+
+   So the melt is long because the FIELD is long, not because the blur is heavy.
+   That distinction matters: the previous version tried to buy reach with blur
+   and a wide shutter, and only got mush and stray specks. The blur is now the
+   lowest it can be while still rounding what the field pulls together.
+
+   Overflowing top and bottom keeps the blur's corner-rounding outside the band,
+   so the bars read as straight-edged rather than as lozenges. */
+.gooey-marquee__cap {
+  position: absolute;
+  top: -14px;
+  bottom: -14px;
+  width: var(--gm-cap, 200px);
+  pointer-events: none;
+  background: currentColor;
+  /* Breathing, so the meniscus is never a straight line for long. scaleX rather
+     than width: it deforms the mask and the droplet with it, and costs no
+     layout. The two animations here run on periods that do not divide into each
+     other or into the marquee's, so the bar never settles into a visible loop —
+     a bar pulsing on a round number reads as a metronome, not a liquid. */
+  animation: gooey-marquee-breathe 4.3s ease-in-out infinite;
+}
+
+/* The profile, and every stop earns its place:
+     0–4px    solid — the bar itself
+     12px     0.38  — still above the cut, so the visible edge lands about here
+     60px     0.30  — below the cut, invisible alone; letters here swell and
+                      close up against each other
+     120px    0.16  — barely there; the type only just thickens
+     200px    0     — gone
+   no-repeat matters: the default tiles the gradient outside the box, which puts
+   a second phantom bar wherever anything strays past the cap's edge. */
+.gooey-marquee__cap--start {
+  left: 0;
+  transform-origin: left center;
+  -webkit-mask: linear-gradient(
+      to right,
+      #000 0,
+      #000 4px,
+      rgb(0 0 0 / 0.38) 12px,
+      rgb(0 0 0 / 0.3) 60px,
+      rgb(0 0 0 / 0.16) 120px,
+      rgb(0 0 0 / 0) 200px
+    )
+    no-repeat;
+  mask: linear-gradient(
+      to right,
+      #000 0,
+      #000 4px,
+      rgb(0 0 0 / 0.38) 12px,
+      rgb(0 0 0 / 0.3) 60px,
+      rgb(0 0 0 / 0.16) 120px,
+      rgb(0 0 0 / 0) 200px
+    )
+    no-repeat;
+}
+.gooey-marquee__cap--end {
+  right: 0;
+  transform-origin: right center;
+  animation-delay: -2.1s;
+  -webkit-mask: linear-gradient(
+      to left,
+      #000 0,
+      #000 4px,
+      rgb(0 0 0 / 0.38) 12px,
+      rgb(0 0 0 / 0.3) 60px,
+      rgb(0 0 0 / 0.16) 120px,
+      rgb(0 0 0 / 0) 200px
+    )
+    no-repeat;
+  mask: linear-gradient(
+      to left,
+      #000 0,
+      #000 4px,
+      rgb(0 0 0 / 0.38) 12px,
+      rgb(0 0 0 / 0.3) 60px,
+      rgb(0 0 0 / 0.16) 120px,
+      rgb(0 0 0 / 0) 200px
+    )
+    no-repeat;
+}
+
+/* The droplets — what makes a word arriving look like it lands in something
+   wet. Each is a blob running up and down just inside a bar, near enough for
+   the filter to keep the two fused, so the bar's inner edge carries a bulge
+   that travels and meets every word at a different height.
+
+   They are siblings of the bars, not children, and that is the whole reason
+   they work. Inside a bar they would inherit its inward fade, which is a
+   multiply — the blob could never be more opaque than the bar already was at
+   that point, so it would add nothing and the edge would not move at all.
+   Outside it, the blob carries its own alpha past where the bar's ramp has
+   given up, and the threshold picks it up as a bulge.
+
+   Absolute so the flex column does not lay them out as rows; they sit inside
+   the goo stack, which is what gets filtered. */
+.gooey-marquee__stack--goo::before,
+.gooey-marquee__stack--goo::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 21px;
+  height: 21px;
+  margin-top: -10.5px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: gooey-marquee-drip 6.7s ease-in-out infinite;
+}
+.gooey-marquee__stack--goo::before {
+  left: 4px;
+}
+.gooey-marquee__stack--goo::after {
+  right: 4px;
+  animation-delay: -3.35s;
+}
+
+/* Around a 13px bar, so it reads as the line flexing rather than thickening. */
+@keyframes gooey-marquee-breathe {
+  0%,
+  100% {
+    transform: scaleX(0.9);
+  }
+  50% {
+    transform: scaleX(1.24);
+  }
+}
+
+/* Runs past the top and bottom of the band and draws back toward the edge at
+   both ends of its travel, so it thins into the bar at the turns instead of
+   hanging there like a bead on a wire. */
+@keyframes gooey-marquee-drip {
+  0%,
+  100% {
+    transform: translate(-4px, -20px) scale(0.78);
+  }
+  50% {
+    transform: translate(9px, 20px) scale(1.06);
+  }
+}
+
+@keyframes gooey-marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gooey-marquee__row,
+  .gooey-marquee__cap,
+  .gooey-marquee__stack--goo::before,
+  .gooey-marquee__stack--goo::after {
+    animation: none;
+  }
+}

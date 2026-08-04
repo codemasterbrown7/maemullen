@@ -1,3 +1,49 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
-node_modules/
-.next/
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Reference media kept on disk but out of git — 27 MB of gifs and mp4s that the
+# site never serves, and git would carry them in history forever.
+/Inspo/
+
+# Byte-identical duplicate (same md5) of public/work/bendito/menu-in-situ.jpg,
+# which is already tracked. 19 MB for nothing.
+/public/assets/work/bendito/menu-in-situ.jpg

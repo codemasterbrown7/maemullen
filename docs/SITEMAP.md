@@ -160,6 +160,19 @@ text, since the header logotype is an image.
 is editorial fashion/jewellery/lifestyle.
 `OPEN:` which photographs. Placeholder tiles until supplied.
 
+**Build notes (2026-08-02)** — implementation calls made while building the page; flag if any
+should change:
+
+- **Footer brand mark is the MM monogram, not the wordmark.** §8.4 of `DESIGN.md` lists a footer
+  wordmark, but S4 says the logotype appears in the header only — S4 wins, and the monogram is
+  the sanctioned small-space lockup (§1.3).
+- **Hero CTAs:** primary pill **Enquire** → `/enquire`, plus the bracket CTA
+  **[ Explore our world ]** (verbatim, deck p7) → `/work`.
+- **CTA band copy:** "Let's work together" + Enquire button. Not deck copy — replace at will.
+- Statement stored sentence-case ("Maemullen is…") and uppercased with CSS per §3.4, so the
+  rendered text matches the deck exactly while Q5 (spelling in prose) stays open.
+- Footer Instagram/email render as visible "TBC" placeholders until Q6 is answered.
+
 ---
 
 ### 4.2 `/about` — About

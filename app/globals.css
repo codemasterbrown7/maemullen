@@ -1,0 +1,259 @@
+/* ============================================================================
+   Global stylesheet — the Claude Design source of truth, `MaeMüllen Home.dc.html`
+   (design project 6e562fdc).
+
+   Two blocks, both taken straight from that file:
+     1. its <helmet> <style>, verbatim;
+     2. the pseudo-state rules generated from its style-hover / style-active
+        attributes (see the note above them).
+
+   Everything else the design declares is an inline style on the element, and
+   lives in app/page.tsx. Deliberately no CSS reset and no Tailwind preflight:
+   the design file ships neither, and the runtime's BASE_CSS adds neither, so
+   the page renders on browser defaults — content-box included. Adding a reset
+   would change the layout maths.
+   ============================================================================ */
+
+@import "../design/tokens.css";
+
+/* next/font self-hosts both faces under generated family names — Playfair
+   standing in for the design file's Google Fonts <link>, Switzer supplied by the
+   client. The tokens keep their own stacks as fallbacks; these just re-point
+   them at the self-hosted families. Site-wide: every route inherits this. */
+:root {
+  --font-display: var(--font-playfair, Didot), Didot, serif;
+  --font-body: var(--font-switzer, "Helvetica Neue"), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* TeX Gyre Heros — a metric-compatible Helvetica clone, so the fallback here
+     is genuinely interchangeable rather than merely similar.
+
+     Deliberately NOT named --font-heros: next/font already defines that on
+     <html>, and :root and the generated class have equal specificity, so
+     redefining it would be a source-order coin toss. */
+  --font-swiss: var(--font-heros, "Helvetica Neue"), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* The annotation register — `[ 001 ]` index marks, edge captions, bracket
+     links. Same naming caution as --font-swiss: next/font already defines
+     --font-plex-mono on <html>, so this deliberately has a different name. */
+  --font-mono: var(--font-plex-mono, ui-monospace), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* The inner fallbacks above are not belt-and-braces, they are load-bearing. A
+   var() with no fallback that references an undefined property is invalid at
+   computed-value time — which voids the WHOLE declaration, so --font-body
+   resolves to nothing and every element falls back to the browser default,
+   i.e. Times. That is not a hypothetical: it is what happens for one paint if
+   next/font's generated class has not been applied to <html> yet. */
+
+/* ── <helmet>, verbatim ────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: var(--text-body); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: var(--ink); }
+a:hover { color: var(--accent); }
+:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-offset); border-radius: 2px; }
+@keyframes mm-marquee { to { transform: translateX(-50%); } }
+#mm-marquee:hover #mm-marquee-track, #mm-marquee:focus-within #mm-marquee-track { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  #mm-marquee-track { animation: none !important; }
+  * { transition-duration: 0.01ms !important; }
+}
+
+/* ── Pseudo-state styles ───────────────────────────────────────────────────
+   Originally generated from the design file's style-hover / style-active
+   attributes, which dc-runtime applies as a class rule with every declaration
+   marked !important so it beats the element's own inline style. Kept in that
+   form now that the repo is the source of truth, because the components still
+   carry their styling inline — a plain rule would lose to it. ── */
+/* Hover underlines are gone throughout, by request (2026-08-02): links change
+   colour and nothing else. The rules stay because they still have to beat the
+   inline styles the components carry. */
+.mm-nav-link:hover { color: var(--nav-ink) !important; text-decoration: none !important; }
+.mm-marquee-link:hover { color: var(--marquee-ink) !important; text-decoration: none !important; }
+.mm-btn-primary:hover { background: var(--accent-hover) !important; color: var(--accent-ink) !important; }
+.mm-btn-primary:active { transform: translateY(var(--press-shift)) !important; }
+.mm-link-accent:hover { color: var(--accent) !important; }
+.mm-work-card:hover { color: var(--ink) !important; }
+.mm-work-card-img:hover { transform: scale(1.03) !important; }
+.mm-btn-cream:hover { background: var(--brand-white) !important; color: var(--brand-black) !important; }
+.mm-btn-cream:active { transform: translateY(var(--press-shift)) !important; }
+.mm-footer-link:hover { color: var(--accent) !important; text-decoration: none !important; }
+
+/* ── Hero pair — the two images filling the first screen ───────────────────
+   Full-bleed and butted together, the Nude Social arrangement. They stack
+   below 700px: two portrait photos side by side on a phone are ~180px wide
+   each, too narrow to read. ── */
+.mm-hero-pair {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  background: var(--surface);
+}
+@media (min-width: 700px) {
+  .mm-hero-pair {
+    grid-template-rows: none;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.mm-hero-pair__cell {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.mm-hero-pair__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Scrim. The captions are cream on photography, and photography is not a
+   colour you control — a bright patch under the text would sink it. The
+   gradient is only over the bottom strip, so it costs the image almost
+   nothing and guarantees the caption stays legible whatever the crop does. */
+.mm-hero-pair__cell::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 40%;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.5), transparent);
+  pointer-events: none;
+}
+
+.mm-hero-pair__caption {
+  position: absolute;
+  bottom: var(--space-6);
+  left: var(--space-6);
+  right: var(--space-6);
+  z-index: 1;
+  color: var(--brand-cream);
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.mm-hero-pair__caption[data-align="start"] {
+  text-align: left;
+}
+.mm-hero-pair__caption[data-align="end"] {
+  text-align: right;
+}
+/* Stacked, both captions read better from the same edge. */
+@media (max-width: 699px) {
+  .mm-hero-pair__caption[data-align="end"] {
+    text-align: left;
+  }
+}
+
+/* ── Photographic plate — the cut-out photo-booth strips ───────────────────
+   No frame, no background pattern. The lift comes entirely from a shadow that
+   traces the cut-out's own silhouette, plus a small archival caption.
+
+   NOTE: this briefly had a halftone dot field behind it. It was rejected —
+   dot grids, dither and stipple are not this brand. Do not reintroduce one. ── */
+.mm-plate {
+  position: relative;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-8) var(--space-6);
+}
+
+.mm-plate img {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 26rem;
+  height: auto;
+  /* drop-shadow follows the alpha channel, so the shadow traces the two strips
+     and the gap between them. box-shadow would draw the bounding rectangle and
+     give the frame straight back. Two layers: a tight contact shadow to keep it
+     sitting on the page, and a long soft one for lift. */
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3)) drop-shadow(0 20px 28px rgb(0 0 0 / 0.22));
+  transition: transform var(--duration-slow) var(--ease-standard),
+    filter var(--duration-slow) var(--ease-standard);
+}
+.mm-plate:hover img {
+  transform: translateY(calc(-1 * var(--space-2))) rotate(-0.6deg);
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.28)) drop-shadow(0 30px 38px rgb(0 0 0 / 0.26));
+}
+
+.mm-plate figcaption {
+  position: relative;
+  margin-top: var(--space-5);
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-plate img,
+  .mm-plate:hover img {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── Bracket CTA — the signature, deck p7 / DESIGN.md §6.3 🔒 ──────────────
+   Text only. The brackets are pseudo-elements so they are never read aloud,
+   and slide outwards 4px on hover — a small specific gesture that carries the
+   brand better than a colour change. Used instead of a solid pill wherever a
+   filled control would sit badly in an otherwise typographic block. ── */
+.mm-cta-bracket {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--btn-height);
+  color: var(--ink);
+  font-size: var(--btn-text);
+  font-weight: var(--btn-weight);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.mm-cta-bracket::before,
+.mm-cta-bracket::after {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.mm-cta-bracket::before {
+  content: "[";
+  padding-inline-end: var(--space-2);
+}
+.mm-cta-bracket::after {
+  content: "]";
+  padding-inline-start: var(--space-2);
+}
+.mm-cta-bracket:hover::before {
+  transform: translateX(calc(-1 * var(--space-1)));
+}
+.mm-cta-bracket:hover::after {
+  transform: translateX(var(--space-1));
+}
+@media (prefers-reduced-motion: reduce) {
+  .mm-cta-bracket::before,
+  .mm-cta-bracket::after {
+    transition: none;
+  }
+  .mm-cta-bracket:hover::before,
+  .mm-cta-bracket:hover::after {
+    transform: none;
+  }
+}
+
+/* ── Visually hidden — present for screen readers, not on screen ── */
+.mm-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

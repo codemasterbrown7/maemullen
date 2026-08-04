@@ -1,0 +1,261 @@
+/* ============================================================================
+   /v3 — "vibe of v2, structure of v1."
+
+   Everything is scoped under .v3 so it cannot leak into / or /v2. Selectors are
+   single-class BEM throughout, no element selectors, so nothing here can be
+   cancelled out by a later rule of equal weight.
+
+   THE DESIGN PLAN, and why each part is a choice rather than a default:
+
+   Colour — four values, all already locked in tokens.css:
+     ground  #fffaed  brand cream — every surface
+     ink     #000000  type and the logotype
+     blue    #0b48ff  brand royal blue — the marquee type and nav hover
+     rule    rgb(0 0 0 / 0.2)  hairline
+   Brand red (--accent) is cut entirely; so is the pink header band from /. The
+   page is cream and black with one blue accent, and nothing else.
+
+   The header and the marquee are both cream, which would normally read as two
+   indistinguishable stripes — but the photographs sit between them, so they
+   never touch. That is the only reason this works.
+
+   Type — Switzer (client-supplied, self-hosted in layout.tsx), two treatments:
+     heading  700, uppercase, -0.02em
+     body     400, uppercase, justified, +0.02em
+   Both come from the client's own type reference: heavy uppercase headline over
+   a flush-both-edges uppercase block. No italic anywhere. No second typeface
+   anywhere. The Playfair logotype is artwork in the header, not type on the
+   page. An earlier pass set "by design." in Didone italic inside the heading and
+   ran a blue eyebrow above it — the client called the italic a tell-tale AI
+   signature and the four stacked treatments noise.
+
+   Signature — the first screen itself: two full-bleed photographs, in full
+   colour, edge to edge with no gutter, pinned between the pink header and the
+   marquee so they end exactly at the fold. The photographs carry the page; the
+   type around them stays quiet and out of their way.
+   ============================================================================ */
+
+.v3 {
+  --v3-ground: var(--brand-cream);
+  --v3-ink: var(--brand-black);
+  --v3-blue: var(--brand-blue);
+  --v3-rule: rgb(0 0 0 / 0.2);
+
+  background: var(--v3-ground);
+  color: var(--v3-ink);
+  font-family: var(--font-body);
+  min-width: 320px;
+}
+
+/* The first screen. Marquee and header take what they need, the pair takes the
+   rest — so the fold lands exactly at the bottom of the photographs whatever
+   the marquee's padding does later. svh, not vh, so mobile browsers don't hide
+   the bottom edge behind the collapsing URL bar. */
+.v3__fold {
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+}
+
+/* The header, the marquee and the footer moved to components/chrome/chrome.css
+   on 2026-08-03, unchanged apart from their class prefix, so /services could
+   wear the same chrome without a second copy of it. What is left in this file
+   is only what is specific to this page. */
+
+/* ── The pair — full-bleed, butted together, straight to the fold ──────── */
+.v3__pair {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  background: var(--surface);
+}
+/* Two portrait photos side by side on a phone are ~180px wide each — too narrow
+   to read as anything. Stacked, each takes half the height and both still fit. */
+@media (min-width: 700px) {
+  .v3__pair {
+    grid-template-rows: none;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.v3__cell {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  min-height: 0;
+}
+/* No filter. The photographs are the client's own work and are shown as shot —
+   an earlier pass desaturated them and that was rejected outright. */
+.v3__cell-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Captions are cream on photography, and photography is not a colour you
+   control — the tulle frame in particular is almost white at the bottom. The
+   gradient covers only the bottom strip, so it costs the image almost nothing. */
+.v3__cell-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.55), transparent);
+  pointer-events: none;
+}
+
+.v3__caption {
+  position: absolute;
+  bottom: var(--space-6);
+  left: var(--space-6);
+  right: var(--space-6);
+  z-index: 1;
+  color: var(--brand-cream);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.v3__caption--start {
+  text-align: left;
+}
+.v3__caption--end {
+  text-align: right;
+}
+/* Stacked, both captions read better from the same edge. */
+@media (max-width: 699px) {
+  .v3__caption--end {
+    text-align: left;
+  }
+}
+
+/* ── Studio intro — the one block below the fold ───────────────────────── */
+/* The two columns were together only filling about half the container: a small
+   plate, a wide dead gap, then a 33ch measure — leaving the whole outer third
+   of a large screen empty and the content huddled in the middle. The container
+   is wider now, the plate is much larger, and each column centres its own
+   content rather than both hugging the gap between them. */
+/* The two columns were together only filling about half the container: a small
+   plate, a wide dead gap, then a 33ch measure — leaving the whole outer third
+   of a large screen empty and the content huddled in the middle.
+
+   Spreading them further apart only widens the dead gap; what actually fixes it
+   is making both columns bigger, so the fix is a larger plate and a wider
+   measure rather than more space between them. */
+.v3__intro {
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: var(--space-section) clamp(var(--space-6), 4vw, var(--space-20));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(var(--space-10), 4vw, var(--space-16));
+  align-items: center;
+  justify-items: center;
+}
+
+/* The cut-out sits straight on the page with no frame, lifted by a shadow that
+   traces its own silhouette — drop-shadow follows the alpha channel, box-shadow
+   would draw the rectangle. No pattern field behind it. */
+.v3__plate {
+  margin: 0;
+  justify-self: center;
+  max-width: 100%;
+}
+/* Capped against viewport height, not just column width. The strips are a tall
+   3:8-ish crop, so at full column width they tower over the copy beside them and
+   add most of a screen to the block — and this page is meant to cost one short
+   scroll, not two. Height-capped, the two sides balance. */
+.v3__plate-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(78vh, 760px);
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3)) drop-shadow(0 20px 28px rgb(0 0 0 / 0.22));
+}
+.v3__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Small label, set in Switzer at the reference's 13px / +0.5px — the role its
+   own body face fills. It is a label, not a heading, so nothing is bold. */
+.v3__eyebrow {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Both paragraphs share this — same size, same ink, same leading. The studio
+   name is the only emphasis, and it is weight alone.
+
+   The gap under the heading is set explicitly rather than left to whichever
+   margin happens to win: the two rules below are the only things spacing this
+   column, and the adjacent-sibling one is deliberately the more specific. */
+/* Uppercase and justified, per the client's type reference — the flush-both-edges
+   block with open word gaps is the whole point of that treatment, so no
+   hyphenation and no `text-wrap: pretty`, both of which would fight the
+   justification and close the gaps back up.
+
+   Tracking is opened slightly: uppercase set solid reads tight, and the
+   reference is visibly letterspaced. max-width is in ch rather than em because
+   caps are wider — an em measure here runs about ten characters long. */
+/* The statement. Set in TeX Gyre Heros Regular at the reference's own metrics:
+   ~18px, regular weight, uppercase, justified, only lightly tracked. Nothing
+   here is bold — the reference has no bold anywhere, including on the studio's
+   own name — and the size is deliberately modest. Big type is not what makes
+   this look expensive; small type with a lot of air around it is.
+
+   Measure is in ch, not em: caps are wider, and an em measure runs about ten
+   characters long. ~33ch reproduces the reference's line breaks. */
+.v3__body {
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-swiss);
+  font-size: clamp(1rem, 1.25vw, 1.35rem);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-align: justify;
+  /* Still close to the reference's ~33 characters per line — the column gets its
+     width from a larger size, not from running the lines longer. */
+  max-width: 38ch;
+}
+.v3__eyebrow + .v3__body {
+  margin-top: var(--space-6);
+}
+/* The reference sets its buttons one step below body — 12px, same face, no
+   bold — so the block reads as one system rather than a control bolted on. */
+.v3__cta {
+  margin-top: var(--space-10);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+/* .mm-cta-bracket is the locked signature from deck p7 (DESIGN.md §6.3) and
+   already resolves to --ink, which is correct here. Only the hover is new. */
+.v3 .mm-cta-bracket:hover {
+  color: var(--v3-blue);
+}
+
+/* ── Quality floor ─────────────────────────────────────────────────────── */
+.v3 a:focus-visible {
+  outline: 2px solid var(--v3-blue);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v3 *,
+  .v3 *::before,
+  .v3 *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
