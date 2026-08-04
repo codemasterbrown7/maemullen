@@ -393,15 +393,22 @@ like a default.
 rather than returning the host's 404. Four of the six links in the header lead to one of them, so
 on a live site the alternative was a header that mostly breaks.
 
-One component — `components/InProgress.tsx`, copy in `content/soon.ts` — wearing /services'
-masthead: mono mark, the page name set huge, the scroll-drawn knot, then a contents list of what
-will be on the page set on **hairlines instead of solid rules**, a contents page for something not
-printed yet. It shares its layout with the 404, minus the contents block.
+One component — `components/InProgress.tsx`, copy in `content/soon.ts` — and it is **deliberately
+plain**: a mono `[ IN PROGRESS ]` mark, the page's name, one sentence saying it is being built,
+and two bracket links out (Services, Instagram). Centred in the space the chrome leaves. The 404
+is the same component with a different mark and line.
 
-**Those contents lists must not preview an OPEN question.** `/packages` therefore names no tier
-(Q1 and Q2 below), and `/work` names only Bendito, the one project with a confirmed name and
-cleared assets. The `standfirst` lines are the only copy on this site not taken from the deck,
-because the deck has nothing to say about pages that do not exist — treat them as placeholders.
+**It was more than that first, and that was wrong.** The first version wore /services' masthead —
+the scroll-drawn knot behind the display type, a strand down the right margin, a closing knot —
+plus a contents list of what was coming, set on hairlines. Cut on the client's note the same day:
+*"it should just say that its being built and be fairly plain. dont add the drawing effect that
+was only for the services page."* **The drawn line belongs to /services and nowhere else.** An
+unfinished page borrowing the most elaborate thing on the site was the wrong instinct.
+
+A consequence worth keeping: with no `<ScrollThread>`, these pages ship no client JS of their own.
+
+The one sentence is the only copy on this site not taken from the deck, because the deck has
+nothing to say about pages that do not exist. Treat it as a placeholder.
 
 Each stub is a single ~20-line file that is **deleted outright** when its real page is built.
 

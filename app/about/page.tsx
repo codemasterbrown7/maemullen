@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { InProgress } from "@/components/InProgress";
 import { siteName } from "@/content/site";
-import { soonMark, soonPages } from "@/content/soon";
+import { soonLine, soonMark, soonPages } from "@/content/soon";
 
 /**
  * /about — not built yet. Spec and verbatim deck copy are in docs/SITEMAP.md
@@ -21,8 +21,7 @@ export default function AboutPage() {
       current={page.href}
       mark={soonMark}
       title={page.title}
-      standfirst={page.standfirst}
-      contents={page.contents}
+      line={soonLine}
     />
   );
 }

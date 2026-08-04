@@ -25,7 +25,7 @@ export default function NotFound() {
     <InProgress
       mark={notFoundPage.mark}
       title={notFoundPage.title}
-      standfirst={notFoundPage.standfirst}
+      line={notFoundPage.line}
     />
   );
 }

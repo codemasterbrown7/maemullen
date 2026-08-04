@@ -670,13 +670,13 @@ const SAMPLES = 900;
 const TAIL_SPEED = 0.13;
 
 /**
- * How far down the screen the underlined words may sit before the closing
- * stretch is allowed to start — 0.75 puts all of them on screen with a quarter
- * of the viewport still showing underneath. Reachable at every sensible window
- * height: at the foot of this page the words come to rest around 62% of a
- * 1000px viewport and 73% of a 1400px one.
+ * The closing stretch, keyed to where the underlined words sit in the viewport
+ * — see the draw loop. ENTER is below the fold, RULE has them fully on screen,
+ * REVEAL has them clear of the bottom with the flourish finished.
  */
-const TAIL_REVEAL = 0.75;
+const TAIL_ENTER = 1.1;
+const TAIL_RULE = 0.9;
+const TAIL_REVEAL = 0.62;
 
 function sampleDepths(path: SVGPathElement): number[] {
   const total = path.getTotalLength();
@@ -792,40 +792,63 @@ export function ScrollThread({
     // THE CLOSING STRETCH IS NOT DRIVEN BY THE SWEEP LINE. Everything else is:
     // scroll a section into view and the line beside it draws. But the rule and
     // the flourish do not belong to a section — they belong to the words being
-    // underlined, and the sweep crossing those words is the wrong cue. The
-    // heading is 72px tall near the very foot of the page, so the sweep reaches
-    // it while it is still peeking in at the bottom edge of the screen: a
-    // fraction more scroll and the whole finish had already happened, before
-    // anyone had properly seen what it was underlining.
+    // underlined, so they are drawn against how far those words have risen up
+    // the screen instead.
     //
-    // So it waits for the words instead — all of them on screen, with room to
-    // spare underneath — and then runs to the end on its own clock. That also
-    // means the finish no longer depends on the page being long enough for the
-    // sweep to reach the deepest point of the path, which it only just was.
-    // Where the words actually come to rest at the foot of the page, so the
-    // threshold can never be set somewhere the page cannot scroll to. On a tall
-    // enough window there is not much page left under the heading and it never
-    // rises past three quarters of the viewport — asking for that would leave
-    // the line permanently unfinished. Reads scrollHeight, so it is computed on
-    // mount and on resize rather than on every scroll.
-    let revealAt = TAIL_REVEAL;
+    // WHY NOT JUST HOLD THE PEN AND RELEASE IT. That was the first version and
+    // it read as a stall: the sweep raced the pen down to the mouth of the rule
+    // — a measured leap from 61% to 97% of the screen in 100px of scroll — where
+    // it then sat for another 200px before the whole ending went at once. Both
+    // halves of that were called out. A threshold can only ever produce a wait
+    // followed by a rush; the fix is not a better threshold but no threshold, so
+    // the last stretch is mapped onto scroll like everything else and simply
+    // keeps moving.
+    //
+    // Three scroll positions, expressed as where the heading's baseline sits in
+    // the viewport, and the segment between each pair is linear:
+    //   ENTER  the words are a little below the fold. The line stops taking its
+    //          cue from the sweep here — before the leap, which is the point —
+    //          and covers the last of the approach as they climb into view.
+    //   RULE   the words are fully on screen. The rule is drawn under them from
+    //          here, so it happens where it can be watched.
+    //   REVEAL they are clear of the bottom of the screen, and the flourish has
+    //          finished. Clamped to somewhere the page can actually scroll to:
+    //          on a tall window there is little page left underneath and the
+    //          words never climb this far, which would strand the line unfinished.
+    // Reads scrollHeight, so it is measured on mount and on resize, not on scroll.
+    let enterAt = 0;
+    let ruleAt = 0;
+    let doneAt = 0;
+    let handover = tailStart;
     const measureReveal = () => {
       if (reveal === null) return;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const view = window.innerHeight;
+      const maxScroll = document.documentElement.scrollHeight - view;
       const hostTop = host.getBoundingClientRect().top + window.scrollY;
-      const atFoot = (hostTop + reveal - maxScroll) / window.innerHeight;
-      revealAt = Math.max(TAIL_REVEAL, atFoot + 0.02);
+      const wordsAt = hostTop + reveal;
+      const atFoot = (wordsAt - maxScroll) / view;
+      const done = Math.max(TAIL_REVEAL, atFoot + 0.02);
+      const rule = Math.max(TAIL_RULE, done + 0.08);
+      const enter = Math.max(TAIL_ENTER, rule + 0.12);
+      enterAt = Math.max(0, wordsAt - enter * view);
+      ruleAt = wordsAt - rule * view;
+      doneAt = wordsAt - done * view;
+      // Exactly where the sweep has the pen at the handover, so the two meet
+      // without a step.
+      handover = drawnAt(enterAt - hostTop + view * sweep);
     };
     measureReveal();
+
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * Math.min(Math.max(t, 0), 1);
 
     const targetNow = () => {
       const rect = host.getBoundingClientRect();
       const swept = drawnAt(-rect.top + window.innerHeight * sweep);
       if (reveal === null) return swept;
-      if (rect.top + reveal <= window.innerHeight * revealAt) return 1;
-      // Held at the mouth of the tail until then, so the pen waits where the
-      // rule is about to start rather than part way into drawing it.
-      return Math.min(swept, tailStart);
+      const y = window.scrollY;
+      if (y <= enterAt) return Math.min(swept, handover);
+      if (y < ruleAt) return lerp(handover, tailStart, (y - enterAt) / (ruleAt - enterAt));
+      return lerp(tailStart, 1, (y - ruleAt) / (doneAt - ruleAt));
     };
 
     // EASING IS NOT DECORATION HERE, it is what makes the drawing continuous.

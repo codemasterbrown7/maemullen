@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { InProgress } from "@/components/InProgress";
 import { siteName } from "@/content/site";
-import { soonMark, soonPages } from "@/content/soon";
+import { soonLine, soonMark, soonPages } from "@/content/soon";
 
 /**
  * /packages — not built yet, and blocked rather than merely unstarted:
@@ -23,8 +23,7 @@ export default function PackagesPage() {
       current={page.href}
       mark={soonMark}
       title={page.title}
-      standfirst={page.standfirst}
-      contents={page.contents}
+      line={soonLine}
     />
   );
 }

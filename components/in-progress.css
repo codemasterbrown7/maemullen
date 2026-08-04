@@ -1,11 +1,14 @@
 /* ============================================================================
    The in-progress page, and the 404 — components/InProgress.tsx.
 
-   Built out of /services' parts rather than beside them: same three type
-   registers, same masthead grammar, same drawn line, same bracket CTA. The
-   rules are re-declared under `.soon` rather than shared with `.svc` because
-   the two pages want different measures and different clearances, and a
-   variable-only split would have meant one selector doing two jobs badly.
+   Four things in a column, centred in whatever the chrome leaves. It is meant
+   to be plain: no ornament, no photography, no contents list, and none of
+   /services' scroll-drawn line — see the note at the top of the component for
+   what was there first and why it went.
+
+   The type registers are the site's own and nothing else is borrowed: mono for
+   the mark and the bracket links, Heros Bold for the name, Switzer for the
+   sentence.
 
    NOTE the spacing scale skips --space-7, --space-9 and --space-11. A var()
    that resolves to nothing voids the whole declaration silently.
@@ -14,45 +17,31 @@
 .soon {
   --soon-ink: var(--brand-black);
   --soon-blue: var(--brand-blue);
-  /* Deliberately lighter than /services' solid black index rules — see the
-     contents block below, where this is the entire idea. */
-  --soon-hairline: rgb(0 0 0 / 0.18);
-  --soon-max: 85rem;
-
-  /* Matched to /services: at 14px the line is a drawn mark rather than a wire,
-     which is what lets the knot read as loops. */
-  --thread-weight: 14px;
 
   background: var(--bg);
   color: var(--soon-ink);
   font-family: var(--font-body);
   min-width: 320px;
 
-  /* These pages are short by nature, and the Instagram strip above the footer
-     renders nothing until a feed is configured. Without this the footer floats
-     halfway up an empty screen — the one way an unfinished page can still look
-     broken after all this. */
+  /* The page has very little on it, so the footer would otherwise float
+     halfway up an empty screen — the one way a deliberately plain page can
+     still look broken. */
   display: flex;
   flex-direction: column;
   min-height: 100svh;
 }
 
-/* The positioning context the line is measured and drawn against. */
+/* Centred in the space between the header and the marquee, rather than sitting
+   at the top with a void beneath it. `flex: 1` is what claims that space; the
+   centring is what makes the emptiness read as intended. */
 .soon__main {
-  position: relative;
   flex: 1;
-}
-
-/* Content sits above the line: the thread's host is z-index 0, so the stroke
-   passes behind the type wherever the two meet. */
-.soon__masthead,
-.soon__contents,
-.soon__onward {
-  position: relative;
-  z-index: 1;
-  max-width: var(--soon-max);
-  margin: 0 auto;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: clamp(var(--space-20), 12vh, var(--space-32)) var(--gutter);
 }
 
 /* ── Annotation register ─────────────────────────────────────────────────── */
@@ -67,8 +56,36 @@
   color: var(--soon-ink);
 }
 
+/* Smaller than /services' 14vw masthead. This page is a note, not a masthead,
+   and the name only has to say which page you were heading for. */
+.soon__title {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: var(--text-display-lg);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.soon__line {
+  margin: 0;
+  max-width: 42ch;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.soon__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-10);
+  margin-top: var(--space-6);
+}
+
 /* The locked bracket signature (deck p7 / DESIGN.md §6.3), moved into the mono
-   register so it matches the marks — /services does exactly this. Hover is blue
+   register so it matches the mark — /services does exactly this. Hover is blue
    rather than globals.css's brand red, which is cut from this design. */
 .soon .mm-cta-bracket {
   font-family: var(--font-mono);
@@ -78,184 +95,4 @@
 }
 .soon .mm-cta-bracket:hover {
   color: var(--soon-blue);
-}
-
-/* ── Masthead ─────────────────────────────────────────────────────────────
-   Mark, title and standfirst stacked in the left column; the right is the
-   knot's room. The deep bottom padding is not slack — it is the knot's box. */
-.soon__masthead {
-  padding: clamp(var(--space-12), 7vh, var(--space-20)) var(--gutter) var(--space-16);
-}
-
-@media (min-width: 900px) {
-  .soon__masthead {
-    padding-bottom: clamp(var(--space-24), 12vw, 12rem);
-  }
-}
-
-.soon__title {
-  margin: var(--space-6) 0 0;
-  font-family: var(--font-swiss);
-  font-weight: 700;
-  font-size: clamp(3.25rem, 14vw, 10rem);
-  line-height: 0.92;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  /* Capped so a title with a space in it STACKS rather than running the full
-     width of the page and straight through the knot. "NOT FOUND" set on one
-     line reached 900px, which put the densest part of the tangle across the
-     counters of the last four letters — the one place the loops are too busy to
-     read behind.
-     A single long word (PACKAGES) simply overflows this and crosses the loops as
-     SERVICES does on /services, which is the intended treatment: the knot is
-     supposed to run behind the headline. Only a title with somewhere to break
-     takes the hint, which is exactly the one that needed to. */
-  max-width: 7.5ch;
-}
-
-/* Narrow on purpose: its measure is what keeps it clear of the knot filling the
-   right, without needing a breakpoint to say so. */
-.soon__standfirst {
-  margin: var(--space-8) 0 0;
-  max-width: 38ch;
-  font-size: var(--text-body);
-  line-height: 1.55;
-  text-wrap: pretty;
-}
-
-/* Big, and deliberately overlapping the bottom of the word — the reference gets
-   its scale from running the knot behind the headline. `left` starts past the
-   standfirst's measure rather than past the title's, because the title is meant
-   to be crossed and 15px body copy under a 14px stroke is not. */
-.soon__ornament {
-  position: absolute;
-  z-index: 0;
-  pointer-events: none;
-  left: 42%;
-  right: var(--gutter);
-  top: clamp(40px, 4vw, 72px);
-  bottom: var(--space-8);
-}
-
-/* ── Contents ─────────────────────────────────────────────────────────────
-   /services' index, on hairlines instead of solid rules: a contents page for
-   something that is not printed yet, drawn faintly because it is not set. The
-   rows are not links — there is nothing yet to link to, and an anchor that goes
-   nowhere is worse than plain text.
-
-   The measure is capped well short of the page so the lane the line runs down
-   at 0.95 stays genuinely empty at every width. */
-.soon__contents {
-  padding: 0 var(--gutter) clamp(var(--space-16), 8vw, var(--space-32));
-}
-
-.soon__contents-label {
-  margin: 0 0 var(--space-5);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-
-.soon__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-width: 56rem;
-  border-top: 1px solid var(--soon-hairline);
-}
-
-.soon__row {
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  align-items: baseline;
-  gap: var(--space-5);
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--soon-hairline);
-}
-
-.soon__row-num {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--ink-muted);
-}
-
-.soon__row-name {
-  font-family: var(--font-swiss);
-  font-weight: 700;
-  font-size: clamp(1.25rem, 2.4vw, 2rem);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-}
-
-/* ── Onward ───────────────────────────────────────────────────────────────
-   Copy left, the closing knot's room right — the masthead's arrangement again,
-   at half the scale. Splitting it in two is what stops the line having to cross
-   the page to finish: it comes down the right margin and is already in its own
-   column when it arrives. */
-.soon__onward {
-  padding: 0 var(--gutter) clamp(var(--space-16), 9vw, var(--space-32));
-}
-
-@media (min-width: 900px) {
-  .soon__onward {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--space-16);
-    align-items: center;
-    /* The knot's box has no content to give it height, so the section is as
-       tall as the copy unless it is told otherwise. */
-    min-height: 22rem;
-  }
-}
-
-.soon__onward-heading {
-  margin: 0;
-  font-family: var(--font-swiss);
-  font-weight: 700;
-  font-size: var(--text-display-md);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-}
-
-.soon__onward-links {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-5) var(--space-12);
-  margin-top: clamp(var(--space-8), 4vw, var(--space-12));
-}
-
-/* The closing knot's box: the right half of the section, inset so the loops
-   have somewhere to spill without touching the copy or the edge of the page.
-   Static rather than absolute — it is a grid cell here, not an overlay, and it
-   is the cell's own size the thread measures. */
-.soon__ornament--onward {
-  position: relative;
-  left: auto;
-  right: auto;
-  top: auto;
-  bottom: auto;
-  height: 100%;
-  min-height: 14rem;
-  margin: var(--space-8) 0;
-}
-
-/* ── Below 900px ──────────────────────────────────────────────────────────
-   The ornament layer goes, exactly as it does on /services: a single-column
-   layout has no empty lane for the line to run down, and crossing the text is
-   the one thing it must not do. */
-@media (max-width: 899px) {
-  .soon__ornament,
-  .soon .mm-thread {
-    display: none;
-  }
-  /* With no line there is nothing to leave clearance for. */
-  .soon__onward {
-    padding-bottom: var(--space-20);
-  }
 }
