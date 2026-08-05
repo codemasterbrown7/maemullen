@@ -200,35 +200,38 @@ const detail: Record<string, ServiceDetail> = {
     price: "Half-day shoot £350–450 · Full-day shoot £650–900",
     /* Three, and the closest thing on the page to a contact sheet — which is
        the argument this section is making: one session, a month of content,
-       several subjects. Product, drinks, interiors. */
+       several subjects. Furniture, a portrait, a still life. */
     plates: [
       {
-        src: "/scatter/bedside-stool.webp",
-        alt: "A striped cup and saucer and gold jewellery on a wooden stool beside a white bed",
-        dim: [640, 838],
-        w: 13,
-        x: 28,
-        note: { n: "III", label: "Morning, still life", place: "edge" },
-      },
-      {
-        src: "/scatter/cocktails-chilli.webp",
-        alt: "Four cloudy cocktails on ice, each garnished with a red chilli, on a black lattice table",
-        dim: [640, 794],
-        w: 13,
-        x: 2,
-        y: 1,
-        note: { n: "IV", label: "Drinks, on ice", place: "foot" },
-      },
-      {
-        /* Called out by name as too small at 8rem (2026-08-04) — the whole
-           reason every plate under ~10rem grew by a fifth. */
         src: "/scatter/cowhide-chair.webp",
         alt: "A tub chair upholstered in brown-and-white cowhide on a polished concrete floor",
         dim: [640, 840],
+        w: 13,
+        x: 28,
+        note: { n: "III", label: "Cowhide chair", place: "edge" },
+      },
+      {
+        src: "/scatter/street-trench.webp",
+        alt: "A woman in a navy gingham-lined trench coat and corduroy baker boy cap sitting on a cobbled kerb",
+        dim: [640, 845],
+        w: 13,
+        x: 2,
+        y: 1,
+        note: { n: "IV", label: "Street style", place: "foot" },
+      },
+      {
+        /* 11rem, and it stays there: this slot held the cowhide chair when it
+           was called out by name as too small at 8rem (2026-08-04) — the whole
+           reason every plate under ~10rem grew by a fifth. The chair has since
+           moved up to III and the stool down to here, but the floor the note
+           established is a property of the slot, not of the picture in it. */
+        src: "/scatter/bedside-stool.webp",
+        alt: "A striped cup and saucer and gold jewellery on a wooden stool beside a white bed",
+        dim: [640, 838],
         w: 11,
         x: 50,
         y: 1,
-        note: { n: "V", label: "Cowhide chair", place: "edge" },
+        note: { n: "V", label: "Morning, still life", place: "edge" },
       },
     ],
     side: "left",
@@ -252,18 +255,19 @@ const detail: Record<string, ServiceDetail> = {
     ],
     price: "+£250–400 per month",
     /* One, dropped well down the lane. 003 is the shortest section on the page
-       — a cluster here would be more picture than service. The photobooth
-       screen is the only frame-grab in the set, which is why it is the one
-       sitting under short-form video. */
+       — a cluster here would be more picture than service. It is also the
+       stillest picture in the set, which is the right note under the shortest
+       section: one room, held, rather than a scene with something going on in
+       it. */
     plates: [
       {
-        src: "/scatter/photobooth-screen.webp",
-        alt: "A photobooth screen showing four women in black and white against a tinsel curtain",
-        dim: [640, 843],
+        src: "/scatter/leather-sofa.webp",
+        alt: "A low black leather sofa against a poured-concrete wall, with books and a blue vase on a steel side table",
+        dim: [640, 844],
         w: 16,
         x: 14,
         y: 2,
-        note: { n: "VI", label: "Photobooth", place: "foot" },
+        note: { n: "VI", label: "Leather sofa", place: "foot" },
       },
     ],
     side: "right",
@@ -294,10 +298,12 @@ const detail: Record<string, ServiceDetail> = {
       },
     ],
     price: "Quote depends on hours needed, starting from £250",
-    /* The section names "luxury stays", "hotel & destination" and "behind the
-       scenes" in its own copy, and these three are exactly that — so this is
-       the one place on the page where the pictures are evidence rather than
-       atmosphere. Also the tallest section, so it carries three comfortably. */
+    /* The section names "luxury stays", "hotel & destination" and "product &
+       lifestyle photography" in its own copy, and these three are exactly that
+       — so this is the one place on the page where the pictures are evidence
+       rather than atmosphere. Two rooms and a flat lay, which is also the range
+       the copy claims. Also the tallest section, so it carries three
+       comfortably. */
     plates: [
       {
         src: "/scatter/villa-garden.webp",
@@ -317,13 +323,13 @@ const detail: Record<string, ServiceDetail> = {
         note: { n: "VIII", label: "Bamboo suite", place: "edge" },
       },
       {
-        src: "/scatter/bamboo-ceiling.webp",
-        alt: "A paper lantern hanging beneath a curved bamboo ceiling",
-        dim: [640, 845],
+        src: "/scatter/beauty-tray.webp",
+        alt: "Make-up and skincare — a blusher palette, serum, lip products and a tanning mist — laid out on an oval silver tray on crumpled linen",
+        dim: [640, 853],
         w: 14,
         x: 16,
         y: 1,
-        note: { n: "IX", label: "Woven ceiling", place: "edge" },
+        note: { n: "IX", label: "Beauty, flat lay", place: "edge" },
       },
     ],
     side: "left",
@@ -359,14 +365,21 @@ const detail: Record<string, ServiceDetail> = {
        /work/bendito/menu-artwork.png and .svc__plate still renders any entry
        that declares an `image`, so it is one block away from coming back. */
     /* A printed menu card in situ, and a piece of furniture that is itself a
-       drawn shape — the two halves of "design & illustration". Note this is NOT
-       the Bendito artwork coming back: that was a scan on paper, plated with a
-       vertical caption, and it was pulled on request. These are photographs. */
+       drawn shape — the two halves of "design & illustration".
+
+       X IS THE BENDITO MENU, but as a PHOTOGRAPH, not as the artwork. The thing
+       that was pulled on request was /work/bendito/menu-artwork.png — a flat
+       scan, plated large with a vertical caption. This is the studio's own shot
+       of the same menu on the table it was made for
+       (/assets/work/bendito/menu-in-situ.jpg), scattered at plate scale like
+       every other picture on the page. Different asset, different treatment;
+       the earlier note still stands. Cropped from the top to 3:4 to sit with
+       the rest of the set — the source file is 2:3. */
     plates: [
       {
-        src: "/scatter/menu-marble.webp",
-        alt: "Two cocktails and a printed menu card on a veined marble table",
-        dim: [640, 848],
+        src: "/scatter/menu-table.webp",
+        alt: "An illustrated menu card, hand-drawn in red and blue, on a white-clothed table laid with wine, bread and charcuterie",
+        dim: [640, 851],
         w: 17,
         x: 18,
         y: 1,
@@ -474,18 +487,18 @@ const detail: Record<string, ServiceDetail> = {
     /* Deck p18 also carries "after x amount of clients we get 15%" — an
        internal commercial note, not website copy. Excluded (SITEMAP.md §4.3). */
     price: "£900",
-    /* One, and the only landscape-ish frame in the set — the last picture before
-       the closing band, so it wants to read as a breath rather than as another
-       piece of evidence. */
+    /* One, and the last picture before the closing band, so it wants to read as
+       a breath rather than as another piece of evidence — which is why it is
+       the only frame on the page pointing at nothing but a ceiling. */
     plates: [
       {
-        src: "/scatter/flower-garden.webp",
-        alt: "A dense city flower bed of dahlias, verbena and fountain grass in late summer sun",
-        dim: [640, 846],
+        src: "/scatter/bamboo-ceiling.webp",
+        alt: "A paper lantern hanging beneath a curved bamboo ceiling",
+        dim: [640, 845],
         w: 13,
         x: 40,
         y: 1,
-        note: { n: "XV", label: "Summer border", place: "foot" },
+        note: { n: "XV", label: "Woven ceiling", place: "foot" },
       },
     ],
     side: "right",
