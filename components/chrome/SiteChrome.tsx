@@ -104,7 +104,13 @@ export function ChromeFooter() {
           ) : (
             <span>{footer.instagramPlaceholder}</span>
           )}
-          <span>{footer.email ?? footer.emailPlaceholder}</span>
+          {footer.email ? (
+            <a className="mmc__footer-link" href={`mailto:${footer.email}`}>
+              {footer.email}
+            </a>
+          ) : (
+            <span>{footer.emailPlaceholder}</span>
+          )}
         </div>
       </div>
     </footer>
