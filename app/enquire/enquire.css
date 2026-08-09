@@ -4,17 +4,30 @@
    selectors.
 
    COLOUR — this is the red page. Every other route accents in blue; here the
-   accent is the brand red/burgundy of the MM monogram that opens the page
-   (asked for directly, 2026-08-09). Two overrides do the whole job:
+   accent is the brand red/burgundy of the MM monogram (asked for directly,
+   2026-08-09). Two overrides do the whole job:
      · --mmc-blue is repointed to red, so the shared header/footer pick red up
        for hover, the current-page mark and their focus rings — on THIS page
        only, without editing the chrome components.
-     · --focus-ring is repointed to red, so form controls focus red to match.
-   Everything below then reads from --enq-accent.
+     · --focus-ring is repointed to red, so the controls that keep a focus ring
+       (checkboxes, the submit button, links) focus red to match.
+
+   TYPE — the site's own registers, nothing borrowed. The heading is Heros Bold
+   (--font-swiss), uppercase, exactly as /services and the in-progress pages set
+   their titles; an earlier draft used the serif --font-display, which is a
+   heading nowhere else on the site and read as a different site entirely. The
+   standfirst is Switzer (--font-body), the site's sentence face.
+
+   THE PANEL — the fields sit on a white surface a shade off the cream page, with
+   a hairline and a soft shadow, so the block reads as a form. The MM monogram is
+   its small mark, top-left; there is no masthead logo and no "Enquire" eyebrow.
 
    INPUTS — the underline treatment from DESIGN.md §7: transparent field, a
-   hairline under it, no box, no placeholder standing in for a label. The label
-   sits above with the word "(required)" beside it, never a red asterisk.
+   hairline under it, no box, no placeholder standing in for a label. Focus
+   thickens that underline to the accent and REMOVES the outline ring — a red box
+   around the field on every keystroke was too loud (asked for 2026-08-09). The
+   controls that are not a plain line — checkboxes, submit, links — keep the ring
+   so keyboard focus stays visible.
    ============================================================================ */
 
 .enq {
@@ -26,7 +39,7 @@
 
 /* The two colour overrides. `.enq.mmc` outranks the `.mmc` rule that sets the
    blue, so this wins without !important; --focus-ring is inherited by every
-   control from here down, so their focus rings turn red too. */
+   control from here down. */
 .enq.mmc {
   --mmc-blue: var(--brand-red);
   --focus-ring: var(--brand-red);
@@ -39,56 +52,59 @@
   width: 100%;
   max-width: var(--container-narrow);
   margin: 0 auto;
-  padding: clamp(var(--space-12), 8vw, var(--space-24)) var(--gutter)
+  padding: clamp(var(--space-10), 6vw, var(--space-20)) var(--gutter)
     var(--space-24);
 }
 
-/* ── Masthead — monogram, eyebrow, title, one line. Centred. ─────────────── */
+/* ── Masthead — heading + one line, above the form. Left-aligned, like the
+      site's other mastheads. ─────────────────────────────────────────────── */
 .enq__masthead {
-  text-align: center;
-  margin-bottom: clamp(var(--space-10), 6vw, var(--space-16));
-}
-
-.enq__monogram {
-  display: block;
-  width: clamp(72px, 12vw, 96px);
-  height: auto;
-  margin: 0 auto var(--space-6);
-}
-
-.enq__eyebrow {
-  margin: 0 0 var(--space-4);
-  font-family: var(--font-mono);
-  font-size: var(--text-eyebrow);
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--enq-accent);
+  margin-bottom: clamp(var(--space-6), 4vw, var(--space-10));
 }
 
 .enq__title {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: var(--head-weight);
+  font-family: var(--font-swiss);
+  font-weight: 700;
   font-size: var(--text-display-md);
-  line-height: 1.05;
-  letter-spacing: var(--head-tracking);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   color: var(--ink);
 }
 
 .enq__standfirst {
-  max-width: 34rem;
-  margin: var(--space-5) auto 0;
+  max-width: 46ch;
+  margin: var(--space-4) 0 0;
   font-size: var(--text-body-lg);
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--ink-muted);
-  text-wrap: balance;
+  text-wrap: pretty;
+}
+
+/* ── The form panel — its own surface, a shade off the page ──────────────── */
+.enq__panel {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.03), 0 18px 44px rgb(0 0 0 / 0.05);
+  padding: clamp(var(--space-6), 4vw, var(--space-12));
+}
+
+/* The panel's mark, not a logo header — small, quiet, top-left. */
+.enq__mark {
+  display: block;
+  width: 48px;
+  height: auto;
+  margin: 0 0 var(--space-6);
 }
 
 /* ── Form ────────────────────────────────────────────────────────────────── */
 .enq__form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-6);
 }
 
 /* A row holds one field, or two side by side that stack on narrow screens.
@@ -99,7 +115,7 @@
   padding: 0;
   min-width: 0;
   display: grid;
-  gap: var(--space-6) var(--space-8);
+  gap: var(--space-5) var(--space-6);
 }
 .enq__row--2 {
   grid-template-columns: 1fr 1fr;
@@ -129,7 +145,7 @@
 }
 
 .enq__label {
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-1);
   font-size: var(--text-label);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -146,12 +162,14 @@
   font-size: var(--text-body-sm);
 }
 
-/* The underline input. Transparent, a single hairline under it, generous touch
-   height. Focus thickens the rule to the accent and the standard ring appears. */
+/* The underline input. Transparent, a single hairline under it, a comfortable
+   but not cavernous height. Focus thickens the rule to the accent; the outline
+   ring is removed here (see the header note) — the thicker coloured underline is
+   the focus indicator for these. */
 .enq__input {
   width: 100%;
-  min-height: 44px;
-  padding: var(--space-3) 0;
+  min-height: 40px;
+  padding: var(--space-2) 0;
   background: transparent;
   border: 0;
   border-bottom: 1px solid var(--border);
@@ -163,20 +181,20 @@
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 .enq__input::placeholder {
-  color: rgb(0 0 0 / 0.35);
+  color: rgb(0 0 0 / 0.32);
 }
 .enq__input:hover {
   border-bottom-color: rgb(0 0 0 / 0.4);
 }
 .enq__input:focus,
 .enq__input:focus-visible {
-  outline-offset: 4px;
+  outline: none;
   border-bottom: var(--border-medium) solid var(--enq-accent);
 }
 
 .enq__textarea {
-  min-height: 8rem;
-  padding: var(--space-3) 0;
+  min-height: 7rem;
+  padding: var(--space-2) 0;
   resize: vertical;
 }
 
@@ -253,7 +271,7 @@
 
 /* ── Submit — the one filled control on the page, in the accent red ──────── */
 .enq__actions {
-  margin-top: var(--space-2);
+  margin-top: var(--space-1);
 }
 .enq__submit {
   display: inline-flex;
@@ -312,6 +330,7 @@
   padding: var(--space-5) var(--space-6);
   border: 1px solid var(--enq-accent);
   border-left-width: 3px;
+  border-radius: calc(var(--radius-panel) / 2);
   background: rgb(162 59 59 / 0.06);
 }
 .enq__error-heading {
@@ -330,15 +349,17 @@
 
 /* ── Confirmation — replaces the form; focus lands on the heading ────────── */
 .enq__done {
-  max-width: 34rem;
-  padding: var(--space-8) 0;
+  max-width: 40ch;
+  padding: var(--space-6) 0;
 }
 .enq__done-heading {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: var(--head-weight);
+  font-family: var(--font-swiss);
+  font-weight: 700;
   font-size: var(--text-heading-lg);
-  line-height: 1.1;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
   color: var(--ink);
 }
 .enq__done-heading:focus-visible {

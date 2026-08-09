@@ -38,8 +38,6 @@ export const enquiryMailto = `mailto:${enquiryEmail}?subject=${encodeURIComponen
 )}`;
 
 export const enquiryPage = {
-  /** The MM monogram sits above this — the red logo, per the client 2026-08-09. */
-  eyebrow: "Enquire",
   title: "Start a project",
   standfirst:
     "Tell us a little about you and your brand. We read every enquiry and will be in touch by email soon.",
@@ -59,8 +57,9 @@ export const enquiryPage = {
 };
 
 /**
- * The MM monogram — the red/burgundy logo. Served out of public/ through
- * asset() so it survives the GitHub Pages sub-path.
+ * The MM monogram — the red/burgundy logo, used small as the form panel's mark
+ * (not a masthead logo). Served out of public/ through asset() so it survives
+ * the GitHub Pages sub-path.
  */
 export const enquiryMonogram = {
   src: "/assets/brand/monogram.png",
