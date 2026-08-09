@@ -34,17 +34,39 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: var(--bg);
+
+  /* THE PAPER. Three layers over the cream base: a soft light wash falling from
+     the top for depth, then a fine grain (--paper-grain) blended with soft-light
+     so it textures the cream without darkening it. The grain is an inline SVG —
+     no asset to load, works from the Pages sub-path. It ties the page to the
+     envelope-opening intro: the letter you were handed, opened onto its form. */
+  background-color: var(--brand-cream);
+  background-image:
+    radial-gradient(120% 90% at 50% 0%, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0) 55%),
+    var(--paper-grain);
+  background-repeat: no-repeat, repeat;
+  background-size: cover, 140px 140px;
+  background-blend-mode: normal, soft-light;
 }
 
-/* The two colour overrides. `.enq.mmc` outranks the `.mmc` rule that sets the
-   blue, so this wins without !important; --focus-ring is inherited by every
-   control from here down. */
+/* So the whole sheet is one surface: let the paper show through the shared
+   header rather than a flat cream band sitting on top of the texture. */
+.enq .mmc__header {
+  background-color: transparent;
+}
+
+/* Colour + texture tokens for the page.
+   `.enq.mmc` outranks the `.mmc` rule that sets the blue, so the colour
+   overrides win without !important; --focus-ring is inherited by every control
+   from here down. --paper-grain is a compressed fractal-noise tile (amplitude
+   squeezed to a narrow band around mid-grey by feComponentTransfer) so that,
+   under soft-light, it reads as tooth rather than static. */
 .enq.mmc {
   --mmc-blue: var(--brand-red);
   --focus-ring: var(--brand-red);
   --enq-accent: var(--brand-red);
   --enq-accent-hover: var(--accent-hover);
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.55' intercept='0.22'/%3E%3CfeFuncG type='linear' slope='0.55' intercept='0.22'/%3E%3CfeFuncB type='linear' slope='0.55' intercept='0.22'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
 .enq__main {
@@ -82,13 +104,21 @@
   text-wrap: pretty;
 }
 
-/* ── The form panel — its own surface, a shade off the page ──────────────── */
+/* ── The form panel — a sheet of letter stock laid on the paper ──────────── */
 .enq__panel {
   position: relative;
-  background: var(--surface);
+  /* Warm ivory, a shade lighter than the cream page so it lifts like a card of
+     stationery, carrying the same grain over its own colour. */
+  background-color: var(--paper);
+  background-image: var(--paper-grain);
+  background-size: 140px 140px;
+  background-blend-mode: soft-light;
   border: 1px solid var(--border);
   border-radius: var(--radius-panel);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.03), 0 18px 44px rgb(0 0 0 / 0.05);
+  /* Two soft drops for lift plus a hairline of light along the top edge, so it
+     sits on the page like a physical sheet rather than a flat box. */
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 12px 28px rgb(0 0 0 / 0.06),
+    0 40px 64px rgb(0 0 0 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.7);
   padding: clamp(var(--space-6), 4vw, var(--space-12));
 }
 
