@@ -67,11 +67,12 @@ export const instagramUrl = instagram.handle
   : null;
 
 export const footer = {
-  /** OPEN (SITEMAP.md §6, Q6): contact email is not yet confirmed — rendered as
-   *  a clearly-marked placeholder until then. The handle is read off `instagram`
-   *  above so the footer line and the post strip can never disagree. */
+  /** Contact email, confirmed by the client 2026-08-09. Rendered as a mailto
+   *  link in the footer (components/chrome/SiteChrome.tsx). The handle is read
+   *  off `instagram` above so the footer line and the post strip can never
+   *  disagree. */
   instagram: instagram.handle,
-  email: null as string | null,
+  email: "maemullenagency@gmail.com" as string | null,
   instagramPlaceholder: "Instagram — handle TBC",
   emailPlaceholder: "Email — address TBC",
   copyright: `© ${new Date().getFullYear()} ${siteName}. All rights reserved.`,
