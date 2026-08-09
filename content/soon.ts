@@ -1,11 +1,11 @@
 /**
  * The pages that exist in the navigation but are not built yet.
  *
- * WHY THEY EXIST AS PAGES AT ALL. The header carries six links and only two of
- * them lead anywhere — /about, /packages, /work and /enquire are all still to
- * come, and /services links out at /packages and /enquire as well. On a live
- * site every one of those is a dead end, and a dead end that returns the host's
- * default 404 reads as a broken site rather than an unfinished one.
+ * WHY THEY EXIST AS PAGES AT ALL. The header carries six links and several of
+ * them do not lead anywhere yet — /about, /packages and /work are still to come.
+ * On a live site each of those is a dead end, and a dead end that returns the
+ * host's default 404 reads as a broken site rather than an unfinished one.
+ * (/enquire and /services are built; the stubs below are the ones that remain.)
  *
  * DELIBERATELY PLAIN, by request (2026-08-04). The first version carried a
  * contents list of what was coming and the scroll-drawn knot from /services;
@@ -37,8 +37,8 @@ export const soonLine = "This page is being built. It will be here soon.";
 
 /**
  * Every one of these pages is a dead end by definition, so it has to hand the
- * visitor somewhere real — and /enquire, the site's usual next step, is itself
- * one of the unbuilt pages. Services and Instagram are what is actually live.
+ * visitor somewhere real. Services and Instagram are the live routes onward;
+ * /enquire — the site's usual next step — is now built too.
  */
 export const soonOnward = {
   links: [{ label: "See the services", href: "/services" }],
@@ -66,13 +66,6 @@ export const soonPages: Record<string, SoonPage> = {
     title: "Work",
     metaTitle: "Selected work",
     description: "Selected projects, one screen each.",
-  },
-
-  enquire: {
-    href: "/enquire",
-    title: "Enquire",
-    metaTitle: "Enquire",
-    description: "The form that starts a project.",
   },
 };
 
