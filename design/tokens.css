@@ -73,6 +73,7 @@
 
   /* ── Buttons & shape ── */
   --radius-control: 40px; /* pill — a deliberate softening, see DESIGN.md §5 */
+  --radius-panel: 16px; /* card/panel corners — the enquiry form surface */
   --btn-height: 42px;
   --btn-padding-x: 20px;
   --btn-text: 13px;
