@@ -37,6 +37,7 @@
   /* ── Page ── */
   --bg: #fffaed;
   --surface: #ffffff;
+  --paper: #fffdf6; /* warm ivory — the letter stock on /enquire (see enquire.css) */
   --ink: #000000;
   --ink-muted: rgb(0 0 0 / 0.62);
   --logotype: #fffaed;
