@@ -43,42 +43,31 @@ export function formatPrice(price: number): string {
  */
 export const gumroadScriptSrc = "https://gumroad.com/js/gumroad.js";
 
+/**
+ * One product for now — the illustration package, a stand-in the studio fills
+ * with Poppy's hand-drawn pieces. More products follow later.
+ */
 export const illustrations: Illustration[] = [
   {
-    slug: "illustration-01",
-    name: "Illustration No. 01",
-    format: "Digital download · PNG + PDF",
-    blurb: "An original hand-drawn piece, delivered as a high-resolution file ready to print.",
-    price: 20,
-    gumroad: "",
-  },
-  {
-    slug: "illustration-02",
-    name: "Illustration No. 02",
-    format: "Digital download · PNG + PDF",
-    blurb: "One of the studio's line-drawn originals — yours as a print-quality download.",
-    price: 20,
-    gumroad: "",
-  },
-  {
-    slug: "illustration-03",
-    name: "Illustration No. 03",
-    format: "Digital download · PNG + PDF",
-    blurb: "A hand-drawn illustration by Poppy, sized and set up to print at home or at a lab.",
-    price: 25,
+    slug: "illustration-package",
+    name: "Illustration Package",
+    format: "Digital download",
+    blurb:
+      "A set of the studio's hand-drawn illustrations, delivered as print-ready files. Pieces added as they're released.",
+    price: 30,
     gumroad: "",
   },
 ];
 
 export const shopPage = {
   mark: "The shop",
-  title: "Illustrations",
+  title: "Shop",
   standfirst:
-    "Original hand-drawn illustrations by the studio. Bought and delivered securely through Gumroad.",
+    "Hand-drawn illustrations from the studio, bought and delivered securely through Gumroad — with more to come.",
 };
 
-/** Shown once under the masthead: these pieces are stand-ins. */
-export const shopNote = "Placeholder pieces — real illustrations, prices and covers on their way.";
+/** Shown once under the masthead: the product is a stand-in. */
+export const shopNote = "Placeholder — illustrations, prices and covers on their way.";
 
 /** The label on a piece that has no Gumroad link yet. */
 export const comingSoonLabel = "Coming soon";
