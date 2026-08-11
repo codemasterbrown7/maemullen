@@ -105,6 +105,30 @@
   min-width: 120px;
 }
 
+/* ── Cart button — a utility at the end of the header ─────────────────────── */
+.mmc__cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: clamp(var(--space-2), 1vw, var(--space-4));
+  color: var(--mmc-ink);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.mmc__cart:hover {
+  color: var(--mmc-blue);
+}
+.mmc__cart-icon {
+  display: block;
+}
+.mmc__cart-count {
+  font-size: var(--gm-size, clamp(0.8rem, 1.4vw, 1.2rem));
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Services marquee ─────────────────────────────────────────────────────
    The band itself is components/ui/gooey-marquee. All this does is place it and
    hand it the brand colours through its custom properties. */
