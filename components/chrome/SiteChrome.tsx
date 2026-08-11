@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CartButton } from "@/components/chrome/CartButton";
 import { InstagramStrip } from "@/components/chrome/InstagramStrip";
 import { GooeyMarquee } from "@/components/ui/gooey-marquee";
 import { services } from "@/content/home";
@@ -58,12 +57,7 @@ export function ChromeHeader({ current }: { current?: string }) {
           />
         </Link>
 
-        <div className="mmc__nav-group mmc__nav-group--end">
-          {nav.right.map(link)}
-          {/* The cart sits at the end of the header — a utility beside the nav,
-              not one of the balanced 3+3 links. */}
-          <CartButton />
-        </div>
+        <div className="mmc__nav-group mmc__nav-group--end">{nav.right.map(link)}</div>
       </nav>
     </header>
   );

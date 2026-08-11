@@ -16,8 +16,9 @@ export const siteDescription =
  * Balanced 3+3 nav around the centred logotype (DESIGN.md §0, S2).
  * Portfolio points at /work for now — the Portfolio-vs-Work split is
  * deliberately deferred (docs/SITEMAP.md §2). The old second "Work" link is now
- * "Shop" → /shop, where the studio sells its digital products (2026-08-09); the
- * cart lives beside the nav (components/chrome/CartButton.tsx), not in it.
+ * "Shop" → /shop, where the studio sells its hand-drawn illustrations
+ * (2026-08-09). Checkout, cart and delivery are handled by Gumroad, so there is
+ * no cart in the header — each piece opens its own Gumroad checkout.
  */
 export const nav: { left: NavItem[]; right: NavItem[] } = {
   left: [
