@@ -1,35 +1,31 @@
 /**
  * /about content — supplied by the client 2026-08-09.
  *
- * The copy is verbatim, with one normalisation: the deck/brief writes
- * "Maemullen", and the brand spelling the wordmark uses is `siteName`,
- * "MaeMüllen" — so the studio name is taken from `siteName` and only the rest of
- * each sentence is the brief's. Uppercase treatments are CSS `text-transform`,
- * so strings are stored in their real case (DESIGN.md §3.4).
+ * THE NAME IN BODY COPY is "Maemüllen" — a lowercase second m, unlike the
+ * wordmark's "MaeMüllen" (`siteName`) — asked for directly (2026-08-09). In the
+ * studio paragraph it is also set bold (see `abt__brand` in about.css). The rest
+ * of every sentence is the brief's, verbatim. Uppercase treatments are CSS
+ * `text-transform`, so strings are stored in their real case (DESIGN.md §3.4).
  *
  * LAYOUT borrows the /services vibe — Heros display headings, the mono `[ 00x ]`
- * annotation register, vertical edge type and alternating copy/photo sections —
- * but NOT the scroll-drawn line, which belongs to /services alone (see the note
- * in components/InProgress.tsx). The generous whitespace around every block is
+ * annotation register, vertical type — but NOT the scroll-drawn line, which
+ * belongs to /services alone. The generous whitespace around every block is
  * deliberate: it is the room Poppy's doodles go into once they are drawn.
  *
  * THE PHOTOGRAPHY IS PLACEHOLDER. Two studio shots stand in so the layout can be
- * seen; the real portraits are chosen later. `aboutNote` says so on the page, and
- * every plate is captioned "placeholder" so a stand-in can never ship looking
- * final.
+ * seen; the real portraits are chosen later. `aboutNote` says so on the page.
  */
 
-import { siteName } from "@/content/site";
-
 export const aboutDescription =
-  "Where MaeMüllen came from, and the two people behind it.";
+  "Where Maemüllen came from, and the two people behind it.";
 
 export const aboutPage = {
   /** Mono eyebrow over the title, the annotation register. */
   mark: "The studio",
   title: "About",
-  /** Brief, para 1 — the founding line. Name from siteName, rest verbatim. */
-  standfirst: `${siteName} was founded by two creatives brought together by a shared passion for design, content and creativity.`,
+  /** Brief, para 1 — the founding line, verbatim (name spelled Maemüllen). */
+  standfirst:
+    "Maemüllen was founded by two creatives brought together by a shared passion for design, content and creativity.",
 };
 
 /** Shown once under the masthead: these images are stand-ins. */
@@ -84,7 +80,14 @@ export const founders: Founder[] = [
 export const aboutStory = {
   mark: "Under one roof",
   heading: "A female-founded studio",
-  body: `We created ${siteName} to combine our different creative disciplines under one roof. What began through our shared love of creating has grown into a studio where social media, design and content work together to help brands connect with their audience in a thoughtful and authentic way.`,
+  /**
+   * Split so the studio name can be set bold in the middle of the sentence
+   * (about.css `.abt__brand`). Name spelled "Maemüllen", per the client.
+   */
+  bodyLead: "We created ",
+  bodyName: "Maemüllen",
+  bodyRest:
+    " to combine our different creative disciplines under one roof. What began through our shared love of creating has grown into a studio where social media, design and content work together to help brands connect with their audience in a thoughtful and authentic way.",
 };
 
 /** Brief, para 4 — the closing statement, verbatim. */
