@@ -1,0 +1,332 @@
+/* ============================================================================
+   /about — the studio and its two founders. Built on the shared chrome (.mmc),
+   scoped under .abt. Single-class BEM, no element selectors.
+
+   It borrows the /services language — Heros Bold display headings, the mono
+   `[ 00x ]` annotation register (IBM Plex Mono), vertical edge type, and
+   copy/photo sections that alternate side down the page — but NOT the
+   scroll-drawn line, which is /services' alone.
+
+   COLOUR — the site default: cream ground, black type, one blue accent on hover.
+   (The red page is /enquire; this is not it.)
+
+   WHITESPACE IS THE BRIEF. Every block is given a lot of room, and the content
+   column is held well inside the page, because the empty space around the text
+   and pictures is where Poppy's doodles go once drawn. Do not tighten it into a
+   dense layout.
+
+   PHOTOGRAPHY IS PLACEHOLDER. The plates are portrait crops (aspect-ratio +
+   object-fit) so any stand-in image sits cleanly until the real ones are chosen.
+   ============================================================================ */
+
+.abt {
+  --abt-ink: var(--brand-black);
+  --abt-blue: var(--brand-blue);
+  --abt-hairline: rgb(0 0 0 / 0.18);
+  --abt-edge-col: 34px;
+  --abt-max: 80rem;
+
+  background: var(--bg);
+  color: var(--abt-ink);
+  font-family: var(--font-body);
+  min-width: 320px;
+}
+
+/* Each block is centred in a column held inside the page, leaving margins for
+   doodles. */
+.abt__masthead,
+.abt__list,
+.abt__story,
+.abt__closing,
+.abt__cta {
+  max-width: var(--abt-max);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── Annotation register — the mono `[ 00x ]` mark ───────────────────────── */
+.abt__mark {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--abt-ink);
+}
+
+/* The locked bracket signature, moved into the mono register to match the
+   marks; hover is blue (the site default; red is /enquire's). */
+.abt .mm-cta-bracket {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+.abt .mm-cta-bracket:hover {
+  color: var(--abt-blue);
+}
+
+/* ── Vertical edge type — left reads bottom-to-top, right top-to-bottom ──── */
+.abt__edge {
+  margin: 0;
+  align-self: start;
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--abt-ink);
+}
+.abt__edge--up {
+  transform: rotate(180deg);
+}
+
+/* ── Masthead ────────────────────────────────────────────────────────────── */
+.abt__masthead {
+  padding: clamp(var(--space-12), 8vh, var(--space-24)) var(--gutter)
+    clamp(var(--space-12), 7vw, var(--space-20));
+}
+
+.abt__masthead-body {
+  max-width: 52rem;
+}
+
+.abt__title {
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(3rem, 12vw, 8rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.abt__standfirst {
+  margin: var(--space-8) 0 0;
+  max-width: 40ch;
+  font-family: var(--font-swiss);
+  font-weight: 400;
+  font-size: var(--text-statement);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.abt__note {
+  margin: var(--space-6) 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ── The founders — copy on one side, a plate on the other ───────────────── */
+.abt__list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.abt__item {
+  padding: clamp(var(--space-16), 9vw, var(--space-40)) var(--gutter);
+  border-top: 1px solid var(--abt-hairline);
+}
+
+@media (min-width: 900px) {
+  .abt__item {
+    display: grid;
+    grid-template-columns:
+      var(--abt-edge-col)
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      var(--abt-edge-col);
+    gap: clamp(var(--space-10), 5vw, var(--space-24));
+    align-items: center;
+  }
+
+  /* Every child pinned to row 1 so a right-facing section does not wrap to a
+     second row (the /services note explains the auto-placement trap). */
+  .abt__edge,
+  .abt__body,
+  .abt__plate {
+    grid-row: 1;
+  }
+
+  .abt__item--left .abt__edge {
+    grid-column: 1;
+  }
+  .abt__item--left .abt__body {
+    grid-column: 2;
+  }
+  .abt__item--left .abt__plate {
+    grid-column: 3;
+  }
+
+  .abt__item--right .abt__plate {
+    grid-column: 2;
+  }
+  .abt__item--right .abt__body {
+    grid-column: 3;
+  }
+  .abt__item--right .abt__edge {
+    grid-column: 4;
+  }
+
+  /* A right-facing section hangs off the right edge, mark included. */
+  .abt__item--right .abt__body {
+    align-items: flex-end;
+    text-align: right;
+  }
+}
+
+.abt__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.abt__name {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.abt__prose {
+  margin: var(--space-6) 0 0;
+  max-width: 42ch;
+  font-size: var(--text-body-lg);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ── The plate — a clean portrait rectangle, no frame, with a mono caption ── */
+.abt__plate {
+  margin: var(--space-10) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+@media (min-width: 900px) {
+  .abt__plate {
+    margin-top: 0;
+    max-width: 24rem;
+  }
+  .abt__item--left .abt__plate {
+    justify-self: start;
+  }
+  .abt__item--right .abt__plate {
+    justify-self: end;
+  }
+}
+
+/* Aspect-ratio + cover so any placeholder crops to the same portrait shape. */
+.abt__plate-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.abt__plate-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.abt__item--right .abt__plate-caption {
+  text-align: right;
+}
+
+/* Edge type is unreadable in a 34px column on a phone; drop it and stack. */
+@media (max-width: 899px) {
+  .abt__edge {
+    display: none;
+  }
+  .abt__plate {
+    max-width: 22rem;
+  }
+  .abt__item--right .abt__plate {
+    margin-left: auto;
+  }
+}
+
+/* ── The studio story ────────────────────────────────────────────────────── */
+.abt__story {
+  padding: clamp(var(--space-20), 11vw, var(--space-40)) var(--gutter);
+  border-top: 1px solid var(--abt-hairline);
+  max-width: 60rem;
+}
+
+.abt__story-heading {
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.abt__story-body {
+  margin: var(--space-8) 0 0;
+  max-width: 54ch;
+  font-size: var(--text-body-lg);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ── Closing statement — Heros, a step down in weight, plenty of air ─────── */
+.abt__closing {
+  padding: clamp(var(--space-16), 9vw, var(--space-32)) var(--gutter);
+}
+
+.abt__statement {
+  margin: 0;
+  max-width: 30ch;
+  font-family: var(--font-swiss);
+  font-weight: 400;
+  font-size: var(--text-statement);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+/* ── CTA into /enquire — heading beside a bracket link, no drawn line ────── */
+.abt__cta {
+  padding: clamp(var(--space-16), 8vw, var(--space-24)) var(--gutter)
+    clamp(var(--space-20), 9vw, var(--space-32));
+  border-top: 1px solid var(--abt-hairline);
+  display: flex;
+  flex-flow: row wrap;
+  align-items: baseline;
+  gap: var(--space-6) clamp(var(--space-8), 6vw, var(--space-20));
+}
+
+.abt__cta-heading {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Bigger than the 11px marks — the one thing on the page meant to be clicked. */
+.abt .mm-cta-bracket.abt__cta-link {
+  font-size: 14px;
+}

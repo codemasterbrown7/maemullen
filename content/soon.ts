@@ -1,11 +1,11 @@
 /**
  * The pages that exist in the navigation but are not built yet.
  *
- * WHY THEY EXIST AS PAGES AT ALL. The header carries six links and several of
- * them do not lead anywhere yet — /about, /packages and /work are still to come.
- * On a live site each of those is a dead end, and a dead end that returns the
- * host's default 404 reads as a broken site rather than an unfinished one.
- * (/enquire and /services are built; the stubs below are the ones that remain.)
+ * WHY THEY EXIST AS PAGES AT ALL. The header carries six links and a couple of
+ * them do not lead anywhere yet — /packages and /work are still to come. On a
+ * live site each of those is a dead end, and a dead end that returns the host's
+ * default 404 reads as a broken site rather than an unfinished one.
+ * (/about, /enquire and /services are built; the stubs below are what remain.)
  *
  * DELIBERATELY PLAIN, by request (2026-08-04). The first version carried a
  * contents list of what was coming and the scroll-drawn knot from /services;
@@ -47,13 +47,6 @@ export const soonOnward = {
 };
 
 export const soonPages: Record<string, SoonPage> = {
-  about: {
-    href: "/about",
-    title: "About",
-    metaTitle: "About",
-    description: "Where MaeMüllen came from, and the two people behind it.",
-  },
-
   packages: {
     href: "/packages",
     title: "Packages",
