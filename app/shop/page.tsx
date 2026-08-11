@@ -31,6 +31,7 @@ export default function ShopPage() {
           <p className="shop__mark">[ {shopPage.mark} ]</p>
           <h1 className="shop__title">{shopPage.title}</h1>
           <p className="shop__standfirst">{shopPage.standfirst}</p>
+          <p className="shop__desc">{shopPage.description}</p>
           <p className="shop__note">{shopNote}</p>
         </header>
 

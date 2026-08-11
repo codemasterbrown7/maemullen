@@ -68,10 +68,12 @@ export function productBySlug(slug: string): Product | undefined {
 export const shopPage = {
   mark: "The shop",
   title: "Shop",
-  /** Deliberately generic — the studio will sell more than illustrations, and
-   *  each product explains itself. Do not narrow this back to illustrations. */
-  standfirst:
-    "Digital products from the studio, bought and delivered securely through Gumroad — with more to come.",
+  /** Client copy, 2026-08-09. Deliberately generic — the studio will sell more
+   *  than illustrations, and each product explains itself. The lead is the
+   *  statement line; the description steps down to body text beneath it. */
+  standfirst: "Everything we know, made downloadable.",
+  description:
+    "Digital tools, templates and resources designed to help businesses create better content, strengthen their socials and show up confidently online.",
 };
 
 /** Shown once under the masthead: the product is a stand-in. */
