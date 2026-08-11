@@ -34,43 +34,28 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-
-  /* THE PAPER. A soft light wash falling from the top for depth, over a fine
-     paper grain (--paper-grain). The grain is an inline SVG that carries its own
-     alpha — sparse dark flecks — so it composites straight over the cream and
-     genuinely darkens the tooth, rather than a blend mode that washes out on a
-     near-white surface. No asset to load; works from the Pages sub-path. It ties
-     the page to the envelope-opening intro: the letter, opened onto its form. */
+  /* Plain cream, like every other page. The paper texture lives ONLY on the
+     form panel below: an all-over grain read as noise rather than paper (asked
+     to confine it to the white panel, 2026-08-09). */
   background-color: var(--brand-cream);
-  background-image:
-    radial-gradient(120% 90% at 50% 0%, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0) 55%),
-    var(--paper-grain);
-  background-repeat: no-repeat, repeat;
-  background-size: cover, 180px 180px;
-}
-
-/* So the whole sheet is one surface: let the paper show through the shared
-   header rather than a flat cream band sitting on top of the texture. */
-.enq .mmc__header {
-  background-color: transparent;
 }
 
 /* Colour + texture tokens for the page.
    `.enq.mmc` outranks the `.mmc` rule that sets the blue, so the colour
    overrides win without !important; --focus-ring is inherited by every control
-   from here down. --paper-grain is a fractal-noise tile turned into sparse dark
-   flecks: feColorMatrix maps the noise's luminance into the alpha channel and
-   forces the colour to black, then feFuncA thresholds it (slope up, negative
-   intercept) so only the brighter noise survives as faint specks. The result
-   composites normally over whatever colour is beneath it — cream on the page,
-   ivory on the panel — so the tooth is visible on both without darkening the
-   whole surface. */
+   from here down. --paper-grain is a fine fractal-noise tile turned into sparse
+   dark flecks: feColorMatrix maps the noise's luminance into the alpha channel
+   and forces the colour to black, then feFuncA thresholds it (slope up, negative
+   intercept) so only occasional faint specks survive. It is used ONLY on the
+   ivory panel — a slight, close-grained tooth that reads as expensive stock, not
+   an all-over field of noise. High baseFrequency keeps the grain fine; the low
+   alpha keeps it a whisper. */
 .enq.mmc {
   --mmc-blue: var(--brand-red);
   --focus-ring: var(--brand-red);
   --enq-accent: var(--brand-red);
   --enq-accent-hover: var(--accent-hover);
-  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.6' intercept='-0.3'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.46' intercept='-0.24'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
 .enq__main {
@@ -115,7 +100,7 @@
      stationery, carrying the same grain over its own colour. */
   background-color: var(--paper);
   background-image: var(--paper-grain);
-  background-size: 180px 180px;
+  background-size: 150px 150px;
   border: 1px solid var(--border);
   border-radius: var(--radius-panel);
   /* Two soft drops for lift plus a hairline of light along the top edge, so it
