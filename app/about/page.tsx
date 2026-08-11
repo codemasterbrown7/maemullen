@@ -20,20 +20,20 @@ export const metadata: Metadata = {
 };
 
 /**
- * /about — two screens, not a long scroll (asked for directly, 2026-08-09).
+ * /about — two screens, not a long scroll.
  *
- *   Page one  — the two founders side by side: intro line, then Laura and Poppy
- *               as a two-up with small portrait plates, in the /services type
- *               registers (Heros names, the mono `[ 00x ]` mark).
- *   Page two  — the studio itself: the "female-founded studio" block, the
- *               closing statement, and the CTA into /enquire.
- *
- * Each `.abt__page` is sized to fill a screen and centres its content, so the
- * whole thing reads as two pages rather than five stacked sections.
+ *   Page one  — the two founders, SCATTERED rather than lined up: Laura sits
+ *               high, Poppy drops down and hangs off the right, echoing the
+ *               editorial reference the client sent. Each person's mark, name
+ *               and bio sit directly UNDER their placeholder image.
+ *   Page two  — the studio, with "A female-founded studio" set VERTICALLY down
+ *               the side (the /services edge-type treatment) so the page is not
+ *               just a stack of paragraphs.
  *
  * NO SCROLL-DRAWN LINE (that is /services' alone). PHOTOGRAPHY IS PLACEHOLDER —
- * two studio shots stand in, captioned as such, until the real portraits are
- * chosen. The air around the blocks is the room for Poppy's doodles.
+ * two studio shots stand in, flagged by the note under the masthead, until the
+ * real portraits are chosen. The air around everything is the room for Poppy's
+ * doodles.
  */
 export default function AboutPage() {
   return (
@@ -41,7 +41,7 @@ export default function AboutPage() {
       <ChromeHeader current="/about" />
 
       <main className="abt__main">
-        {/* PAGE ONE — the founders */}
+        {/* PAGE ONE — the founders, scattered */}
         <section className="abt__page abt__founders">
           <header className="abt__intro">
             <p className="abt__mark">[ {aboutPage.mark} ]</p>
@@ -50,20 +50,17 @@ export default function AboutPage() {
             <p className="abt__note">{aboutNote}</p>
           </header>
 
-          <ol className="abt__founders-grid">
+          <ol className="abt__founders-scatter">
             {founders.map((founder) => (
               <li key={founder.name} className="abt__founder">
-                <figure className="abt__plate">
-                  <img
-                    className="abt__plate-img"
-                    src={asset(founder.image.src)}
-                    alt={founder.image.alt}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <figcaption className="abt__plate-caption">{founder.image.caption}</figcaption>
-                </figure>
-
+                {/* The placeholder image, with its identity underneath it. */}
+                <img
+                  className="abt__plate-img"
+                  src={asset(founder.image.src)}
+                  alt={founder.image.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <p className="abt__mark abt__founder-mark">
                   [ {founder.number} · {founder.edge} ]
                 </p>
@@ -74,19 +71,22 @@ export default function AboutPage() {
           </ol>
         </section>
 
-        {/* PAGE TWO — the studio */}
+        {/* PAGE TWO — the studio, heading set vertically */}
         <section className="abt__page abt__studio">
-          <div className="abt__studio-inner">
-            <p className="abt__mark">[ {aboutStory.mark} ]</p>
+          <div className="abt__studio-grid">
             <h2 className="abt__story-heading">{aboutStory.heading}</h2>
-            <p className="abt__story-body">{aboutStory.body}</p>
-            <p className="abt__statement">{aboutClosing}</p>
 
-            <div className="abt__cta">
-              <h2 className="abt__cta-heading">{aboutCta.heading}</h2>
-              <Link href={aboutCta.href} className="mm-cta-bracket abt__cta-link">
-                {aboutCta.label}
-              </Link>
+            <div className="abt__studio-inner">
+              <p className="abt__mark">[ {aboutStory.mark} ]</p>
+              <p className="abt__story-body">{aboutStory.body}</p>
+              <p className="abt__statement">{aboutClosing}</p>
+
+              <div className="abt__cta">
+                <h2 className="abt__cta-heading">{aboutCta.heading}</h2>
+                <Link href={aboutCta.href} className="mm-cta-bracket abt__cta-link">
+                  {aboutCta.label}
+                </Link>
+              </div>
             </div>
           </div>
         </section>
