@@ -1,30 +1,30 @@
 /* ============================================================================
-   /about — the studio and its two founders. Built on the shared chrome (.mmc),
-   scoped under .abt. Single-class BEM, no element selectors.
+   /about — the studio and its two founders, on TWO screen-sized pages rather
+   than one long scroll (asked for directly, 2026-08-09). Built on the shared
+   chrome (.mmc), scoped under .abt. Single-class BEM, no element selectors.
 
-   It borrows the /services language — Heros Bold display headings, the mono
-   `[ 00x ]` annotation register (IBM Plex Mono), vertical edge type, and
-   copy/photo sections that alternate side down the page — but NOT the
-   scroll-drawn line, which is /services' alone.
+     Page one  — both founders, side by side: an intro line, then Laura and
+                 Poppy as a two-up with small portrait plates.
+     Page two  — the studio: the "female-founded studio" block, the closing
+                 statement, and the CTA into /enquire.
 
-   COLOUR — the site default: cream ground, black type, one blue accent on hover.
-   (The red page is /enquire; this is not it.)
+   It keeps the /services language — Heros Bold display headings, the mono
+   `[ 00x ]` annotation register — but not the scroll-drawn line, which is
+   /services' alone. Colour is the site default (cream, black, blue on hover).
 
-   WHITESPACE IS THE BRIEF. Every block is given a lot of room, and the content
-   column is held well inside the page, because the empty space around the text
-   and pictures is where Poppy's doodles go once drawn. Do not tighten it into a
-   dense layout.
+   WHITESPACE IS THE BRIEF. Each page centres its content in a screen's height,
+   so there is air around every block — the room Poppy's doodles go into.
 
-   PHOTOGRAPHY IS PLACEHOLDER. The plates are portrait crops (aspect-ratio +
-   object-fit) so any stand-in image sits cleanly until the real ones are chosen.
+   PHOTOGRAPHY IS PLACEHOLDER, and small on purpose: the plates are portrait
+   crops (aspect-ratio + object-fit) so the two founders sit on one screen and
+   any stand-in image crops cleanly until the real ones are chosen.
    ============================================================================ */
 
 .abt {
   --abt-ink: var(--brand-black);
   --abt-blue: var(--brand-blue);
   --abt-hairline: rgb(0 0 0 / 0.18);
-  --abt-edge-col: 34px;
-  --abt-max: 80rem;
+  --abt-max: 78rem;
 
   background: var(--bg);
   color: var(--abt-ink);
@@ -32,16 +32,21 @@
   min-width: 320px;
 }
 
-/* Each block is centred in a column held inside the page, leaving margins for
-   doodles. */
-.abt__masthead,
-.abt__list,
-.abt__story,
-.abt__closing,
-.abt__cta {
+/* Each page fills a screen and centres its content, so the two read as two
+   pages. min-height rather than height: on a phone the founders stack and the
+   block is allowed to grow past one screen instead of being clipped. */
+.abt__page {
   max-width: var(--abt-max);
   margin: 0 auto;
   box-sizing: border-box;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(var(--space-12), 6vh, var(--space-20)) var(--gutter);
+}
+.abt__studio {
+  border-top: 1px solid var(--abt-hairline);
 }
 
 /* ── Annotation register — the mono `[ 00x ]` mark ───────────────────────── */
@@ -56,8 +61,8 @@
   color: var(--abt-ink);
 }
 
-/* The locked bracket signature, moved into the mono register to match the
-   marks; hover is blue (the site default; red is /enquire's). */
+/* The locked bracket signature, moved into the mono register; hover is blue
+   (the site default; red is /enquire's). */
 .abt .mm-cta-bracket {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -68,45 +73,24 @@
   color: var(--abt-blue);
 }
 
-/* ── Vertical edge type — left reads bottom-to-top, right top-to-bottom ──── */
-.abt__edge {
-  margin: 0;
-  align-self: start;
-  writing-mode: vertical-rl;
-  white-space: nowrap;
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--abt-ink);
-}
-.abt__edge--up {
-  transform: rotate(180deg);
-}
-
-/* ── Masthead ────────────────────────────────────────────────────────────── */
-.abt__masthead {
-  padding: clamp(var(--space-12), 8vh, var(--space-24)) var(--gutter)
-    clamp(var(--space-12), 7vw, var(--space-20));
-}
-
-.abt__masthead-body {
+/* ── Page one: intro ─────────────────────────────────────────────────────── */
+.abt__intro {
   max-width: 52rem;
 }
 
 .abt__title {
-  margin: var(--space-5) 0 0;
+  margin: var(--space-4) 0 0;
   font-family: var(--font-swiss);
   font-weight: 700;
-  font-size: clamp(3rem, 12vw, 8rem);
+  font-size: clamp(2.5rem, 7.5vw, 4.75rem);
   line-height: 0.92;
   letter-spacing: -0.03em;
   text-transform: uppercase;
 }
 
 .abt__standfirst {
-  margin: var(--space-8) 0 0;
-  max-width: 40ch;
+  margin: var(--space-6) 0 0;
+  max-width: 44ch;
   font-family: var(--font-swiss);
   font-weight: 400;
   font-size: var(--text-statement);
@@ -116,7 +100,7 @@
 }
 
 .abt__note {
-  margin: var(--space-6) 0 0;
+  margin: var(--space-5) 0 0;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -124,116 +108,44 @@
   color: var(--ink-muted);
 }
 
-/* ── The founders — copy on one side, a plate on the other ───────────────── */
-.abt__list {
+/* ── Page one: the two founders, side by side ────────────────────────────── */
+.abt__founders-grid {
   list-style: none;
-  margin: 0 auto;
+  margin: clamp(var(--space-8), 4vh, var(--space-12)) 0 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
-
-.abt__item {
-  padding: clamp(var(--space-16), 9vw, var(--space-40)) var(--gutter);
-  border-top: 1px solid var(--abt-hairline);
-}
-
-@media (min-width: 900px) {
-  .abt__item {
-    display: grid;
-    grid-template-columns:
-      var(--abt-edge-col)
-      minmax(0, 1fr)
-      minmax(0, 1fr)
-      var(--abt-edge-col);
-    gap: clamp(var(--space-10), 5vw, var(--space-24));
-    align-items: center;
-  }
-
-  /* Every child pinned to row 1 so a right-facing section does not wrap to a
-     second row (the /services note explains the auto-placement trap). */
-  .abt__edge,
-  .abt__body,
-  .abt__plate {
-    grid-row: 1;
-  }
-
-  .abt__item--left .abt__edge {
-    grid-column: 1;
-  }
-  .abt__item--left .abt__body {
-    grid-column: 2;
-  }
-  .abt__item--left .abt__plate {
-    grid-column: 3;
-  }
-
-  .abt__item--right .abt__plate {
-    grid-column: 2;
-  }
-  .abt__item--right .abt__body {
-    grid-column: 3;
-  }
-  .abt__item--right .abt__edge {
-    grid-column: 4;
-  }
-
-  /* A right-facing section hangs off the right edge, mark included. */
-  .abt__item--right .abt__body {
-    align-items: flex-end;
-    text-align: right;
+/* Stack to one column on a phone — the page is allowed to grow here. */
+@media (max-width: 720px) {
+  .abt__founders-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(var(--space-12), 12vw, var(--space-20));
   }
 }
 
-.abt__body {
+.abt__founder {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-width: 0;
 }
 
-.abt__name {
-  margin: var(--space-4) 0 0;
-  font-family: var(--font-swiss);
-  font-weight: 700;
-  font-size: clamp(2.25rem, 5vw, 4rem);
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  text-wrap: balance;
-}
-
-.abt__prose {
-  margin: var(--space-6) 0 0;
-  max-width: 42ch;
-  font-size: var(--text-body-lg);
-  line-height: 1.6;
-  text-wrap: pretty;
-}
-
-/* ── The plate — a clean portrait rectangle, no frame, with a mono caption ── */
+/* Small plate — a clean portrait rectangle, no frame, sized so both founders
+   fit on one screen. */
 .abt__plate {
-  margin: var(--space-10) 0 0;
+  margin: 0 0 var(--space-6);
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  min-width: 0;
-}
-@media (min-width: 900px) {
-  .abt__plate {
-    margin-top: 0;
-    max-width: 24rem;
-  }
-  .abt__item--left .abt__plate {
-    justify-self: start;
-  }
-  .abt__item--right .abt__plate {
-    justify-self: end;
-  }
 }
 
-/* Aspect-ratio + cover so any placeholder crops to the same portrait shape. */
 .abt__plate-img {
   display: block;
   width: 100%;
+  max-width: 15rem;
   aspect-ratio: 4 / 5;
   object-fit: cover;
 }
@@ -245,27 +157,32 @@
   text-transform: uppercase;
   color: var(--ink-muted);
 }
-.abt__item--right .abt__plate-caption {
-  text-align: right;
+
+.abt__founder-mark {
+  color: var(--ink-muted);
 }
 
-/* Edge type is unreadable in a 34px column on a phone; drop it and stack. */
-@media (max-width: 899px) {
-  .abt__edge {
-    display: none;
-  }
-  .abt__plate {
-    max-width: 22rem;
-  }
-  .abt__item--right .abt__plate {
-    margin-left: auto;
-  }
+.abt__name {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(1.875rem, 3.6vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
 }
 
-/* ── The studio story ────────────────────────────────────────────────────── */
-.abt__story {
-  padding: clamp(var(--space-20), 11vw, var(--space-40)) var(--gutter);
-  border-top: 1px solid var(--abt-hairline);
+.abt__prose {
+  margin: var(--space-4) 0 0;
+  max-width: 42ch;
+  font-size: var(--text-body);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ── Page two: the studio ────────────────────────────────────────────────── */
+.abt__studio-inner {
   max-width: 60rem;
 }
 
@@ -273,8 +190,8 @@
   margin: var(--space-5) 0 0;
   font-family: var(--font-swiss);
   font-weight: 700;
-  font-size: clamp(2rem, 5vw, 3.75rem);
-  line-height: 0.98;
+  font-size: clamp(2.25rem, 6vw, 4.25rem);
+  line-height: 0.96;
   letter-spacing: -0.03em;
   text-transform: uppercase;
   text-wrap: balance;
@@ -288,14 +205,10 @@
   text-wrap: pretty;
 }
 
-/* ── Closing statement — Heros, a step down in weight, plenty of air ─────── */
-.abt__closing {
-  padding: clamp(var(--space-16), 9vw, var(--space-32)) var(--gutter);
-}
-
+/* The closing statement — Heros, a step down in weight, set apart with air. */
 .abt__statement {
-  margin: 0;
-  max-width: 30ch;
+  margin: clamp(var(--space-12), 8vh, var(--space-20)) 0 0;
+  max-width: 34ch;
   font-family: var(--font-swiss);
   font-weight: 400;
   font-size: var(--text-statement);
@@ -304,22 +217,20 @@
   text-wrap: pretty;
 }
 
-/* ── CTA into /enquire — heading beside a bracket link, no drawn line ────── */
+/* ── CTA into /enquire — heading beside a bracket link ───────────────────── */
 .abt__cta {
-  padding: clamp(var(--space-16), 8vw, var(--space-24)) var(--gutter)
-    clamp(var(--space-20), 9vw, var(--space-32));
-  border-top: 1px solid var(--abt-hairline);
+  margin-top: clamp(var(--space-12), 9vh, var(--space-24));
   display: flex;
   flex-flow: row wrap;
   align-items: baseline;
-  gap: var(--space-6) clamp(var(--space-8), 6vw, var(--space-20));
+  gap: var(--space-5) clamp(var(--space-6), 5vw, var(--space-16));
 }
 
 .abt__cta-heading {
   margin: 0;
   font-family: var(--font-swiss);
   font-weight: 700;
-  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  font-size: clamp(2rem, 5vw, 3.75rem);
   line-height: 0.95;
   letter-spacing: -0.03em;
   text-transform: uppercase;
