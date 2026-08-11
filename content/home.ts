@@ -23,6 +23,18 @@ export const statement =
 export const statementTail =
   "We create thoughtful, distinctive work that helps brands show up with personality and purpose.";
 
+/**
+ * The statement split at "together." so the home intro can set the opening
+ * sentence bold (asked for directly, 2026-08-09). `statementOpenRest` is
+ * everything after the studio name up to and including "together."; the name
+ * itself is prepended at render time from `siteName`, and `statementRemainder`
+ * is the sentence that follows, left at the normal weight.
+ */
+const _afterName = statement.replace(/^Maemullen/, "");
+const _openEnd = _afterName.indexOf("together.") + "together.".length;
+export const statementOpenRest = _afterName.slice(0, _openEnd);
+export const statementRemainder = _afterName.slice(_openEnd);
+
 /** Verbatim, deck p6 — the About summary paragraph. */
 export const aboutSummary =
   "We believe the strongest brands are built through creativity, consistency and genuine connection. From social media and content creation to design, illustration, PR and events, we create work that feels authentic, considered and designed to leave a lasting impression.";
@@ -171,7 +183,10 @@ export const studioIntro = {
   eyebrow: "The studio",
   heading: { text: "A studio of two,", emphasis: "by design." },
   lead: siteName,
-  leadRest: statement.replace(/^Maemullen/, ""),
+  /** The opening sentence (name + `statementOpenRest`) is set bold; the
+   *  remainder follows at the normal weight. See app/page.tsx. */
+  leadStrong: statementOpenRest,
+  leadTail: statementRemainder,
   body: aboutSummary,
   cta: { label: "Enquire", href: "/enquire" },
   /**

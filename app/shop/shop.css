@@ -1,0 +1,176 @@
+/* ============================================================================
+   /shop — the studio's digital products. Built on the shared chrome (.mmc),
+   scoped under .shop. Site default colour (cream, black, blue on hover).
+
+   Typographic cards: no cover art yet, so each product is a labelled placeholder
+   tile over its name, format, blurb, price and add-to-cart button. When the real
+   covers arrive they drop into .shop__thumb.
+   ============================================================================ */
+
+.shop {
+  --shop-hairline: rgb(0 0 0 / 0.16);
+  background: var(--bg);
+  color: var(--brand-black);
+  font-family: var(--font-body);
+  min-width: 320px;
+}
+
+.shop__main {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: clamp(var(--space-12), 8vh, var(--space-24)) var(--gutter)
+    clamp(var(--space-20), 10vw, var(--space-32));
+}
+
+/* ── Masthead ────────────────────────────────────────────────────────────── */
+.shop__mark {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shop__title {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 9vw, 5.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.shop__standfirst {
+  margin: var(--space-6) 0 0;
+  max-width: 46ch;
+  font-family: var(--font-swiss);
+  font-weight: 400;
+  font-size: var(--text-statement);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.shop__note {
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ── Product grid ────────────────────────────────────────────────────────── */
+.shop__grid {
+  list-style: none;
+  margin: clamp(var(--space-12), 7vw, var(--space-20)) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: clamp(var(--space-8), 4vw, var(--space-16)) clamp(var(--space-6), 3vw, var(--space-12));
+}
+
+.shop__card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Placeholder cover — a hairline tile with a mono note, replaced by real art. */
+.shop__thumb {
+  aspect-ratio: 4 / 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--shop-hairline);
+}
+.shop__thumb-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.shop__card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: var(--space-4);
+}
+
+.shop__format {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.shop__name {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.shop__blurb {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: rgb(0 0 0 / 0.72);
+  text-wrap: pretty;
+}
+
+/* Price left, add-to-cart right — pinned to the foot so uneven blurbs still line
+   the controls up across the row. */
+.shop__card-foot {
+  margin-top: auto;
+  padding-top: var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.shop__price {
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+}
+
+/* Bordered control that inverts on hover — a clear "clickable" without pulling
+   in the red filled button, which is /enquire's. */
+.shop__add {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid var(--brand-black);
+  background: transparent;
+  color: var(--brand-black);
+  border-radius: var(--radius-control);
+  padding: 0 var(--space-5);
+  min-height: var(--btn-height-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: var(--btn-weight);
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+.shop__add:hover {
+  background: var(--brand-black);
+  color: var(--brand-cream);
+}
+.shop__add:active {
+  transform: translateY(var(--press-shift));
+}

@@ -56,7 +56,7 @@ function Pair() {
  * content. `studioIntro.heading` is still in content/home.ts if it comes back.
  */
 function Intro() {
-  const { eyebrow, lead, leadRest, body, cta, image } = studioIntro;
+  const { eyebrow, lead, leadStrong, leadTail, body, cta, image } = studioIntro;
 
   return (
     <section id="studio" aria-label="About the studio" className="home__intro">
@@ -69,9 +69,14 @@ function Intro() {
       <div className="home__copy">
         <h1 className="home__eyebrow">{eyebrow}</h1>
 
+        {/* The opening sentence is bold, through "together." (asked for
+            2026-08-09); the sentence that follows stays at the body weight. */}
         <p className="home__body">
-          {lead}
-          {leadRest}
+          <strong className="home__lead-strong">
+            {lead}
+            {leadStrong}
+          </strong>
+          {leadTail}
         </p>
 
         <p className="home__body">{body}</p>
