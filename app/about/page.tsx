@@ -78,11 +78,14 @@ export default function AboutPage() {
 
             <div className="abt__studio-inner">
               <p className="abt__mark">[ {aboutStory.mark} ]</p>
-              <p className="abt__story-body">{aboutStory.body}</p>
-              <p className="abt__statement">{aboutClosing}</p>
+              <p className="abt__story-body">
+                {aboutStory.bodyLead}
+                <strong className="abt__brand">{aboutStory.bodyName}</strong>
+                {aboutStory.bodyRest}
+              </p>
+              <p className="abt__story-body">{aboutClosing}</p>
 
               <div className="abt__cta">
-                <h2 className="abt__cta-heading">{aboutCta.heading}</h2>
                 <Link href={aboutCta.href} className="mm-cta-bracket abt__cta-link">
                   {aboutCta.label}
                 </Link>

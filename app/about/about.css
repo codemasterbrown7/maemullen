@@ -207,6 +207,7 @@
   text-transform: uppercase;
 }
 
+/* Both studio paragraphs share this: same font, same size (asked for). */
 .abt__story-body {
   margin: var(--space-6) 0 0;
   max-width: 54ch;
@@ -214,17 +215,14 @@
   line-height: 1.6;
   text-wrap: pretty;
 }
+/* A clear gap between the two paragraphs, without changing their type. */
+.abt__story-body + .abt__story-body {
+  margin-top: clamp(var(--space-8), 5vh, var(--space-12));
+}
 
-/* The closing statement — Heros, a step down in weight, set apart with air. */
-.abt__statement {
-  margin: clamp(var(--space-12), 8vh, var(--space-20)) 0 0;
-  max-width: 34ch;
-  font-family: var(--font-swiss);
-  font-weight: 400;
-  font-size: var(--text-statement);
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  text-wrap: pretty;
+/* The studio name, set bold in the run of the sentence. */
+.abt__brand {
+  font-weight: 700;
 }
 
 /* A long vertical headline is unreadable on a phone; lay it flat and stack. */
@@ -244,24 +242,9 @@
   }
 }
 
-/* ── CTA into /enquire — heading beside a bracket link ───────────────────── */
+/* ── CTA into /enquire — just the bracket link now ───────────────────────── */
 .abt__cta {
   margin-top: clamp(var(--space-12), 9vh, var(--space-24));
-  display: flex;
-  flex-flow: row wrap;
-  align-items: baseline;
-  gap: var(--space-5) clamp(var(--space-6), 5vw, var(--space-16));
-}
-
-.abt__cta-heading {
-  margin: 0;
-  font-family: var(--font-swiss);
-  font-weight: 700;
-  font-size: clamp(2rem, 5vw, 3.75rem);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  text-wrap: balance;
 }
 
 .abt .mm-cta-bracket.abt__cta-link {
