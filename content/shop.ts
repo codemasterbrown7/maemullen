@@ -51,10 +51,9 @@ export const illustrations: Illustration[] = [
   {
     slug: "illustration-package",
     name: "Illustration Package",
-    format: "Digital download",
-    blurb:
-      "A set of the studio's hand-drawn illustrations, delivered as print-ready files. Pieces added as they're released.",
-    price: 30,
+    format: "Digital download · PNG + PDF",
+    blurb: "An original hand-drawn piece, delivered as a high-resolution file ready to print.",
+    price: 20,
     gumroad: "",
   },
 ];
@@ -62,12 +61,14 @@ export const illustrations: Illustration[] = [
 export const shopPage = {
   mark: "The shop",
   title: "Shop",
+  /** Deliberately generic — the studio will sell more than illustrations, and
+   *  each product explains itself. Do not narrow this back to illustrations. */
   standfirst:
-    "Hand-drawn illustrations from the studio, bought and delivered securely through Gumroad — with more to come.",
+    "Digital products from the studio, bought and delivered securely through Gumroad — with more to come.",
 };
 
 /** Shown once under the masthead: the product is a stand-in. */
-export const shopNote = "Placeholder — illustrations, prices and covers on their way.";
+export const shopNote = "Placeholder — product details and covers on their way.";
 
 /** The label on a piece that has no Gumroad link yet. */
 export const comingSoonLabel = "Coming soon";
