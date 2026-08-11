@@ -15,7 +15,9 @@ export const siteDescription =
 /**
  * Balanced 3+3 nav around the centred logotype (DESIGN.md §0, S2).
  * Portfolio points at /work for now — the Portfolio-vs-Work split is
- * deliberately deferred (docs/SITEMAP.md §2).
+ * deliberately deferred (docs/SITEMAP.md §2). The old second "Work" link is now
+ * "Shop" → /shop, where the studio sells its digital products (2026-08-09); the
+ * cart lives beside the nav (components/chrome/CartButton.tsx), not in it.
  */
 export const nav: { left: NavItem[]; right: NavItem[] } = {
   left: [
@@ -25,7 +27,7 @@ export const nav: { left: NavItem[]; right: NavItem[] } = {
   ],
   right: [
     { label: "Portfolio", href: "/work" },
-    { label: "Work", href: "/work" },
+    { label: "Shop", href: "/shop" },
     { label: "Enquire", href: "/enquire" },
   ],
 };

@@ -236,6 +236,11 @@
 .home__eyebrow + .home__body {
   margin-top: var(--space-6);
 }
+/* The opening sentence of the statement, set bold through "together." (asked
+   for 2026-08-09). The rest of the block stays at 400. */
+.home__lead-strong {
+  font-weight: 700;
+}
 /* The reference sets its buttons one step below body — 12px, same face, no
    bold — so the block reads as one system rather than a control bolted on. */
 .home__cta {
