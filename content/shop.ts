@@ -1,20 +1,20 @@
 /**
  * /shop content — the studio sells Poppy's hand-drawn illustrations. Kept
- * deliberately small so the site can go live fast (asked for 2026-08-09); the
- * templates and toolkits come later.
+ * deliberately small so the site can go live fast; more products follow later.
  *
- * CHECKOUT IS GUMROAD. Each piece links to its own Gumroad product; Gumroad
- * hosts the payment overlay and delivers the file, so there is nothing to run on
- * our side (the site is a static export). To take a piece live: create it as a
- * product on Gumroad, then paste its URL into `gumroad` below. Until a piece has
- * a URL it shows as "Coming soon" rather than a dead buy button.
+ * THE FLOW. Add to cart on the shop → the cart (browser-side, lib/cart.ts) →
+ * Checkout hands off to GUMROAD, which takes the payment and delivers the files.
+ * The site is a static export, so there is nothing to run on our side.
  *
- * PLACEHOLDER PIECES. Names, prices and cover art are stand-ins until Poppy's
- * real illustrations and their Gumroad links arrive; `shopNote` says so on the
- * page. Prices are whole pounds.
+ * TO SWITCH CHECKOUT ON. Create the product on Gumroad, then paste its product
+ * URL into `gumroad` below. While it is empty, the cart's Checkout explains that
+ * payment isn't connected yet instead of opening a dead link.
+ *
+ * PLACEHOLDER PIECE. Name, price and cover art are stand-ins until Poppy's real
+ * illustrations arrive; `shopNote` says so on the page.
  */
 
-export type Illustration = {
+export type Product = {
   slug: string;
   name: string;
   /** A short line under the name — what the buyer receives. */
@@ -23,9 +23,10 @@ export type Illustration = {
   /** Whole pounds. */
   price: number;
   /**
-   * The piece's Gumroad product URL, e.g.
-   * "https://maemullen.gumroad.com/l/your-permalink". Empty until the product
-   * exists on Gumroad — an empty string renders "Coming soon".
+   * The product's Gumroad URL, e.g.
+   * "https://maemullen.gumroad.com/l/your-permalink". PASTE IT HERE once the
+   * product exists on Gumroad — that switches Checkout from the "not connected"
+   * note to a live Gumroad checkout. Leave "" until then.
    */
   gumroad: string;
 };
@@ -38,25 +39,31 @@ export function formatPrice(price: number): string {
 }
 
 /**
- * Gumroad's overlay script, included once on the shop page. With it loaded, any
- * link to a Gumroad product opens the checkout in a modal on our own page.
+ * Gumroad's overlay script, included once on the cart page. With it loaded, the
+ * Checkout link opens Gumroad's payment form in a modal on our own page rather
+ * than navigating away.
  */
 export const gumroadScriptSrc = "https://gumroad.com/js/gumroad.js";
 
 /**
- * One product for now — the illustration package, a stand-in the studio fills
- * with Poppy's hand-drawn pieces. More products follow later.
+ * One product for now — the illustration package, a set of Poppy's hand-drawn
+ * pieces. It is NOT a single illustration; the copy says so (2026-08-09).
  */
-export const illustrations: Illustration[] = [
+export const products: Product[] = [
   {
     slug: "illustration-package",
     name: "Illustration Package",
     format: "Digital download · PNG + PDF",
-    blurb: "An original hand-drawn piece, delivered as a high-resolution file ready to print.",
+    blurb:
+      "A pack of the studio's hand-drawn illustrations, delivered as high-resolution files ready to print.",
     price: 20,
     gumroad: "",
   },
 ];
+
+export function productBySlug(slug: string): Product | undefined {
+  return products.find((p) => p.slug === slug);
+}
 
 export const shopPage = {
   mark: "The shop",
@@ -70,6 +77,22 @@ export const shopPage = {
 /** Shown once under the masthead: the product is a stand-in. */
 export const shopNote = "Placeholder — product details and covers on their way.";
 
-/** The label on a piece that has no Gumroad link yet. */
-export const comingSoonLabel = "Coming soon";
-export const buyLabel = "Buy";
+export const cartPage = {
+  mark: "Your cart",
+  title: "Cart",
+  empty: "Your cart is empty.",
+  emptyLink: { label: "Browse the shop", href: "/shop" },
+  subtotalLabel: "Subtotal",
+  removeLabel: "Remove",
+  checkoutLabel: "Checkout",
+  /** Shown above the per-product checkout links when the cart holds more than
+   *  one distinct product (each still checks out on Gumroad individually). */
+  multiHint: "Each item checks out on Gumroad:",
+  /**
+   * Shown when a cart item has no Gumroad link yet — checkout cannot open a
+   * payment that does not exist. Paste the product's Gumroad URL into
+   * content/shop.ts to switch checkout on.
+   */
+  checkoutNote:
+    "Checkout runs through Gumroad, which takes the payment and sends the files. It goes live the moment this product is connected on Gumroad.",
+};
