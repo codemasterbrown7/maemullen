@@ -1,11 +1,12 @@
 /**
  * The pages that exist in the navigation but are not built yet.
  *
- * WHY THEY EXIST AS PAGES AT ALL. The header carries six links and a couple of
- * them do not lead anywhere yet — /packages and /work are still to come. On a
- * live site each of those is a dead end, and a dead end that returns the host's
- * default 404 reads as a broken site rather than an unfinished one.
- * (/about, /enquire and /services are built; the stubs below are what remain.)
+ * WHY THEY EXIST AS PAGES AT ALL. The header carries six links and one of them
+ * does not lead anywhere yet — /work is still to come. On a live site that is a
+ * dead end, and a dead end that returns the host's default 404 reads as a broken
+ * site rather than an unfinished one.
+ * (/about, /services, /packages, /shop and /enquire are built; the stub below is
+ * what remains.)
  *
  * DELIBERATELY PLAIN, by request (2026-08-04). The first version carried a
  * contents list of what was coming and the scroll-drawn knot from /services;
@@ -29,9 +30,9 @@ export type SoonPage = {
 export const soonMark = "In progress";
 
 /**
- * One line, shared by all four. Per-page wording was the previous version's and
- * went with the rest of it: four variations on "this is being built" is four
- * chances to say it slightly differently for no gain.
+ * One line, shared by every page that needs it. Per-page wording was the previous
+ * version's and went with the rest of it: a variation on "this is being built"
+ * per page is a chance to say it slightly differently for no gain.
  */
 export const soonLine = "This page is being built. It will be here soon.";
 
@@ -47,12 +48,11 @@ export const soonOnward = {
 };
 
 export const soonPages: Record<string, SoonPage> = {
-  packages: {
-    href: "/packages",
-    title: "Packages",
-    metaTitle: "Packages",
-    description: "How we work together month to month, and what that includes.",
-  },
+  /* /packages was here. It shipped 2026-08-06 — both of the contradictions in
+     docs/SITEMAP.md §4.4 that were blocking it are resolved, and the reasoning
+     is recorded at the top of content/packages.ts.
+
+     /about and /enquire were here too, and shipped ahead of it. */
 
   work: {
     href: "/work",

@@ -283,10 +283,118 @@ Landing pages · Portfolio websites · Small business websites · Website refres
 
 ### 4.4 `/packages` — Packages
 
-Deck p10–p13. Three tiers plus the TikTok add-on.
+Deck p8 and p10–p13. ✅ **Built 2026-08-06.** Both blocking contradictions are resolved — see
+`RESOLVED` below. Full reasoning lives at the top of `content/packages.ts`.
 
-> ⚠️ **Two unresolved contradictions — see the OPEN items below. Do not ship this page until both
-> are settled.**
+**Scope is p8, not p10–13.** This section used to read "three tiers plus the TikTok add-on", which
+is what p10–13 shows. Deck p8 — the IA page — is broader and it is the one that governs:
+
+> PACKAGES (bronze, silver, gold, **content days, tiktok management, pr & events, website
+> building** dont include prices on website)
+
+So Packages is the whole commercial menu, not just the retainers. That resolves §1's `OPEN:` in
+favour of keeping the route, and creates the real problem: five of the seven services appear on
+both pages. **The axis that separates them is discipline vs commitment** — `/services` is what we
+do, `/packages` is the shapes you can book it in. The mapping is deliberately not one-to-one
+(social media management is one service and three packages; PR & events is one service split
+across a monthly add-on and a one-off quote). Three rules enforce it, and breaking any of them
+collapses the page back into a copy of `/services`:
+
+1. Name the shape, not the field — *"Design project"*, not *"Design & illustration"*.
+2. No prose and no photography. `/packages` is type and rules only, and carries no scroll-drawn
+   thread — the knot belongs to `/services`.
+3. Every row links back to the service it draws on.
+
+**As built — ONE TAB PER THING YOU CAN BUY.** Eight tabs, `001–010`:
+
+| Tab | | Panel |
+|---|---|---|
+| Social media | 001–003 | Essential · Signature · **Elevated** (emphasised) — the only three-column panel |
+| Content days | 004 | Content day |
+| UGC | 005 | UGC & brand content |
+| TikTok | 006 | TikTok management |
+| PR | 007 | PR & influencer |
+| Events | 008 | Event |
+| Design | 009 | Design project |
+| Websites | 010 | Website build |
+
+Then one band that is the bespoke offer **and** the page's closing CTA — *"Bespoke / Don't see a
+package that fits?"* → Enquire. One band rather than two, because every package already ends in
+Enquire and a generic "let's work together" underneath would be the third ask on a screen.
+
+> **The page has now failed twice in the same direction, and it is worth not doing a third time.**
+> The first build was one eleven-row accordion — *"way way too confusing"*. The second grouped
+> nine packages into four areas ("Content" holding both the content day and UGC) — *"each thing
+> should be its own separate clickable thing"*. Both made the reader work out for themselves which
+> items compete with each other.
+>
+> **Social media is the only multi-card panel, and that is the rule rather than an exception to
+> it.** Essential/Signature/Elevated are three prices for one thing, so they are alternatives and
+> belong side by side. Nothing else on the page is an alternative to anything, so nothing else
+> shares a panel. TikTok was a line under the social tiers until the client asked that it not be
+> *"hidden down at the bottom"*; it is 006 now, and its `commitment` still reads "alongside any
+> package", which is the one thing worth keeping from treating it as an add-on.
+
+**Tabs run on CSS, not JavaScript** — one visually-hidden radio group with the tab bar and the
+panels as siblings (`#id:checked ~ …`). The page stays a server component with no client bundle
+of its own; a radio group already *is* "one of a set", so native arrow-key behaviour comes free;
+every panel stays in the HTML, so all ten packages are indexable and findable with find-in-page;
+and it works with JS off. The inputs are clipped with `.mm-visually-hidden`, **not**
+`display: none`, which would make them unfocusable.
+
+**⚠️ HORIZONTAL RULES IN THIS AREA — what stays and what went. Three were cut; one is wanted.**
+
+| | Verdict |
+|---|---|
+| Full-width `border-bottom` under the whole tab bar | **Cut** — read as two stacked lines against the column rules below it |
+| The **moving rule under the active tab** | **KEEP.** Asked for, then deleted by mistake, then asked back |
+| Black rule over each comparison column, above `[ 00x ]` | **Cut** — furniture; the spec list already rules every entry |
+| Blue 2px rule over the **feature** column only | **KEEP** — emphasis, not structure |
+
+The mis-step is worth recording so it is not repeated: *"i still think the line looks out of place
+and is unnecessary"* was read as the tab indicator, and `components/ui/tab-line.tsx` was deleted.
+It meant *"the line below that"* — the column rules. The component is restored; the column rules
+are gone.
+
+**The moving rule** (`components/ui/tab-line.tsx`). Its two edges are transitioned separately —
+`left` and `right` on one ease-in-out curve with a 90ms delay on the trailing edge — so the leading
+edge leaves first, the rule briefly spans both tabs, and the tail closes it. `data-dir` swaps which
+edge leads, or a leftward move stretches away from the tab that was clicked. Measured live at 1440:
+158px → 655px → 113px, settling exactly on the target label.
+
+It is the page's only script and it is decoration: it adds `is-enhanced` to the track, and until
+that lands (and forever, with JS off) the CSS draws a static `border-bottom` on the checked label
+instead. The two can never both show. Positions come from `offsetLeft`/`offsetWidth`, **not**
+`getBoundingClientRect`, because the bar scrolls horizontally and rect values would be off by the
+scroll distance.
+
+**With the black column rules gone**, the feature column's blue rule is the only one in the row, so
+it says more than it did when all three had one — and it doubles as the underline for the
+`[ RECOMMENDED ]` tag above it. The other two columns keep its exact metrics as bare padding
+(`calc(var(--space-5) + 2px)`), so all three `[ 00x ]` numbers still sit on one line; only the ink
+differs. `.pkg__col-head` is `vertical-align: top` for the same reason — bottom-aligning would drop
+a column's number whenever a neighbour's positioning line wrapped.
+
+**Tabs are centred and set large** (22px at 1440, `clamp(1rem, 1.7vw, 1.375rem)`) — they are the
+page's primary control and at 18px they read as a filter bar on top of the content rather than the
+thing you use first. Centring is `justify-content: center` on a track that is `width: max-content;
+min-width: 100%`: when the labels fit, the track fills the bar and they centre; when they do not,
+the track is wider than the bar and centring silently stops applying, so the first tab stays flush
+left and reachable. One rule, both behaviours, no breakpoint.
+
+**Active is ink plus the moving rule** — solid black against `rgb(0 0 0 / 0.45)`, lighter than the
+site's usual `--ink-muted` so the step is unmistakable (still clears 3:1 for large text). **Not
+weight**: bold and regular set to different widths, so every click would reflow the row and,
+centred, shift every other tab sideways — and the rule measures those widths.
+
+**Making Elevated pull.** Asked for directly: distinguish it *and* make someone likelier to click
+it. The reference does it with a solid blue button, which is ruled out here — filled pills were
+rejected as "extremely out of place" in typographic blocks and the bracket CTA is the locked
+signature (DESIGN.md §6.3). Three signals instead, no new furniture: **ink** (everything the card
+owns switches to brand blue — the page's only accent, spent here and nowhere else, so it reads
+pre-attentively); **mark** (a `[ RECOMMENDED ]` tag in the page's own bracket-and-caps register);
+**height** (a 2px rule against the others' 1px, and the tag lifts the column). The tag row is
+reserved on every card in a panel that has a feature card, so the three rules stay on one line.
 
 | Tier | Second name | Price | Positioning line (verbatim) |
 |---|---|---|---|
@@ -310,18 +418,76 @@ Caption writing · Content scheduling · Content calendar · Monthly performance
 
 **TikTok add-on** — *"Available alongside any package."* +£250–400/month.
 
-`OPEN: 1 — Do prices appear at all?` Deck p8 says
-> PACKAGES (bronze, silver, gold, content days, tiktok management, pr & events, website building
-> **dont include prices on website**)
+`RESOLVED: 1 — Do prices appear at all?` **No. Suppressed site-wide.** The deck's *"dont include
+prices on website"* sits at the end of the whole PACKAGES parenthesis on p8, not on "website
+building" alone; the client confirmed it directly on 2026-08-06. The real figures stay recorded in
+`content/services.ts`, unrendered.
 
-…yet every single service page in the deck states a price. Two readings: (a) suppress *all*
-pricing and drive to enquiry, or (b) the note attaches only to website building. This changes the
-whole page — a price grid versus a "request a quote" layout.
+What replaces them is a **commitment line** on every row — the shape of the spend rather than the
+amount, shown in the *closed* row so the shut list is still scannable: *"Monthly, ongoing"* ·
+*"Half day or full day"* · *"By the hour, or by the project"* · *"Fixed project fee"* · *"Quoted by
+scale"* · *"Quoted to you"*. A mono note above the closing CTA explains the absence, so it reads as
+a decision rather than an oversight.
 
-`OPEN: 2 — Which naming scheme?` Gold/Silver/Bronze *and* Essential/Signature/Elevated are both
-present. They also conflict semantically: **"Elevated" is attached to the cheapest tier**, which
-reads backwards, and "Essential" to the most expensive. Options: pick metals, pick names, or
-re-map names so the ladder ascends sensibly.
+`RESOLVED: 2 — Which naming scheme?` **Metals dropped, word-names remapped to ascend.** Confirmed
+by the client 2026-08-06. Metals read as a podium — the entry client is told they bought bronze —
+which is off-brand for a studio selling *"authentic, considered, distinctive"*. The two
+semantically-broken names simply swap; Signature does not move.
+
+| Deck | Ships as |
+|---|---|
+| Bronze / *"Elevated"* (cheapest) | **001 Essential** |
+| Silver / Signature | **002 Signature** |
+| Gold / *"Essential"* (dearest) | **003 Elevated** |
+
+`OPEN:` **Minimum term on the three monthly packages.** Nothing in the deck says. `commitment`
+reads *"Monthly, ongoing"*, which is true either way and deliberately does not assert a rolling
+contract. If there is a three-month minimum it belongs in that string.
+
+`RESOLVED: 3 — PR is a package, not an add-on` (client, 2026-08-06). It shipped as an add-on first
+because the deck prices it monthly and *"alongside"* is the pattern. It is now **006**, in its own
+tab beside Events — the better read anyway: PR recurs, events are one-off, and putting them side
+by side is what shows that. **TikTok is now the only add-on**, and stays one: the deck's own
+framing is *"Available alongside any package"* (p13), so it is not an alternative to anything and
+cannot be a column in a panel of alternatives. It renders as a single line under the social tiers.
+
+`OPEN:` ⚠️ **The three tier lists have gaps, and an assumption has been made to cover them.** The
+client asked (2026-08-06) that features appearing across all three tiers line up on one row, so the
+social panel is now a real `<table>` built from `socialMatrix` in `content/packages.ts` — one row
+per feature, `null` rendering as a dash.
+
+Aligning them exposed what three separate lists hid: **the deck says a cheaper tier includes things
+a dearer one does not.** Signature (p11) never mentions caption writing or content scheduling, both
+of which Essential *below it* lists; Elevated (p10) never mentions Signature's 2 revisions. Read
+literally that is a ladder that goes down as it goes up.
+
+**The assumption, and it is an assumption: each tier includes everything below it.** The deck's
+lists are summaries, not contracts, and every tiered offer works this way — so those cells are
+filled cumulatively rather than left as dashes that would misrepresent the client's own product.
+Marked `INHERITED` at each one in `content/packages.ts`. **Confirm with Laura & Poppy**; if any is
+genuinely not in a tier, set that cell to `null` and the dash returns.
+
+A **"Revisions"** row (deck p11, Signature's "2 revisions") was cut on request 2026-08-06. It was
+also the only row whose Elevated cell was inherited purely to stop the ladder reading backwards, so
+removing it takes one of the three deck contradictions off the page rather than papering over it.
+
+**Row order is load-bearing.** Rows run from "in all three tiers" down to "in Elevated only", so
+every column's dashes collect at the *bottom* — Essential 7 filled then 4 dashes, Signature 9 then
+2, Elevated 11 and none. The first version grouped rows by subject, which scattered Essential's
+dashes through the middle of its column and left holes in the list; cut on request (2026-08-06).
+This only works because the matrix is cumulative, so the three sets nest strictly. A **build-time
+assertion** at the foot of `socialMatrix` throws if a column ever has a filled cell below a gap —
+verified by injecting one, which fails `next build` with the offending row named.
+
+`OPEN:` **The comparison scrolls sideways on a phone** (`min-width: 46rem`), so Elevated — the
+emphasised column — is the last one reached. Stacking was rejected: it destroys the row alignment
+that is the whole requirement. If it matters, the mobile answer is a snapping carousel of one card
+per screen, which is a second layout to build rather than a tweak.
+
+`OPEN:` **Cross-links from `/services` into `/packages`.** Rule 3 runs one way so far — every
+package row links out to its service. Only `#social-media` links back. Adding a link to the other
+six sections means touching `/services`, whose layout the scroll-drawn thread measures itself
+against, so it is a deliberate follow-up rather than a free change.
 
 ---
 

@@ -104,7 +104,13 @@ export default function RootLayout({
       lang="en-GB"
       className={`${playfair.variable} ${switzer.variable} ${heros.variable} ${plexMono.variable}`}
     >
-      <body>
+      {/* Browser extensions stamp their own attributes onto <body> (bis_register,
+          __processed_<uuid>__ and friends) before React hydrates, which React
+          then reports as a mismatch it "won't patch up". Nothing here renders
+          those, and there is no way to stop an extension touching the document.
+          The suppression is scoped to this one element's attributes, so a real
+          mismatch anywhere inside the tree is still reported. */}
+      <body suppressHydrationWarning>
         {children}
         {/* Last in the body, so the letter split runs over a page that is
             already committed. Mouse-and-keyboard only: it declines to start on
