@@ -29,6 +29,9 @@
      this and three of them in a row read as boxes rather than as offers. */
   --pkg-card: var(--brand-white);
   --pkg-card-edge: rgb(0 0 0 / 0.07);
+  /* The banded row. Warm rather than a grey wash, so it reads as the cream
+     page showing through the card rather than as a tint dropped on top. */
+  --pkg-band: #faf7ef;
   --pkg-card-pad: clamp(var(--space-5), 2.2vw, var(--space-8));
 
   background: var(--bg);
@@ -433,21 +436,36 @@
   text-wrap: pretty;
 }
 
-/* NO RULE BETWEEN ENTRIES. Every row carried a hairline — the spec-list
-   treatment /services uses — and inside a card that is ten horizontal lines
-   stacked on a white field, which is a spreadsheet: "i dont like the lines
-   seperating each thing" (2026-08-20).
+/* BANDED, NOT RULED. Every row first carried a hairline, which inside a card
+   is ten lines stacked on a white field — a spreadsheet, and cut for it. Then
+   nothing separated the rows at all, and that lost the thing the layout exists
+   for: "there is nothing to help guide the eyes and show that each row
+   corresponds" (2026-08-20).
 
-   Space does the separating now. That works here and did not on /services
-   because the card already supplies the boundary the rules were drawing; a
-   rule inside a bounded surface is furniture on top of furniture. What holds
-   the three tiers on the same line is the <table>, which never needed the
-   hairlines to do it — they were only ever the visible echo of an alignment
-   the markup already guarantees. */
+   The band is the third answer and the right one. A rule divides; a band
+   GROUPS, and because the three cards share one <table> the bands land at the
+   same heights across all three, so the eye tracks "8 pieces" → "12–16" →
+   "20+" along a continuous rail instead of drifting. It also reads correctly
+   where a rule did not: an empty cell in Essential still carries its band, so
+   the row visibly exists and is visibly unfilled.
+
+   Warm, and barely there. Strong enough to track, and nowhere near zebra
+   striping — the moment the band is legible as a stripe it is a spreadsheet
+   again.
+
+   MONO, because in the body face this was eleven lines of prose stacked in a
+   column: "it kind of just looks like regular paragraph text". The page
+   already speaks mono for every annotation on it (001, MONTHLY ONGOING,
+   [ ENQUIRE ], the service link), so the spec list joins a register that
+   exists rather than inventing a treatment. It also sets the list at a
+   different rhythm to the sentence above it, which is what stops the card
+   reading as one undifferentiated block of copy. */
 .pkg__cell {
   padding: var(--space-3) var(--pkg-card-pad);
-  font-size: var(--text-body-sm);
-  line-height: 1.45;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
   vertical-align: top;
   background: var(--pkg-card);
   /* Sides only. A cell is its own box, so a box-shadow or a full border here
@@ -456,6 +474,10 @@
      the column because every cell in it carries the same two. */
   border-left: 1px solid var(--pkg-card-edge);
   border-right: 1px solid var(--pkg-card-edge);
+}
+
+.pkg__matrix tbody tr:nth-child(even) .pkg__cell {
+  background: var(--pkg-band);
 }
 
 /* THE ONE RULE LEFT, and it separates two kinds of thing rather than two
