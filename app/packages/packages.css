@@ -21,6 +21,16 @@
   --pkg-edge-col: 34px;
   --pkg-max: 85rem;
 
+  /* ── The card each offer sits on ──
+     White on cream is a soft distinction by design — #ffffff against #fffaed
+     differs mostly in the blue channel — so the separation is carried by the
+     padding and the corner as much as by the fill, with a whisper of an edge
+     to stop the card dissolving into the page on a warm display. Heavier than
+     this and three of them in a row read as boxes rather than as offers. */
+  --pkg-card: var(--brand-white);
+  --pkg-card-edge: rgb(0 0 0 / 0.07);
+  --pkg-card-pad: clamp(var(--space-5), 2.2vw, var(--space-8));
+
   background: var(--bg);
   color: var(--pkg-ink);
   font-family: var(--font-body);
@@ -342,7 +352,7 @@
   margin: 0 calc(-1 * clamp(var(--space-8), 4vw, var(--space-16)));
   width: calc(100% + 2 * clamp(var(--space-8), 4vw, var(--space-16)));
   table-layout: fixed;
-  text-align: left;
+  text-align: center;
 }
 
 /* `top`, not `bottom`. Nothing rules the tops of these columns any more, so
@@ -353,8 +363,12 @@
    sentence, which nothing else lines up against. */
 .pkg__col-head {
   vertical-align: top;
-  padding: 0 0 var(--space-6);
+  padding: var(--pkg-card-pad) var(--pkg-card-pad) var(--space-6);
   font-weight: 400;
+  background: var(--pkg-card);
+  border: 1px solid var(--pkg-card-edge);
+  border-bottom: 0;
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
 }
 
 /* NO EMPHASISED COLUMN. Elevated carried a `[ RECOMMENDED ]` tag, brand-blue
@@ -422,11 +436,18 @@
 /* The /services spec-list treatment: a hairline over every entry so the block
    reads as a schedule rather than as another paragraph. */
 .pkg__cell {
-  padding: var(--space-3) 0;
+  padding: var(--space-3) var(--pkg-card-pad);
   border-top: 1px solid var(--pkg-hairline);
   font-size: var(--text-body-sm);
   line-height: 1.4;
   vertical-align: top;
+  background: var(--pkg-card);
+  /* Sides only. A cell is its own box, so a box-shadow or a full border here
+     would draw a line between every row and the card would come apart into
+     the table it actually is; the left and right edges are continuous down
+     the column because every cell in it carries the same two. */
+  border-left: 1px solid var(--pkg-card-edge);
+  border-right: 1px solid var(--pkg-card-edge);
 }
 
 /* A row this tier does not have. Quiet enough not to be read as an offer and
@@ -437,8 +458,12 @@
 }
 
 .pkg__col-foot {
-  padding-top: var(--space-8);
+  padding: var(--space-8) var(--pkg-card-pad) var(--pkg-card-pad);
   vertical-align: top;
+  background: var(--pkg-card);
+  border: 1px solid var(--pkg-card-edge);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
 }
 
 /* The stacking lives here rather than on the <td>: `display: flex` on a table
@@ -447,7 +472,7 @@
 .pkg__foot-stack {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-4);
 }
 
@@ -463,10 +488,20 @@
    NO RULE ACROSS THE TOP either — it was the same full-width hairline under the
    tab bar that was cut from the comparison columns, and it survived here one
    pass longer than it should have. */
+/* ON THE SAME CARD AS THE COMPARISON. The tiers became three white cards on
+   2026-08-20, and a tab that switched from a carded panel to bare cream read as
+   a page half-finished rather than as a different kind of offer. The surface is
+   shared; the ARRANGEMENT is still the one this panel always had — copy against
+   its list, left-aligned — because there is nothing here to compare and a lone
+   centred column in a full-width card is a lot of white either side of nothing. */
 .pkg__single {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-10);
+  background: var(--pkg-card);
+  border: 1px solid var(--pkg-card-edge);
+  border-radius: var(--radius-panel);
+  padding: clamp(var(--space-8), 3.5vw, var(--space-12));
 }
 
 @media (min-width: 900px) {
