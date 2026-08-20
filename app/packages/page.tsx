@@ -160,10 +160,11 @@ export default function PackagesPage() {
                               {/* The row's name is spoken but not shown: on
                                   screen every cell says what it is ("20+ pieces
                                   of content"), so a label column would repeat
-                                  each row four times. A dash has no such luxury
-                                  — without this it is announced as nothing. */}
+                                  each row four times. An empty cell has no such
+                                  luxury — without this it is announced as
+                                  nothing at all. */}
                               <span className="mm-visually-hidden">{row.label}: </span>
-                              {cell ?? <span aria-hidden="true">—</span>}
+                              {cell}
                               {!cell && <span className="mm-visually-hidden">Not included</span>}
                             </td>
                           ))}

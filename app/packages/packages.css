@@ -433,13 +433,21 @@
   text-wrap: pretty;
 }
 
-/* The /services spec-list treatment: a hairline over every entry so the block
-   reads as a schedule rather than as another paragraph. */
+/* NO RULE BETWEEN ENTRIES. Every row carried a hairline — the spec-list
+   treatment /services uses — and inside a card that is ten horizontal lines
+   stacked on a white field, which is a spreadsheet: "i dont like the lines
+   seperating each thing" (2026-08-20).
+
+   Space does the separating now. That works here and did not on /services
+   because the card already supplies the boundary the rules were drawing; a
+   rule inside a bounded surface is furniture on top of furniture. What holds
+   the three tiers on the same line is the <table>, which never needed the
+   hairlines to do it — they were only ever the visible echo of an alignment
+   the markup already guarantees. */
 .pkg__cell {
   padding: var(--space-3) var(--pkg-card-pad);
-  border-top: 1px solid var(--pkg-hairline);
   font-size: var(--text-body-sm);
-  line-height: 1.4;
+  line-height: 1.45;
   vertical-align: top;
   background: var(--pkg-card);
   /* Sides only. A cell is its own box, so a box-shadow or a full border here
@@ -450,11 +458,25 @@
   border-right: 1px solid var(--pkg-card-edge);
 }
 
-/* A row this tier does not have. Quiet enough not to be read as an offer and
-   present enough that the row still lines up — which is the whole point of the
-   dash: it is what makes "20+" opposite "8" mean something. */
+/* THE ONE RULE LEFT, and it separates two kinds of thing rather than two
+   entries of the same kind: who the tier is for, above; what it contains,
+   below. One line per card instead of ten. */
+.pkg__matrix tbody tr:first-child .pkg__cell {
+  border-top: 1px solid var(--pkg-hairline);
+}
+
+/* A row this tier does not have. It renders EMPTY, and the emptiness is the
+   comparison: the rows line up, so a blank opposite "Priority support" says
+   the same thing a dash did without putting a mark on the page.
+
+   The dash went with the hairlines on 2026-08-20 and for the same reason. It
+   was calibrated against a ruled list, where it sat on its own line and read
+   as a deliberate mark; with the rules gone, four of them stacked at the foot
+   of Essential read as debris. Screen readers still hear "Not included" —
+   that never depended on the dash. The class stays: it is the hook for the
+   cell's a11y text and for anything this row needs later. */
 .pkg__cell--absent {
-  color: rgb(0 0 0 / 0.3);
+  color: transparent;
 }
 
 .pkg__col-foot {
@@ -536,10 +558,14 @@
   color: var(--ink-muted);
 }
 
+/* One rule under the label, for the same reason the comparison keeps one under
+   its head: it marks where the list starts. The entries below it are separated
+   by space. */
 .pkg__includes {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: var(--space-2) 0 0;
+  border-top: 1px solid var(--pkg-hairline);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   column-gap: var(--space-8);
@@ -547,9 +573,8 @@
 
 .pkg__include {
   padding: var(--space-3) 0;
-  border-top: 1px solid var(--pkg-hairline);
   font-size: var(--text-body-sm);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 /* Mono, quiet, and the only navigation out of a package — the cross-link back
