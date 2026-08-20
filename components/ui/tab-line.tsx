@@ -36,7 +36,15 @@ import { useEffect, useRef } from "react";
  * was the one BELOW it, the rule over each column of the comparison. That rule
  * is gone; this one was asked back the same day. The tab indicator stays.
  */
-export function TabLine({ name }: { name: string }) {
+export function TabLine({
+  name,
+  className = "pkg__tab-line",
+}: {
+  name: string;
+  /** The hook the host page styles this with. Defaults to /packages', so the
+      original caller did not have to change; /packages-v3 passes its own. */
+  className?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -112,5 +120,5 @@ export function TabLine({ name }: { name: string }) {
 
   /* aria-hidden: it is a picture of the radio group's state, and the radio
      group already announces that state properly. */
-  return <span ref={ref} className="pkg__tab-line" aria-hidden="true" />;
+  return <span ref={ref} className={className} aria-hidden="true" />;
 }

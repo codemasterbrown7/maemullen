@@ -1,0 +1,731 @@
+/* ============================================================================
+   /packages — one tab per thing you can buy, and one panel underneath.
+
+   Deliberately the plainest page on the site. It shares /services' registers —
+   the mono `[ 00x ]` annotation, the Swiss display face, hairline rules — and
+   drops everything /services uses to be an editorial: no photography, no
+   vertical section type, no scroll-drawn thread. Every subject on this page also
+   appears on /services, and this restraint is a large part of what stops the two
+   reading as one page twice. See the header of content/packages.ts.
+
+   The class prefix is `pap` and the tokens below are local to it, mirroring the
+   `svc` block in app/services/services.css. They are not shared on purpose: the
+   two pages are meant to be able to diverge.
+   ============================================================================ */
+
+.pap {
+  --pap-ink: var(--brand-black);
+  --pap-blue: var(--brand-blue);
+  --pap-rule: var(--brand-black);
+  --pap-hairline: rgb(0 0 0 / 0.18);
+  --pap-edge-col: 34px;
+  --pap-max: 85rem;
+
+  /* ── The card each offer sits on ──
+     White on cream is a soft distinction by design — #ffffff against #fffaed
+     differs mostly in the blue channel — so the separation is carried by the
+     padding and the corner as much as by the fill, with a whisper of an edge
+     to stop the card dissolving into the page on a warm display. Heavier than
+     this and three of them in a row read as boxes rather than as offers. */
+  /* Warm ivory rather than white: this is stock, and the whole point of the
+     page is that it should feel like something you could pick up. */
+  --pap-card: var(--paper);
+  /* Two soft drops for depth plus a hairline of light along the top edge, so
+     the sheet sits ON the page rather than being a hole cut in it. /enquire's
+     recipe again. */
+  --pap-lift: 0 1px 1px rgb(0 0 0 / 0.04), 0 12px 28px rgb(0 0 0 / 0.06),
+    0 40px 64px rgb(0 0 0 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.7);
+  --pap-card-edge: rgb(0 0 0 / 0.07);
+  /* The banded row. Warm rather than a grey wash, so it reads as the cream
+     page showing through the card rather than as a tint dropped on top. */
+  --pap-band: #faf7ef;
+
+  /* ── Paper ──
+     The grain is /enquire's, lifted whole rather than re-derived: a fine
+     fractal-noise tile whose luminance is mapped into the alpha channel by
+     feColorMatrix, so what lands on the card is sparse dark flecks and not a
+     grey wash. High baseFrequency keeps it close-grained — a tooth you read as
+     stock, not as a field of noise.
+
+     It is FLECKS, not a dot grid. Halftone, dither and stipple are banned on
+     this site outright (2026-08-02) and this is deliberately none of them: the
+     flecks are irregular and unaligned, which is the difference between paper
+     and a pattern. The same ruling names "real material (paper, print edges)"
+     as what to reach for instead, which is exactly what this page is. */
+  --pap-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.46' intercept='-0.24'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23g)'/%3E%3C/svg%3E");
+  --pap-card-pad: clamp(var(--space-5), 2.2vw, var(--space-8));
+
+  background: var(--bg);
+  color: var(--pap-ink);
+  font-family: var(--font-body);
+  min-width: 320px;
+}
+
+.pap__main {
+  position: relative;
+}
+
+.pap__masthead,
+.pap__tabbed,
+.pap__bespoke {
+  max-width: var(--pap-max);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── Annotation register ───────────────────────────────────────────────────
+   Identical to /services'. These two pages are siblings; the marks are the
+   family resemblance. */
+.pap__mark {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pap-ink);
+}
+
+.pap .mm-cta-bracket {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+.pap .mm-cta-bracket:hover {
+  color: var(--pap-blue);
+}
+
+/* Left edge, so it reads bottom-to-top — the same rule as /services, which is
+   what keeps the eye travelling into the page rather than off it. */
+.pap__edge {
+  margin: 0;
+  align-self: start;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--pap-ink);
+}
+
+/* ── Masthead ──────────────────────────────────────────────────────────────
+   /services' masthead, less the deep bottom padding — that space is the knot's
+   box, and there is no knot here. The tabs start almost immediately, which is
+   right for a page whose first job is to let you pick one. */
+.pap__masthead {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding: clamp(var(--space-12), 7vh, var(--space-20)) var(--gutter) var(--space-12);
+}
+
+@media (min-width: 900px) {
+  .pap__masthead {
+    grid-template-columns: var(--pap-edge-col) 1fr;
+    gap: var(--space-10);
+    align-items: start;
+  }
+}
+
+.pap__title {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(3.25rem, 14vw, 10rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+/* Standfirst left, mark hard against the right margin. Baseline-aligned rather
+   than top-aligned, so the paragraph's first line and the mark's first line sit
+   on one line across the full width — which is what makes the two ends read as
+   one band instead of as two stray blocks. */
+.pap__masthead-foot {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-8) var(--space-16);
+  margin-top: clamp(var(--space-10), 6vw, var(--space-16));
+}
+
+/* Wider measure than /services' 42ch: there the standfirst has to stay clear of
+   the knot filling the right-hand side, and here there is no knot. */
+.pap__standfirst {
+  margin: 0;
+  flex: 1 1 28rem;
+  max-width: 54ch;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ── The tabs ──────────────────────────────────────────────────────────────
+   Eight of them, one per package, driven by a hidden radio group: `#id:checked
+   ~ …` marks the label and reveals the panel. The inputs are clipped rather
+   than `display: none`, which would make them unfocusable and kill the keyboard
+   behaviour that is half the reason for doing it this way — see page.tsx.
+
+   NO RULE UNDER THE BAR. It was there and it read as two lines stacked, with
+   the panel's own rules a few pixels below it; asked to go. The only rule here
+   now is the one saying which tab you are on.
+
+   Blue is deliberately NOT used on the active tab. It is the page's one accent
+   and, with the emphasised column gone, it is now unspent apart from hover —
+   which is where it should stay until something genuinely earns it. Active is
+   full-strength ink against muted, plus the rule. */
+.pap__tabbed {
+  padding: 0 var(--gutter);
+}
+
+/* The bar scrolls, the track does not. Eight labels fit on one line down to
+   about 760px and slide sideways below that — which is deliberately NOT
+   wrapping: a wrapped bar puts the tabs on two rows and the moving rule would
+   have to jump between them, which is not a movement that reads as anything. */
+.pap__tabbar {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  /* The tabs visibly running off the edge is the affordance; a scrollbar under
+     them is just furniture. */
+  scrollbar-width: none;
+}
+
+/* `width: max-content` with `min-width: 100%` does two jobs at once: when the
+   labels fit, the track is the full bar and `justify-content` centres them;
+   when they do not, the track is wider than the bar and the centring quietly
+   stops applying because there is no free space to distribute. One rule, both
+   behaviours, no breakpoint. */
+.pap__tabtrack {
+  /* The offset parent the moving rule measures itself against. */
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+  gap: clamp(var(--space-5), 2.4vw, var(--space-10));
+  /* The rule's room — it sits at the track's bottom edge. */
+  padding-bottom: var(--space-3);
+}
+
+/* ── The tabs ──────────────────────────────────────────────────────────────
+   Set large, and the size is the point: these are the page's primary control
+   and at 18px they read as a filter bar on top of the content rather than as
+   the thing you are meant to use first.
+
+   Ink carries the active state alongside the moving rule below — inactive at
+   0.45 rather than the site's usual `--ink-muted` (0.62), which is an
+   unmistakable step against solid black and still clears the 3:1 contrast
+   minimum for large text.
+
+   NOT weight, which would be the obvious alternative — bold and regular set to
+   different widths, so every click would reflow the row and, centred, shift
+   every other tab sideways. Colour is the only property here that costs no
+   layout, which also matters because the rule measures those widths. */
+.pap__tab {
+  position: relative;
+  white-space: nowrap;
+  padding: var(--space-2) 0;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(1rem, 1.7vw, 1.375rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: rgb(0 0 0 / 0.45);
+  cursor: pointer;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+.pap__tab:hover {
+  color: var(--pap-ink);
+}
+
+/* One pair of selectors per tab — CSS cannot match "the label whose `for` is
+   this input's id" generically. Adding a tab means adding it here too; the page
+   fails visibly (no panel shows) rather than silently if that is forgotten. */
+#pap-tab-social:checked ~ .pap__tabbar [for="pap-tab-social"],
+#pap-tab-content-days:checked ~ .pap__tabbar [for="pap-tab-content-days"],
+#pap-tab-ugc:checked ~ .pap__tabbar [for="pap-tab-ugc"],
+#pap-tab-tiktok:checked ~ .pap__tabbar [for="pap-tab-tiktok"],
+#pap-tab-pr:checked ~ .pap__tabbar [for="pap-tab-pr"],
+#pap-tab-events:checked ~ .pap__tabbar [for="pap-tab-events"],
+#pap-tab-design:checked ~ .pap__tabbar [for="pap-tab-design"],
+#pap-tab-websites:checked ~ .pap__tabbar [for="pap-tab-websites"] {
+  color: var(--pap-ink);
+  /* The no-JS indicator. Switched off the moment TabLine takes over — see the
+     handover rule below. */
+  border-bottom-color: var(--pap-rule);
+}
+
+/* The input is clipped to a pixel, so its own focus ring is invisible. The ring
+   has to be drawn on the label the user is actually looking at. */
+#pap-tab-social:focus-visible ~ .pap__tabbar [for="pap-tab-social"],
+#pap-tab-content-days:focus-visible ~ .pap__tabbar [for="pap-tab-content-days"],
+#pap-tab-ugc:focus-visible ~ .pap__tabbar [for="pap-tab-ugc"],
+#pap-tab-tiktok:focus-visible ~ .pap__tabbar [for="pap-tab-tiktok"],
+#pap-tab-pr:focus-visible ~ .pap__tabbar [for="pap-tab-pr"],
+#pap-tab-events:focus-visible ~ .pap__tabbar [for="pap-tab-events"],
+#pap-tab-design:focus-visible ~ .pap__tabbar [for="pap-tab-design"],
+#pap-tab-websites:focus-visible ~ .pap__tabbar [for="pap-tab-websites"] {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: 2px;
+}
+
+/* ── The moving rule ───────────────────────────────────────────────────────
+   Asked for: "it stretches and accelerates and then slows down under the one
+   you clicked on."
+
+   THE STRETCH IS TWO EDGES ON DIFFERENT CLOCKS. `left` and `right` are
+   transitioned separately, and the edge heading TOWARDS the new tab starts
+   immediately while the trailing edge waits ~90ms. For those 90ms the rule
+   spans both tabs and everything between them; then the tail catches up and it
+   closes. `data-dir` swaps which edge leads, or a leftward move would stretch
+   away from the tab that was clicked instead of towards it.
+
+   ONE EASE-IN-OUT ON BOTH EDGES gives the accelerate-then-settle — a plain
+   ease-out would leave at full speed and only decelerate, which is the opposite
+   of what was asked for.
+
+   Only drawn once components/ui/tab-line.tsx has measured the layout and put
+   `is-enhanced` on the track. Until then — and forever, with JS off — the
+   static `border-bottom` above is the indicator, so the two must never both be
+   visible.
+
+   ⚠️ THIS RULE IS WANTED. It was deleted once, on 2026-08-06, by misreading a
+   note about "the line" looking out of place: the line meant was the one BELOW
+   it — the rule over each column of the comparison — which is the one that is
+   now gone (see `.pap__num`). Two lines have been cut from this area and this
+   is not either of them. */
+.pap__tab-line {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--pap-rule);
+  opacity: 0;
+  pointer-events: none;
+  transition-property: left, right;
+  transition-duration: 460ms;
+  transition-timing-function: cubic-bezier(0.7, 0, 0.15, 1);
+}
+/* Order matches `transition-property` above: left, then right. */
+.pap__tab-line[data-dir="right"] {
+  transition-delay: 90ms, 0ms;
+}
+.pap__tab-line[data-dir="left"] {
+  transition-delay: 0ms, 90ms;
+}
+
+/* The handover. One rule, so the static underline cannot survive a frame past
+   the moving one appearing. */
+.pap__tabtrack.is-enhanced .pap__tab {
+  border-bottom-color: transparent !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pap__tab-line {
+    transition: none;
+  }
+}
+
+/* Clearance under the tab bar. */
+.pap__panels {
+  padding-top: clamp(var(--space-10), 4vw, var(--space-16));
+}
+
+/* Every panel is in the DOM at all times — indexable, and findable with the
+   browser's own find-in-page. Only one is displayed. */
+.pap__panel {
+  display: none;
+}
+#pap-tab-social:checked ~ .pap__panels [data-panel="social"],
+#pap-tab-content-days:checked ~ .pap__panels [data-panel="content-days"],
+#pap-tab-ugc:checked ~ .pap__panels [data-panel="ugc"],
+#pap-tab-tiktok:checked ~ .pap__panels [data-panel="tiktok"],
+#pap-tab-pr:checked ~ .pap__panels [data-panel="pr"],
+#pap-tab-events:checked ~ .pap__panels [data-panel="events"],
+#pap-tab-design:checked ~ .pap__panels [data-panel="design"],
+#pap-tab-websites:checked ~ .pap__panels [data-panel="websites"] {
+  display: block;
+}
+
+/* ── The comparison ────────────────────────────────────────────────────────
+   A real table, because the requirement — things that appear across all three
+   tiers must sit on the same line — is the definition of a table row. Rows
+   sized to their tallest cell is what `<tr>` already does at every viewport
+   width, with no measuring and nothing to keep in sync.
+
+   It does not look like a table: no vertical rules, no zebra, no borders except
+   the hairline over each cell, which is the same spec-list treatment /services
+   uses. `border-spacing` rather than `border-collapse`, because collapsing
+   would merge the columns' hairlines into one continuous rule across the row —
+   and the gap between columns is what says these are three separate offers. */
+.pap__matrix {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: clamp(var(--space-8), 4vw, var(--space-16)) 0;
+  /* Cancels the outermost spacing, so the first and last columns still line up
+     with the page's gutter. */
+  margin: 0 calc(-1 * clamp(var(--space-8), 4vw, var(--space-16)));
+  width: calc(100% + 2 * clamp(var(--space-8), 4vw, var(--space-16)));
+  table-layout: fixed;
+  text-align: center;
+  /* THE LIFT GOES ON THE TABLE, NOT THE CELLS. A cell is its own box, so a
+     box-shadow on one draws across every row boundary and the sheet comes
+     apart into the table it is. `filter: drop-shadow` follows the painted
+     silhouette instead — and because the columns are separated by
+     `border-spacing` and the gaps are transparent, the silhouette IS three
+     separate sheets, so each one gets its own shadow from a single filter. */
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))
+    drop-shadow(0 12px 26px rgb(0 0 0 / 0.07));
+}
+
+/* `top`, not `bottom`. Nothing rules the tops of these columns any more, so
+   the only thing holding the three heads level is the numbers themselves —
+   and bottom-aligning drops a column's number whenever a neighbour's
+   positioning line wraps to an extra line. Aligned from the top the marks
+   always agree; the only thing that can vary is the gap under the last
+   sentence, which nothing else lines up against. */
+.pap__col-head {
+  vertical-align: top;
+  padding: var(--pap-card-pad) var(--pap-card-pad) var(--space-6);
+  font-weight: 400;
+  background-color: var(--pap-card);
+  background-image: var(--pap-grain);
+  background-size: 150px 150px;
+  border: 1px solid var(--pap-card-edge);
+  border-bottom: 0;
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+}
+
+/* NO EMPHASISED COLUMN. Elevated carried a `[ RECOMMENDED ]` tag, brand-blue
+   ink and a heavier rule — three signals built to a brief about making the top
+   tier likelier to be clicked. All three were cut on 2026-08-06: "i dont like
+   the recommended effect on the most expensive package. just get rid of it
+   altogether."
+
+   What went with them: the reserved tag row above every column (it existed only
+   to keep the three rules level), the `--pap-col-ink` custom property, and the
+   last use of `--pap-blue` outside a hover state. The three tiers now differ
+   only in what they say they contain. */
+
+/* NO RULE OVER THE COLUMNS. Each `[ 00x ]` sat under a full-width hairline —
+   three of them in a row, directly below the tab bar — and they were cut as out
+   of place and unnecessary. They were furniture: the spec list below already
+   rules every one of its own entries, so a column simply starts at its number.
+   The feature column's blue rule went with the emphasis it belonged to. */
+.pap__num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.pap__name {
+  display: block;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Doing the job the price would have done. Mono and one register down from the
+   name, so it reads as an annotation on it rather than as a second name — the
+   quietest thing in the column and still the second thing anyone reads, which
+   is the right weighting for a fact about money on a page that has decided not
+   to quote one. */
+.pap__commitment {
+  display: block;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* The one place a column carries a sentence. Body face and body ink — the
+   ruling is one heading against uniform body copy, so this does not get its own
+   size, colour and face on top of the name above it. */
+.pap__positioning {
+  display: block;
+  margin: var(--space-6) 0 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--pap-ink);
+  text-wrap: pretty;
+}
+
+/* BANDED, NOT RULED. Every row first carried a hairline, which inside a card
+   is ten lines stacked on a white field — a spreadsheet, and cut for it. Then
+   nothing separated the rows at all, and that lost the thing the layout exists
+   for: "there is nothing to help guide the eyes and show that each row
+   corresponds" (2026-08-20).
+
+   The band is the third answer and the right one. A rule divides; a band
+   GROUPS, and because the three cards share one <table> the bands land at the
+   same heights across all three, so the eye tracks "8 pieces" → "12–16" →
+   "20+" along a continuous rail instead of drifting. It also reads correctly
+   where a rule did not: an empty cell in Essential still carries its band, so
+   the row visibly exists and is visibly unfilled.
+
+   Warm, and barely there. Strong enough to track, and nowhere near zebra
+   striping — the moment the band is legible as a stripe it is a spreadsheet
+   again.
+
+   MONO, because in the body face this was eleven lines of prose stacked in a
+   column: "it kind of just looks like regular paragraph text". The page
+   already speaks mono for every annotation on it (001, MONTHLY ONGOING,
+   [ ENQUIRE ], the service link), so the spec list joins a register that
+   exists rather than inventing a treatment. It also sets the list at a
+   different rhythm to the sentence above it, which is what stops the card
+   reading as one undifferentiated block of copy. */
+.pap__cell {
+  padding: var(--space-3) var(--pap-card-pad);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  vertical-align: top;
+  background-color: var(--pap-card);
+  background-image: var(--pap-grain);
+  background-size: 150px 150px;
+  /* Sides only. A cell is its own box, so a box-shadow or a full border here
+     would draw a line between every row and the card would come apart into
+     the table it actually is; the left and right edges are continuous down
+     the column because every cell in it carries the same two. */
+  border-left: 1px solid var(--pap-card-edge);
+  border-right: 1px solid var(--pap-card-edge);
+}
+
+.pap__matrix tbody tr:nth-child(even) .pap__cell {
+  background-color: var(--pap-band);
+}
+
+/* THE ONE RULE LEFT, and it separates two kinds of thing rather than two
+   entries of the same kind: who the tier is for, above; what it contains,
+   below. One line per card instead of ten. */
+.pap__matrix tbody tr:first-child .pap__cell {
+  border-top: 1px solid var(--pap-hairline);
+}
+
+/* A row this tier does not have. It renders EMPTY, and the emptiness is the
+   comparison: the rows line up, so a blank opposite "Priority support" says
+   the same thing a dash did without putting a mark on the page.
+
+   The dash went with the hairlines on 2026-08-20 and for the same reason. It
+   was calibrated against a ruled list, where it sat on its own line and read
+   as a deliberate mark; with the rules gone, four of them stacked at the foot
+   of Essential read as debris. Screen readers still hear "Not included" —
+   that never depended on the dash. The class stays: it is the hook for the
+   cell's a11y text and for anything this row needs later. */
+.pap__cell--absent {
+  color: transparent;
+}
+
+.pap__col-foot {
+  padding: var(--space-8) var(--pap-card-pad) var(--pap-card-pad);
+  vertical-align: top;
+  background-color: var(--pap-card);
+  background-image: var(--pap-grain);
+  background-size: 150px 150px;
+  border: 1px solid var(--pap-card-edge);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+
+/* The stacking lives here rather than on the <td>: `display: flex` on a table
+   cell takes it out of the table's column sizing, and the columns would stop
+   being equal widths. */
+.pap__foot-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.pap .mm-cta-bracket.pap__card-cta {
+  font-size: 13px;
+}
+
+/* ── Single-package panels ─────────────────────────────────────────────────
+   Seven of the eight tabs hold one package, which has nothing to be compared
+   against — so it gets the width instead of a column of it. Copy on the left,
+   the list running across the rest in as many columns as fit.
+
+   NO RULE ACROSS THE TOP either — it was the same full-width hairline under the
+   tab bar that was cut from the comparison columns, and it survived here one
+   pass longer than it should have. */
+/* ON THE SAME CARD AS THE COMPARISON. The tiers became three white cards on
+   2026-08-20, and a tab that switched from a carded panel to bare cream read as
+   a page half-finished rather than as a different kind of offer. The surface is
+   shared; the ARRANGEMENT is still the one this panel always had — copy against
+   its list, left-aligned — because there is nothing here to compare and a lone
+   centred column in a full-width card is a lot of white either side of nothing. */
+.pap__single {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  background-color: var(--pap-card);
+  background-image: var(--pap-grain);
+  background-size: 150px 150px;
+  border: 1px solid var(--pap-card-edge);
+  border-radius: var(--radius-panel);
+  padding: clamp(var(--space-8), 3.5vw, var(--space-12));
+  box-shadow: var(--pap-lift);
+}
+
+@media (min-width: 900px) {
+  .pap__single {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(var(--space-10), 5vw, var(--space-20));
+  }
+}
+
+.pap__single .pap__name {
+  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+}
+
+.pap__single .pap__positioning {
+  max-width: 34ch;
+}
+
+.pap__single-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-top: var(--space-10);
+}
+
+.pap__includes-label {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* One rule under the label, for the same reason the comparison keeps one under
+   its head: it marks where the list starts. The entries below it are separated
+   by space. */
+.pap__includes {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2) 0 0;
+  border-top: 1px solid var(--pap-hairline);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  column-gap: var(--space-8);
+}
+
+.pap__include {
+  padding: var(--space-3) 0;
+  font-size: var(--text-body-sm);
+  line-height: 1.45;
+}
+
+/* Mono, quiet, and the only navigation out of a package — the cross-link back
+   to the discipline this commitment buys. It gets the same 4px slide the
+   bracket CTA's brackets get, so the page has one gesture rather than several. */
+.pap__service-link {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.pap__service-link:hover {
+  color: var(--pap-blue);
+}
+.pap__service-arrow {
+  display: inline-block;
+  margin-left: var(--space-2);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.pap__service-link:hover .pap__service-arrow {
+  transform: translateX(var(--space-1));
+}
+
+/* ── Bespoke, and the closing CTA in one band ──────────────────────────────
+   Two blocks were one too many: every package already ends in Enquire, so a
+   bespoke offer plus a generic "let's work together" underneath is the third
+   ask on a single screen. This band is both. */
+.pap__bespoke {
+  padding: clamp(var(--space-20), 9vw, var(--space-32)) var(--gutter) var(--space-24);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pap__price-note {
+  margin: 0 0 var(--space-12);
+  max-width: 46ch;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.pap__bespoke-heading {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.pap__bespoke-line {
+  margin: var(--space-6) 0 0;
+  max-width: 44ch;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.pap .mm-cta-bracket.pap__bespoke-cta {
+  font-size: 14px;
+  margin-top: var(--space-8);
+}
+
+/* ── Narrow ────────────────────────────────────────────────────────────────
+   The comparison stays a table and scrolls sideways rather than stacking. A
+   stacked comparison is not a comparison — the whole requirement was that the
+   three tiers line up on one row, and stacking is precisely what destroys that.
+   Sideways, the rows stay intact and you swipe across them. */
+@media (max-width: 899px) {
+  .pap__edge {
+    display: none;
+  }
+
+  .pap__panel {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .pap__matrix {
+    /* Wide enough that the three columns keep a readable measure instead of
+       squeezing every cell onto three lines. */
+    min-width: 46rem;
+  }
+}

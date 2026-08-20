@@ -42,6 +42,12 @@ about instead of asking the visitor to say it again.
 
 ## Visual — in progress
 
+- **Pick a /packages direction, then delete the losers.** Three routes exist to
+  be compared (2026-08-20): `/packages` (the live one), `/packages-v2` (receipt)
+  and `/packages-v3` (paper). v2 and v3 are `noindex` and are linked from
+  nowhere. Whichever wins gets folded back into `/packages` and the other two
+  routes come out — they duplicate layout, and left alone they will drift.
+
 - `/packages` — comparison rows: banding and type treatment (2026-08-20).
 - Corner radius on the package cards is `--radius-panel` (16px), which matches
   `/enquire` but contradicts the design system's "radius 0 everywhere".

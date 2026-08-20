@@ -1,0 +1,402 @@
+/* /packages-v2 — the packages as till receipts.
+   ────────────────────────────────────────────────────────────────────────────
+   A comparison build (2026-08-20), sitting beside /packages and /packages-v3.
+
+   THE REFERENCES were the Frank Ocean "blond" receipt and a West Tenth Denim
+   receipt. What actually carries the form in both is narrow: one column of
+   monospace, an item and a figure with dotted leaders between them, rules made
+   of dashes rather than lines, a total, a barcode, and torn ends. Colour does
+   almost nothing in either — the blond one is grey on grey. So this leans on
+   arrangement, not on tinting the page brown.
+
+   IT IS ALSO ALREADY HALF THE SITE'S VOICE. The page speaks IBM Plex Mono for
+   every annotation it carries, so a receipt is less of a costume here than it
+   would be somewhere else. */
+
+.rcpt {
+  --rcpt-paper: #f6f4ef; /* thermal stock: cooler and greyer than the page */
+  --rcpt-ink: #1a1a1a; /* never pure black — this is print, and print isn't */
+  --rcpt-faint: rgb(26 26 26 / 0.45);
+  --rcpt-line: rgb(26 26 26 / 0.32);
+  --rcpt-tooth: 14px; /* one tooth of the torn edge */
+  --rcpt-max: 85rem;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--brand-cream);
+  color: var(--brand-black);
+}
+
+.rcpt__main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--rcpt-max);
+  margin: 0 auto;
+  padding: clamp(var(--space-10), 6vw, var(--space-20)) var(--gutter) var(--space-24);
+}
+
+/* ── Masthead ─────────────────────────────────────────────────────────────
+   Unchanged from /packages in kind: the page's own voice, not the receipt's.
+   The receipt starts at the strips. */
+.rcpt__edge {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.rcpt__title {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(3rem, 11vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.rcpt__standfirst {
+  max-width: 52ch;
+  margin: var(--space-8) 0 0;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────
+   Same CSS-radio mechanism as /packages, without the sliding rule: on this page
+   the tab bar is a printed header, so the current tab is marked by a box drawn
+   around it rather than by an animated underline. */
+.rcpt__tabbed {
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+}
+
+.rcpt__tabbar {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.rcpt__tabtrack {
+  display: flex;
+  gap: var(--space-2);
+  width: max-content;
+  margin: 0 auto;
+}
+
+.rcpt__tab {
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border: 1px dashed transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 120ms linear, border-color 120ms linear;
+}
+.rcpt__tab:hover {
+  color: var(--brand-black);
+}
+
+.rcpt__panel {
+  display: none;
+  margin-top: clamp(var(--space-8), 4vw, var(--space-12));
+}
+
+#rcpt-tab-social:checked ~ .rcpt__panels [data-panel="social"],
+#rcpt-tab-content-days:checked ~ .rcpt__panels [data-panel="content-days"],
+#rcpt-tab-ugc:checked ~ .rcpt__panels [data-panel="ugc"],
+#rcpt-tab-tiktok:checked ~ .rcpt__panels [data-panel="tiktok"],
+#rcpt-tab-pr:checked ~ .rcpt__panels [data-panel="pr"],
+#rcpt-tab-events:checked ~ .rcpt__panels [data-panel="events"],
+#rcpt-tab-design:checked ~ .rcpt__panels [data-panel="design"],
+#rcpt-tab-websites:checked ~ .rcpt__panels [data-panel="websites"] {
+  display: block;
+}
+
+/* The checked tab, boxed. `:checked ~` reaches the bar, then nth-child pairs
+   each input with the label at the same position in the track. */
+#rcpt-tab-social:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(1),
+#rcpt-tab-content-days:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(2),
+#rcpt-tab-ugc:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(3),
+#rcpt-tab-tiktok:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(4),
+#rcpt-tab-pr:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(5),
+#rcpt-tab-events:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(6),
+#rcpt-tab-design:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(7),
+#rcpt-tab-websites:checked ~ .rcpt__tabbar .rcpt__tab:nth-child(8) {
+  color: var(--brand-black);
+  border-color: var(--rcpt-line);
+}
+
+/* ── The strips ───────────────────────────────────────────────────────────── */
+.rcpt__strips {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(var(--space-8), 4vw, var(--space-12));
+  justify-items: center;
+}
+
+@media (min-width: 900px) {
+  .rcpt__strips--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* One receipt. Narrow on purpose — a receipt that fills a third of a desktop
+   screen stops being a receipt and goes back to being a card. */
+.rcpt__strip {
+  position: relative;
+  width: 100%;
+  max-width: 24rem;
+  background: var(--rcpt-paper);
+  color: var(--rcpt-ink);
+  /* Sits on the page like a slip of paper: one tight contact shadow and one
+     wide soft one. Same recipe as the /enquire letter panel. */
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.05), 0 10px 24px rgb(0 0 0 / 0.07),
+    0 30px 50px rgb(0 0 0 / 0.05);
+}
+
+/* The torn ends. Teeth are drawn in the PAGE colour on top of the strip's own
+   ends, which is why this needs no mask and no clip-path: a row of cream
+   triangles bites into the paper. `conic-gradient` tiles one tooth; the top and
+   bottom differ only in which way the cone points. */
+.rcpt__tear {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--rcpt-tooth) / 2);
+  pointer-events: none;
+}
+.rcpt__tear--top {
+  top: 0;
+  background: conic-gradient(
+      from -45deg at 50% 100%,
+      transparent 0deg 90deg,
+      var(--brand-cream) 90deg 360deg
+    )
+    0 0 / var(--rcpt-tooth) 100% repeat-x;
+}
+.rcpt__tear--bottom {
+  bottom: 0;
+  background: conic-gradient(
+      from 135deg at 50% 0%,
+      transparent 0deg 90deg,
+      var(--brand-cream) 90deg 360deg
+    )
+    0 0 / var(--rcpt-tooth) 100% repeat-x;
+}
+
+.rcpt__body {
+  padding: calc(var(--rcpt-tooth) + var(--space-6)) var(--space-6)
+    calc(var(--rcpt-tooth) + var(--space-6));
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.65;
+}
+
+/* ── Printed head ─────────────────────────────────────────────────────────── */
+.rcpt__head {
+  text-align: center;
+}
+
+.rcpt__brand {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rcpt-faint);
+}
+
+/* The one thing on the strip that is not mono. A receipt's shop name is always
+   the logotype rather than the till's own face — that is what the blond
+   reference does with its wordmark, and it is what stops the strip reading as
+   an undifferentiated block of typewriter. */
+.rcpt__name {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.rcpt__sub {
+  margin: var(--space-2) 0 0;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rcpt-faint);
+}
+
+.rcpt__positioning {
+  margin: var(--space-5) 0 0;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* A rule made of dashes, because a receipt has no solid rules — the printer
+   only has characters. */
+.rcpt__rule {
+  height: 0;
+  margin: var(--space-5) 0;
+  border-top: 1px dashed var(--rcpt-line);
+}
+
+/* ── The lines ────────────────────────────────────────────────────────────── */
+.rcpt__lines {
+  margin: 0;
+}
+
+.rcpt__line,
+.rcpt__total {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+}
+
+.rcpt__line + .rcpt__line {
+  margin-top: var(--space-1);
+}
+
+.rcpt__item {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  /* The item name never wraps mid-leader: if it is too long for the strip it
+     takes the line and the figure sits at its end. */
+  flex: 0 1 auto;
+}
+
+/* The dots between an item and its figure. A border rather than a string of
+   periods, so it stretches to whatever gap is left and never wraps. */
+.rcpt__leader {
+  flex: 1 1 auto;
+  min-width: var(--space-4);
+  align-self: flex-end;
+  margin: 0 var(--space-2) 0.28em;
+  border-bottom: 1px dotted var(--rcpt-line);
+}
+
+.rcpt__figure {
+  margin: 0;
+  flex: 0 0 auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* A line this tier does not have. It still prints — a receipt shows a zero
+   rather than omitting the line, and here that is also what keeps the three
+   strips landing on the same rows. */
+.rcpt__line--absent {
+  color: var(--rcpt-faint);
+}
+
+.rcpt__total {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.rcpt__total .rcpt__item {
+  text-transform: uppercase;
+}
+
+.rcpt__meta {
+  margin: var(--space-5) 0 0;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rcpt-faint);
+}
+
+/* ── Barcode ──────────────────────────────────────────────────────────────
+   Drawn, not an image: a repeating gradient of bars at four widths, which is
+   enough irregularity to read as a code rather than as a hatch. Each strip
+   starts the pattern at a different offset so the three are not identical. */
+.rcpt__barcode {
+  height: 40px;
+  margin: var(--space-5) 0 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--rcpt-ink) 0 2px,
+    transparent 2px 5px,
+    var(--rcpt-ink) 5px 6px,
+    transparent 6px 8px,
+    var(--rcpt-ink) 8px 11px,
+    transparent 11px 13px,
+    var(--rcpt-ink) 13px 14px,
+    transparent 14px 18px
+  );
+}
+.rcpt__barcode[data-seed="1"] {
+  background-position: -7px 0;
+}
+.rcpt__barcode[data-seed="2"] {
+  background-position: -13px 0;
+}
+
+/* ── Foot ─────────────────────────────────────────────────────────────────── */
+.rcpt__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.rcpt .mm-cta-bracket.rcpt__cta {
+  font-size: 12px;
+}
+
+.rcpt__service {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rcpt-faint);
+  text-decoration: none;
+  transition: color 120ms linear;
+}
+.rcpt__service:hover {
+  color: var(--rcpt-ink);
+}
+
+/* ── Closing band ─────────────────────────────────────────────────────────── */
+.rcpt__bespoke {
+  margin-top: clamp(var(--space-16), 8vw, var(--space-32));
+}
+
+.rcpt__price-note {
+  max-width: 34ch;
+  margin: 0 0 clamp(var(--space-10), 5vw, var(--space-16));
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.rcpt__bespoke-heading {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.rcpt__bespoke-line {
+  max-width: 46ch;
+  margin: var(--space-6) 0 var(--space-8);
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
