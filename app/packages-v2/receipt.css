@@ -264,7 +264,11 @@
   inset: 0;
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  opacity: 0.92;
+  /* Halved from 0.92 on 2026-08-21 — "make it like 50% more subtle". This is
+     the dial the layer exists for: the crumple is generated once and its
+     strength is one number, so tuning it costs nothing and cannot disturb the
+     geometry. */
+  opacity: 0.46;
   pointer-events: none;
 }
 
