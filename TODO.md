@@ -42,6 +42,16 @@ about instead of asking the visitor to say it again.
 
 ## Visual — in progress
 
+- **Optional: photograph a crumpled receipt for `/packages-v2`.** The crumple is
+  generated (lit facets in SVG) and now reads as paper, but a real photographed
+  sheet would beat it. The surface is already its own layer
+  (`.rcpt__strip::after`), so a texture drops in as a `background-image` swap
+  with nothing else on the page changing. The TEXT stays HTML either way —
+  never baked into the image, or the screen-reader support, find-in-page,
+  indexing and reflow all go with it. Watch tiling: strips vary in height, so
+  the texture wants to be vertically seamless, `cover` on a tall source, or a
+  9-slice `border-image`. Licensing matters if the image is not shot in-house.
+
 - **Pick a /packages direction, then delete the losers.** Three routes exist to
   be compared (2026-08-20): `/packages` (the live one), `/packages-v2` (receipt)
   and `/packages-v3` (paper). v2 and v3 are `noindex` and are linked from
