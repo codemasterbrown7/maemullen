@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChromeFooter, ChromeHeader } from "@/components/chrome/SiteChrome";
-import { TabLine } from "@/components/ui/tab-line";
 import {
   packageTabs,
   packagesDescription,
@@ -9,33 +8,46 @@ import {
   socialMatrix,
 } from "@/content/packages";
 import { siteName } from "@/content/site";
-import "./packages.css";
+import "./receipt.css";
 
 export const metadata: Metadata = {
   title: `Packages — ${siteName}`,
   description: packagesDescription,
 };
 
-/** The radio group's name — shared with TabLine, which listens on it. */
-const TAB_GROUP = "pkg-tab";
+const TAB_GROUP = "rcpt-tab";
 
 /**
- * /packages — one tab per thing you can buy. Why the page exists separately
- * from /services, why social media is the only tab holding more than one card,
- * and where every line of copy came from is all in content/packages.ts; this
- * file is layout only.
+ * /packages — one receipt per thing you can buy.
+ *
+ * WHY A RECEIPT. Chosen on 2026-08-21 out of three directions built side by
+ * side: the card version this replaces, a paper version, and this. What made
+ * it the answer is that it was barely a costume — the page already spoke IBM
+ * Plex Mono for every annotation on it, so an item-and-figure list with dotted
+ * leaders and a total was a register it was half in already. The references
+ * were the Frank Ocean "blond" receipt and a West Tenth Denim receipt.
+ *
+ * The other two routes are gone. They duplicated this layout and would have
+ * drifted; the history has them if a decision ever needs revisiting.
+ *
+ * WHY THE ROWS LINE UP WITHOUT A TABLE. The old card version used a real
+ * <table>, because the tiers have to compare row by row. A receipt cannot: its
+ * whole form is one column of item-and-figure. What replaces the table is that
+ * every strip renders EVERY row of socialMatrix in the same order, and the
+ * left side of each row is the SHARED `label` rather than the tier's own
+ * wording — so the three columns wrap identically and land on the same lines
+ * by construction. A tier that lacks a row prints it as an absent line rather
+ * than skipping it, which is also how a real receipt shows a zero.
  *
  * THE TABS RUN ON CSS, NOT JAVASCRIPT. One radio group, visually hidden, with
  * the tab bar and the panels as its siblings — `#id:checked ~ … [data-panel]`
- * does the switching. This is not cleverness for its own sake; it buys four
- * things a useState component would not:
+ * does the switching. Four things that buys, none of them cleverness for its
+ * own sake:
  *
- *   · The site is a static export, so this stays a server component. The only
- *     script the page ships is the tab rule's animation, which is decoration
- *     (components/ui/tab-line.tsx) and degrades to a static underline.
+ *   · The site is a static export, so this stays a server component. The page
+ *     ships no JavaScript of its own at all.
  *   · A radio group already IS the semantics — one of a set, exactly one
- *     chosen. Arrow keys move between options natively, so the keyboard
- *     behaviour a hand-rolled tablist has to implement comes free and correct.
+ *     chosen — so arrow-key navigation comes free and correct.
  *   · Every panel is in the HTML at all times, so all ten packages are
  *     indexable and findable with the browser's own find-in-page.
  *   · With JS off it still works.
@@ -44,219 +56,167 @@ const TAB_GROUP = "pkg-tab";
  * `display: none` — a display-none radio is not focusable and the whole thing
  * would stop being keyboard-operable.
  *
- * TWO PANEL LAYOUTS, and the difference is not decorative. `compare` panels put
- * their cards in columns because the cards are ALTERNATIVES and the reader has
- * a choice to make; every other tab holds one package, which has nothing to be
- * compared against, so it gets the width instead.
- *
- * THE COMPARISON IS A REAL <table>. Asked for: things that appear across all
- * three tiers must sit on the same line. Grid rows sized to the tallest cell is
- * exactly what a table row already is, so this is the mechanism rather than a
- * fallback — and `scope="col"` means a screen reader announces "Elevated: 20+
- * pieces of content" instead of reading three lists in a row.
- *
  * NO PRICES ANYWHERE. Deck p8, confirmed by the client. `commitment` on each
- * card is what stands in for them.
+ * card is what stands in for them, and the receipt's money line is a count.
+ *
+ * NOTHING HERE IS NEW CONTENT. Every string comes out of content/packages.ts.
+ * The figure on the right of each line is DERIVED — see `figure()` below.
  */
 export default function PackagesPage() {
   return (
-    <div className="pkg mmc">
+    <div className="rcpt mmc">
       <ChromeHeader current="/packages" />
 
-      <main className="pkg__main">
-        <header className="pkg__masthead">
-          <p className="pkg__edge">{packagesPage.edge}</p>
-
-          <div className="pkg__masthead-body">
-            <h1 className="pkg__title">{packagesPage.title}</h1>
-
-            <div className="pkg__masthead-foot">
-              <p className="pkg__standfirst">{packagesPage.standfirst}</p>
-
-              <p className="pkg__mark">
-                [ {packagesPage.mark.range} ]
-                <br />
-                {packagesPage.mark.label}
-              </p>
-            </div>
-          </div>
+      <main className="rcpt__main">
+        <header className="rcpt__masthead">
+          <p className="rcpt__edge">{packagesPage.edge}</p>
+          <h1 className="rcpt__title">{packagesPage.title}</h1>
+          <p className="rcpt__standfirst">{packagesPage.standfirst}</p>
         </header>
 
-        {/* Inputs, tab bar and panels are siblings in ONE element, because the
-            whole mechanism is `~` — a general sibling selector can only see
-            forwards from the checked input, so the inputs must come first and
-            everything they drive must be their sibling, not their nephew. */}
-        <div className="pkg__tabbed">
+        <div className="rcpt__tabbed">
           {packageTabs.map((tab, i) => (
             <input
               key={tab.key}
               type="radio"
               name={TAB_GROUP}
-              id={`pkg-tab-${tab.key}`}
-              className="pkg__radio mm-visually-hidden"
+              id={`rcpt-tab-${tab.key}`}
+              className="rcpt__radio mm-visually-hidden"
               defaultChecked={i === 0}
             />
           ))}
 
-          {/* Two elements, because the bar scrolls and the track does not: the
-              track is exactly as wide as its labels, which is what lets them
-              centre when they fit and slide sideways when they do not — and
-              what makes the moving rule's offsets meaningful, since it is
-              positioned against the track rather than the scrollport. */}
-          <div className="pkg__tabbar">
-            <div className="pkg__tabtrack" role="group" aria-label="Choose a package">
+          <div className="rcpt__tabbar">
+            <div className="rcpt__tabtrack" role="group" aria-label="Choose a package">
               {packageTabs.map((tab) => (
-                <label key={tab.key} htmlFor={`pkg-tab-${tab.key}`} className="pkg__tab">
+                <label key={tab.key} htmlFor={`rcpt-tab-${tab.key}`} className="rcpt__tab">
                   {tab.label}
                 </label>
               ))}
-
-              <TabLine name={TAB_GROUP} />
             </div>
           </div>
 
-          <div className="pkg__panels">
-            {packageTabs.map((tab) =>
-              tab.compare ? (
-                <section
-                  key={tab.key}
-                  className="pkg__panel"
-                  data-panel={tab.key}
-                  aria-label={tab.label}
-                >
-                  <table className="pkg__matrix">
-                    <caption className="mm-visually-hidden">
-                      {tab.label} packages compared
-                    </caption>
+          <div className="rcpt__panels">
+            {packageTabs.map((tab) => (
+              <section
+                key={tab.key}
+                className="rcpt__panel"
+                data-panel={tab.key}
+                aria-label={tab.label}
+              >
+                <div className={`rcpt__strips${tab.compare ? " rcpt__strips--three" : ""}`}>
+                  {tab.cards.map((card, cardIndex) => {
+                    /* The comparison tab reads its rows off the shared matrix so
+                       the three line up; every other tab has one package and
+                       reads its own `includes`. */
+                    const rows = tab.compare
+                      ? socialMatrix.map((row) => ({
+                          label: row.label,
+                          cell: row.cells[cardIndex],
+                        }))
+                      : (card.includes ?? []).map((include) => ({
+                          label: include,
+                          cell: include,
+                        }));
 
-                    <thead>
-                      <tr>
-                        {tab.cards.map((card) => (
-                          <th
-                            key={card.slug}
-                            id={card.slug}
-                            scope="col"
-                            className="pkg__col-head"
-                          >
-                            <span className="pkg__num">{card.number}</span>
-                            <span className="pkg__name">{card.name}</span>
-                            {/* Doing the job the price would have done: the
-                                shape of the spend, in the annotation register. */}
-                            <span className="pkg__commitment">{card.commitment}</span>
-                            <span className="pkg__positioning">{card.positioning}</span>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
+                    const included = rows.filter((r) => r.cell).length;
 
-                    <tbody>
-                      {socialMatrix.map((row) => (
-                        <tr key={row.label}>
-                          {row.cells.map((cell, i) => (
-                            <td
-                              key={tab.cards[i].slug}
-                              className={`pkg__cell${cell ? "" : " pkg__cell--absent"}`}
-                            >
-                              {/* The row's name is spoken but not shown: on
-                                  screen every cell says what it is ("20+ pieces
-                                  of content"), so a label column would repeat
-                                  each row four times. An empty cell has no such
-                                  luxury — without this it is announced as
-                                  nothing at all. */}
-                              <span className="mm-visually-hidden">{row.label}: </span>
-                              {cell}
-                              {!cell && <span className="mm-visually-hidden">Not included</span>}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
+                    return (
+                      <article key={card.slug} id={card.slug} className="rcpt__strip">
+                        {/* Two bars of torn paper, drawn as page-coloured teeth
+                            over the strip's own ends. */}
+                        <span className="rcpt__tear rcpt__tear--top" aria-hidden="true" />
 
-                    <tfoot>
-                      <tr>
-                        {tab.cards.map((card) => (
-                          <td
-                            key={card.slug}
-                            className="pkg__col-foot"
-                          >
-                            {/* A wrapper, because the two links have to stack and
-                                `display: flex` on the <td> itself would drop the
-                                cell out of the table's column sizing. */}
-                            <div className="pkg__foot-stack">
-                              <Link
-                                href={packagesPage.bespoke.href}
-                                className="mm-cta-bracket pkg__card-cta"
+                        <div className="rcpt__body">
+                          <header className="rcpt__head">
+                            <p className="rcpt__brand">{siteName}</p>
+                            <h2 className="rcpt__name">{card.name}</h2>
+                            <p className="rcpt__sub">{card.commitment}</p>
+                          </header>
+
+                          <p className="rcpt__positioning">{card.positioning}</p>
+
+                          <div className="rcpt__rule" aria-hidden="true" />
+
+                          <dl className="rcpt__lines">
+                            {rows.map((row) => (
+                              <div
+                                key={row.label}
+                                className={`rcpt__line${row.cell ? "" : " rcpt__line--absent"}`}
                               >
-                                {packagesPage.bespoke.label}
-                                <span className="mm-visually-hidden"> about {card.name}</span>
-                              </Link>
+                                <dt className="rcpt__item">
+                                  {/* The strike is on the words, not the row:
+                                      a rule drawn through the leader dots and
+                                      the figure as well reads as a crossed-out
+                                      receipt line rather than as an item this
+                                      tier does not have. */}
+                                  <span className="rcpt__item-text">{row.label}</span>
+                                </dt>
+                                <span className="rcpt__leader" aria-hidden="true" />
+                                <dd className="rcpt__figure">
+                                  {row.cell ? (
+                                    figure(row.label, row.cell)
+                                  ) : (
+                                    <>
+                                      <span aria-hidden="true">0</span>
+                                      <span className="mm-visually-hidden">Not included</span>
+                                    </>
+                                  )}
+                                </dd>
+                              </div>
+                            ))}
+                          </dl>
 
-                              <ServiceLink card={card} />
-                            </div>
-                          </td>
-                        ))}
-                      </tr>
-                    </tfoot>
-                  </table>
-                </section>
-              ) : (
-                <section
-                  key={tab.key}
-                  className="pkg__panel"
-                  data-panel={tab.key}
-                  aria-label={tab.label}
-                >
-                  {tab.cards.map((card) => (
-                    <article key={card.slug} id={card.slug} className="pkg__single">
-                      <div className="pkg__single-head">
-                        <span className="pkg__num">{card.number}</span>
-                        <h3 className="pkg__name">{card.name}</h3>
-                        <p className="pkg__commitment">{card.commitment}</p>
-                        <p className="pkg__positioning">{card.positioning}</p>
+                          <div className="rcpt__rule" aria-hidden="true" />
 
-                        <div className="pkg__single-foot">
-                          <Link
-                            href={packagesPage.bespoke.href}
-                            className="mm-cta-bracket pkg__card-cta"
-                          >
-                            {packagesPage.bespoke.label}
-                          </Link>
-                          <ServiceLink card={card} />
+                          {/* Where a receipt puts the money. There are no prices
+                              on this site (deck p8, confirmed), so the total is
+                              a count and the money line says so instead. */}
+                          <div className="rcpt__total">
+                            <span className="rcpt__item">Total included</span>
+                            <span className="rcpt__leader" aria-hidden="true" />
+                            <span className="rcpt__figure">{included}</span>
+                          </div>
+
+                          {/* No "quoted per brand" line here, tempting as the
+                              money slot is: that sentence already exists once on
+                              the page as `priceNote`, and inventing a second
+                              wording for it would be writing client copy to fill
+                              a shape. The slot stays a count. */}
+                          <p className="rcpt__meta">
+                            {card.number} &nbsp; {tab.label} &nbsp; {siteName}
+                          </p>
+
+                          <div className="rcpt__foot">
+                            <Link
+                              href={packagesPage.bespoke.href}
+                              className="mm-cta-bracket rcpt__cta"
+                            >
+                              {packagesPage.bespoke.label}
+                              <span className="mm-visually-hidden"> about {card.name}</span>
+                            </Link>
+
+                            <Link href={card.service.href} className="rcpt__service">
+                              {card.service.label}
+                            </Link>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="pkg__single-body">
-                        <p className="pkg__includes-label">{packagesPage.includesLabel}</p>
-                        <ul className="pkg__includes">
-                          {card.includes?.map((include) => (
-                            <li key={include} className="pkg__include">
-                              {include}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </article>
-                  ))}
-                </section>
-              ),
-            )}
+                        <span className="rcpt__tear rcpt__tear--bottom" aria-hidden="true" />
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
           </div>
         </div>
 
-        {/* The bespoke offer and the page's closing CTA are one band. See the
-            note on `bespoke` in content/packages.ts — every card already ends in
-            Enquire, so a generic "let's work together" underneath this would be
-            the third ask on one screen. */}
-        <section className="pkg__bespoke" aria-labelledby="pkg-bespoke-heading">
-          <p className="pkg__price-note">{packagesPage.priceNote}</p>
-
-          <h2 id="pkg-bespoke-heading" className="pkg__bespoke-heading">
-            {packagesPage.bespoke.heading}
-          </h2>
-
-          <p className="pkg__bespoke-line">{packagesPage.bespoke.line}</p>
-
-          <Link href={packagesPage.bespoke.href} className="mm-cta-bracket pkg__bespoke-cta">
+        <section className="rcpt__bespoke">
+          <p className="rcpt__price-note">{packagesPage.priceNote}</p>
+          <h2 className="rcpt__bespoke-heading">{packagesPage.bespoke.heading}</h2>
+          <p className="rcpt__bespoke-line">{packagesPage.bespoke.line}</p>
+          <Link href={packagesPage.bespoke.href} className="mm-cta-bracket rcpt__bespoke-cta">
             {packagesPage.bespoke.label}
           </Link>
         </section>
@@ -268,20 +228,41 @@ export default function PackagesPage() {
 }
 
 /**
- * Rule 3 in content/packages.ts: every package points back at the service it
- * draws on, so the commitment and the discipline read as two views of one thing
- * rather than as two menus.
+ * The figure a receipt prints in its right-hand column.
+ *
+ * A receipt is a list of things and their amounts, and the deck's copy is
+ * neither — it is eleven full sentences. Rather than rewrite any of it (copy in
+ * content/ is the client's and is verbatim), this takes the row's shared label
+ * as the item and prints only what the tier's own wording ADDS to it:
+ *
+ *   "Pieces of content"      + "8 pieces of content"        → 8
+ *   "Instagram Stories"      + "Daily Instagram Stories"    → Daily
+ *   "Performance report"     + "…& recommendations"         → & recommendations
+ *   "Content calendar"       + "Content calendar"           → ✓  (adds nothing)
+ *
+ * The singular/plural retry is what catches "1 content creation session"
+ * against a label of "Content creation sessions". Anything that still does not
+ * split cleanly falls back to printing the cell whole, which is never wrong,
+ * only long — this must not be able to drop content on the floor.
  */
-function ServiceLink({ card }: { card: { service: { label: string; href: string } } }) {
-  return (
-    <Link href={card.service.href} className="pkg__service-link">
-      {card.service.label}
-      {/* The gap is a margin, not a space in the string: the arrow is
-          inline-block so it can slide on hover, and leading whitespace inside an
-          inline-block is collapsed away. */}
-      <span className="pkg__service-arrow" aria-hidden="true">
-        →
-      </span>
-    </Link>
-  );
+function figure(label: string, cell: string): string {
+  const item = cell.trim();
+  const lower = item.toLowerCase();
+
+  const candidates = [label.trim().toLowerCase()];
+  if (candidates[0].endsWith("s")) candidates.push(candidates[0].slice(0, -1));
+
+  for (const name of candidates) {
+    if (lower === name) return "✓";
+    if (lower.endsWith(name)) {
+      const rest = item.slice(0, item.length - name.length).trim();
+      if (rest) return rest;
+    }
+    if (lower.startsWith(name)) {
+      const rest = item.slice(name.length).trim();
+      if (rest) return rest;
+    }
+  }
+
+  return item;
 }
