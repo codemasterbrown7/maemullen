@@ -120,7 +120,14 @@ export default function PackagesReceiptPage() {
                                 key={row.label}
                                 className={`rcpt__line${row.cell ? "" : " rcpt__line--absent"}`}
                               >
-                                <dt className="rcpt__item">{row.label}</dt>
+                                <dt className="rcpt__item">
+                                  {/* The strike is on the words, not the row:
+                                      a rule drawn through the leader dots and
+                                      the figure as well reads as a crossed-out
+                                      receipt line rather than as an item this
+                                      tier does not have. */}
+                                  <span className="rcpt__item-text">{row.label}</span>
+                                </dt>
                                 <span className="rcpt__leader" aria-hidden="true" />
                                 <dd className="rcpt__figure">
                                   {row.cell ? (
@@ -155,8 +162,6 @@ export default function PackagesReceiptPage() {
                           <p className="rcpt__meta">
                             {card.number} &nbsp; {tab.label} &nbsp; {siteName}
                           </p>
-
-                          <div className="rcpt__barcode" aria-hidden="true" data-seed={cardIndex} />
 
                           <div className="rcpt__foot">
                             <Link
