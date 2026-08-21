@@ -19,6 +19,7 @@
   --rcpt-faint: rgb(26 26 26 / 0.45);
   --rcpt-line: rgb(26 26 26 / 0.32);
   --rcpt-tooth: 14px; /* one tooth of the torn edge */
+  --rcpt-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.4' intercept='-0.22'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23g)'/%3E%3C/svg%3E");
   --rcpt-max: 85rem;
 
   display: flex;
@@ -154,12 +155,82 @@
   position: relative;
   width: 100%;
   max-width: 24rem;
-  background: var(--rcpt-paper);
   color: var(--rcpt-ink);
+  background-color: var(--rcpt-paper);
+  /* ── CRINKLE ──
+     "right now it looks too perfect" (2026-08-21). A flat rectangle of one
+     colour is a rendering of paper; this is meant to look like a slip that has
+     been in someone's pocket.
+
+     Creases are pairs — a thin shadow with a thin highlight immediately beside
+     it — because that is what a fold actually is: one plane tipped away from
+     the light and the next tipped into it. Each pair sits at its own angle and
+     its own position, and the positions are deliberately NOT on a rhythm. A
+     regular interval would read as a generated pattern, which is the thing
+     this site has already rejected once; irregular ones read as damage.
+
+     Under the creases, two very wide soft washes stop the sheet being evenly
+     lit, so it reads as not quite lying flat. */
+  background-image:
+    linear-gradient(
+      99deg,
+      transparent 0 21%,
+      rgb(0 0 0 / 0.03) 21.4%,
+      rgb(255 255 255 / 0.55) 22.1%,
+      transparent 22.7%
+    ),
+    linear-gradient(
+      86deg,
+      transparent 0 43%,
+      rgb(0 0 0 / 0.022) 43.3%,
+      rgb(255 255 255 / 0.45) 44%,
+      transparent 44.6%
+    ),
+    linear-gradient(
+      93deg,
+      transparent 0 64%,
+      rgb(0 0 0 / 0.026) 64.5%,
+      rgb(255 255 255 / 0.5) 65.1%,
+      transparent 65.8%
+    ),
+    linear-gradient(
+      81deg,
+      transparent 0 82%,
+      rgb(0 0 0 / 0.019) 82.4%,
+      rgb(255 255 255 / 0.4) 83%,
+      transparent 83.5%
+    ),
+    linear-gradient(
+      177deg,
+      transparent 0 37%,
+      rgb(0 0 0 / 0.016) 37.4%,
+      rgb(255 255 255 / 0.38) 38%,
+      transparent 38.5%
+    ),
+    radial-gradient(120% 45% at 18% 8%, rgb(255 255 255 / 0.55), transparent 62%),
+    radial-gradient(110% 40% at 84% 72%, rgb(0 0 0 / 0.028), transparent 64%);
   /* Sits on the page like a slip of paper: one tight contact shadow and one
      wide soft one. Same recipe as the /enquire letter panel. */
   box-shadow: 0 1px 1px rgb(0 0 0 / 0.05), 0 10px 24px rgb(0 0 0 / 0.07),
     0 30px 50px rgb(0 0 0 / 0.05);
+}
+
+/* The tooth of the stock, over the creases and under the print. Fractal noise
+   turned into sparse flecks — /enquire's technique, retuned a little finer for
+   till roll. Flecks, NOT a dot grid: halftone, dither and stipple are banned
+   outright, and the same ruling names real material as what to use instead. */
+.rcpt__strip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--rcpt-grain);
+  background-size: 150px 150px;
+  pointer-events: none;
+}
+
+/* Above the grain overlay. */
+.rcpt__body {
+  position: relative;
 }
 
 /* The torn ends. Teeth are drawn in the PAGE colour on top of the strip's own
@@ -293,9 +364,30 @@
 
 /* A line this tier does not have. It still prints — a receipt shows a zero
    rather than omitting the line, and here that is also what keeps the three
-   strips landing on the same rows. */
+   strips landing on the same rows.
+
+   STRUCK, NOT JUST DIMMED. Grey alone was doing the whole job and was not
+   doing it: "the things that arent included need to be more clear than just
+   making it slightly grey" (2026-08-21). A rule through the words is
+   unambiguous at any contrast, and it survives being printed, photographed or
+   read by someone who cannot separate two close greys.
+
+   The strike lands on the WORDS only. Drawn through the leader dots and the
+   figure as well it reads as a voided receipt line — a thing that was rung up
+   and cancelled — rather than as a thing this tier does not include. */
 .rcpt__line--absent {
   color: var(--rcpt-faint);
+}
+.rcpt__line--absent .rcpt__item-text {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  /* Sits the rule on the x-height rather than letting the browser drop it
+     toward the baseline, where it clips the descenders of a mono face. */
+  text-underline-offset: 0;
+}
+.rcpt__line--absent .rcpt__leader {
+  border-bottom-style: dotted;
+  opacity: 0.55;
 }
 
 .rcpt__total {
@@ -308,38 +400,12 @@
 }
 
 .rcpt__meta {
-  margin: var(--space-5) 0 0;
+  margin: var(--space-6) 0 0;
   text-align: center;
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rcpt-faint);
-}
-
-/* ── Barcode ──────────────────────────────────────────────────────────────
-   Drawn, not an image: a repeating gradient of bars at four widths, which is
-   enough irregularity to read as a code rather than as a hatch. Each strip
-   starts the pattern at a different offset so the three are not identical. */
-.rcpt__barcode {
-  height: 40px;
-  margin: var(--space-5) 0 0;
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--rcpt-ink) 0 2px,
-    transparent 2px 5px,
-    var(--rcpt-ink) 5px 6px,
-    transparent 6px 8px,
-    var(--rcpt-ink) 8px 11px,
-    transparent 11px 13px,
-    var(--rcpt-ink) 13px 14px,
-    transparent 14px 18px
-  );
-}
-.rcpt__barcode[data-seed="1"] {
-  background-position: -7px 0;
-}
-.rcpt__barcode[data-seed="2"] {
-  background-position: -13px 0;
 }
 
 /* ── Foot ─────────────────────────────────────────────────────────────────── */
