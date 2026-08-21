@@ -171,48 +171,72 @@
 
      Under the creases, two very wide soft washes stop the sheet being evenly
      lit, so it reads as not quite lying flat. */
-  background-image:
-    linear-gradient(
-      99deg,
-      transparent 0 21%,
-      rgb(0 0 0 / 0.03) 21.4%,
-      rgb(255 255 255 / 0.55) 22.1%,
-      transparent 22.7%
-    ),
-    linear-gradient(
-      86deg,
-      transparent 0 43%,
-      rgb(0 0 0 / 0.022) 43.3%,
-      rgb(255 255 255 / 0.45) 44%,
-      transparent 44.6%
-    ),
-    linear-gradient(
-      93deg,
-      transparent 0 64%,
-      rgb(0 0 0 / 0.026) 64.5%,
-      rgb(255 255 255 / 0.5) 65.1%,
-      transparent 65.8%
-    ),
-    linear-gradient(
-      81deg,
-      transparent 0 82%,
-      rgb(0 0 0 / 0.019) 82.4%,
-      rgb(255 255 255 / 0.4) 83%,
-      transparent 83.5%
-    ),
-    linear-gradient(
-      177deg,
-      transparent 0 37%,
-      rgb(0 0 0 / 0.016) 37.4%,
-      rgb(255 255 255 / 0.38) 38%,
-      transparent 38.5%
-    ),
-    radial-gradient(120% 45% at 18% 8%, rgb(255 255 255 / 0.55), transparent 62%),
-    radial-gradient(110% 40% at 84% 72%, rgb(0 0 0 / 0.028), transparent 64%);
   /* Sits on the page like a slip of paper: one tight contact shadow and one
      wide soft one. Same recipe as the /enquire letter panel. */
   box-shadow: 0 1px 1px rgb(0 0 0 / 0.05), 0 10px 24px rgb(0 0 0 / 0.07),
     0 30px 50px rgb(0 0 0 / 0.05);
+}
+
+/* ── CRINKLE ──
+   "it should look random and look like someone has scrunched it up and then
+   unravled it" (2026-08-21). The first pass was one set of near-vertical
+   creases shared by all three strips, which is why it read as a texture rather
+   than as damage: parallel, evenly spaced, and identical three times over.
+
+   These are generated, not hand-placed — nine creases per strip, each drawn
+   from one of four angle families so the sheet folds in every direction at
+   once rather than only downward, and each at its own position, width and
+   depth. THE THREE SETS ARE DIFFERENT, which is the half of the note that
+   mattered most: the same slip printed three times is the tell.
+
+   A crease is still a PAIR, a thin shadow with a highlight beside it, because
+   that is what a fold is. What changed is that the pairs no longer line up.
+
+   Fixed seed, so the creases are stable between builds. A sheet that
+   re-crumples itself on every deploy is a different kind of wrong. */
+.rcpt__strip:nth-child(1) {
+  background-image:
+    linear-gradient(76deg, transparent 0 80.8%, rgb(0 0 0 / 0.023) 81.3%, rgb(255 255 255 / 0.59) 81.9%, transparent 82.6%),
+    linear-gradient(166deg, transparent 0 61.6%, rgb(0 0 0 / 0.028) 62.0%, rgb(255 255 255 / 0.43) 62.5%, transparent 63.0%),
+    linear-gradient(34deg, transparent 0 70.6%, rgb(0 0 0 / 0.034) 71.1%, rgb(255 255 255 / 0.44) 71.6%, transparent 72.2%),
+    linear-gradient(144deg, transparent 0 70.8%, rgb(0 0 0 / 0.026) 71.2%, rgb(255 255 255 / 0.35) 71.8%, transparent 72.5%),
+    linear-gradient(81deg, transparent 0 38.4%, rgb(0 0 0 / 0.028) 38.7%, rgb(255 255 255 / 0.32) 39.0%, transparent 39.4%),
+    linear-gradient(166deg, transparent 0 75.6%, rgb(0 0 0 / 0.015) 75.9%, rgb(255 255 255 / 0.50) 76.2%, transparent 76.6%),
+    linear-gradient(41deg, transparent 0 31.5%, rgb(0 0 0 / 0.025) 31.9%, rgb(255 255 255 / 0.32) 32.5%, transparent 33.1%),
+    linear-gradient(138deg, transparent 0 40.7%, rgb(0 0 0 / 0.027) 41.4%, rgb(255 255 255 / 0.57) 42.1%, transparent 43.0%),
+    linear-gradient(74deg, transparent 0 38.7%, rgb(0 0 0 / 0.022) 39.0%, rgb(255 255 255 / 0.39) 39.3%, transparent 39.7%),
+    radial-gradient(137% 43% at 26% 4%, rgb(255 255 255 / 0.56), transparent 58%),
+    radial-gradient(112% 32% at 77% 78%, rgb(0 0 0 / 0.026), transparent 66%);
+}
+
+.rcpt__strip:nth-child(2) {
+  background-image:
+    linear-gradient(87deg, transparent 0 23.3%, rgb(0 0 0 / 0.027) 23.8%, rgb(255 255 255 / 0.57) 24.4%, transparent 25.1%),
+    linear-gradient(179deg, transparent 0 55.6%, rgb(0 0 0 / 0.023) 56.1%, rgb(255 255 255 / 0.59) 56.8%, transparent 57.6%),
+    linear-gradient(40deg, transparent 0 26.3%, rgb(0 0 0 / 0.023) 26.6%, rgb(255 255 255 / 0.55) 27.0%, transparent 27.4%),
+    linear-gradient(143deg, transparent 0 55.1%, rgb(0 0 0 / 0.021) 55.5%, rgb(255 255 255 / 0.54) 56.1%, transparent 56.7%),
+    linear-gradient(104deg, transparent 0 32.0%, rgb(0 0 0 / 0.023) 32.3%, rgb(255 255 255 / 0.40) 32.6%, transparent 33.0%),
+    linear-gradient(169deg, transparent 0 45.9%, rgb(0 0 0 / 0.018) 46.2%, rgb(255 255 255 / 0.58) 46.6%, transparent 47.1%),
+    linear-gradient(46deg, transparent 0 38.0%, rgb(0 0 0 / 0.016) 38.3%, rgb(255 255 255 / 0.46) 38.7%, transparent 39.0%),
+    linear-gradient(119deg, transparent 0 6.7%, rgb(0 0 0 / 0.017) 7.0%, rgb(255 255 255 / 0.36) 7.4%, transparent 7.8%),
+    linear-gradient(95deg, transparent 0 83.5%, rgb(0 0 0 / 0.034) 84.1%, rgb(255 255 255 / 0.42) 84.9%, transparent 85.7%),
+    radial-gradient(108% 47% at 24% 4%, rgb(255 255 255 / 0.55), transparent 68%),
+    radial-gradient(103% 45% at 81% 80%, rgb(0 0 0 / 0.021), transparent 63%);
+}
+
+.rcpt__strip:nth-child(3) {
+  background-image:
+    linear-gradient(107deg, transparent 0 69.9%, rgb(0 0 0 / 0.022) 70.2%, rgb(255 255 255 / 0.58) 70.6%, transparent 71.0%),
+    linear-gradient(175deg, transparent 0 78.0%, rgb(0 0 0 / 0.030) 78.4%, rgb(255 255 255 / 0.39) 78.8%, transparent 79.2%),
+    linear-gradient(49deg, transparent 0 36.6%, rgb(0 0 0 / 0.023) 36.8%, rgb(255 255 255 / 0.32) 37.2%, transparent 37.5%),
+    linear-gradient(120deg, transparent 0 32.2%, rgb(0 0 0 / 0.026) 32.7%, rgb(255 255 255 / 0.44) 33.4%, transparent 34.2%),
+    linear-gradient(81deg, transparent 0 6.0%, rgb(0 0 0 / 0.034) 6.3%, rgb(255 255 255 / 0.43) 6.6%, transparent 7.0%),
+    linear-gradient(165deg, transparent 0 80.8%, rgb(0 0 0 / 0.027) 81.2%, rgb(255 255 255 / 0.50) 81.7%, transparent 82.2%),
+    linear-gradient(44deg, transparent 0 71.5%, rgb(0 0 0 / 0.031) 72.1%, rgb(255 255 255 / 0.34) 72.9%, transparent 73.8%),
+    linear-gradient(118deg, transparent 0 68.4%, rgb(0 0 0 / 0.024) 68.7%, rgb(255 255 255 / 0.43) 69.2%, transparent 69.7%),
+    linear-gradient(78deg, transparent 0 42.2%, rgb(0 0 0 / 0.032) 42.6%, rgb(255 255 255 / 0.45) 43.0%, transparent 43.5%),
+    radial-gradient(106% 39% at 11% 17%, rgb(255 255 255 / 0.53), transparent 59%),
+    radial-gradient(95% 36% at 66% 63%, rgb(0 0 0 / 0.024), transparent 55%);
 }
 
 /* The tooth of the stock, over the creases and under the print. Fractal noise
@@ -378,13 +402,54 @@
 .rcpt__line--absent {
   color: var(--rcpt-faint);
 }
+/* ── THE STRIKE ──
+   WHY THE FIRST ONE FAILED. It was `text-decoration: line-through` in
+   --rcpt-faint, the same ink as the words it crossed. A rule the same colour
+   as the glyphs it passes over is invisible on them and only shows in the gaps
+   between them, so what actually reached the page was a row of dashes wedged
+   between the words: "CONTENT—CREATION—SESSIONS". It read as punctuation.
+   Anything drawn in the text's own colour would have failed the same way; the
+   fix is not a thicker rule, it is a different colour.
+
+   WHAT IT IS NOW. A red marker stroke, asked for on 2026-08-21: "an
+   unsymmetrical striek through in red as if it was a sharpie that someone had
+   quickly dont by hand". Each is an SVG path rather than a decoration, because
+   text-decoration cannot wander — and a hand's stroke wanders. Both ends drift
+   by different amounts, the control points sit off the line between them, and
+   the stroke overshoots the word at both ends, which is what a fast stroke
+   does. Four variants cycle down the list so no two adjacent lines carry the
+   same one.
+
+   `preserveAspectRatio: none` lets one path stretch to any word length. The
+   stroke thins as it stretches, which is why it is drawn heavy in the viewBox.
+
+   Brand red, not a marker-pen red off the shelf — it still has to be this
+   site's palette. */
 .rcpt__line--absent .rcpt__item-text {
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
-  /* Sits the rule on the x-height rather than letting the browser drop it
-     toward the baseline, where it clips the descenders of a mono face. */
-  text-underline-offset: 0;
+  /* Room for the overshoot, taken back so the line's metrics do not move. */
+  padding: 0 4px;
+  margin: 0 -4px;
+  background-repeat: no-repeat;
+  background-position: center 52%;
+  background-size: 100% 0.78em;
 }
+
+.rcpt__line--absent:nth-child(4n+1) .rcpt__item-text {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M-6.9,10.0 C28.4,13.5 80.2,14.7 100,6.8 C130.9,13.4 182.6,7.5 201.5,12.2' fill='none' stroke='%23a23b3b' stroke-width='6.0' stroke-linecap='round' opacity='0.9'/%3E%3C/svg%3E");
+}
+
+.rcpt__line--absent:nth-child(4n+2) .rcpt__item-text {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M-6.9,11.0 C46.7,10.3 73.9,4.4 100,10.7 C131.0,10.2 162.5,13.5 207.0,10.5' fill='none' stroke='%23a23b3b' stroke-width='7.1' stroke-linecap='round' opacity='0.9'/%3E%3C/svg%3E");
+}
+
+.rcpt__line--absent:nth-child(4n+3) .rcpt__item-text {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M-2.0,10.6 C44.6,13.1 63.4,4.4 100,10.3 C135.7,7.9 159.3,4.2 207.2,9.4' fill='none' stroke='%23a23b3b' stroke-width='6.7' stroke-linecap='round' opacity='0.9'/%3E%3C/svg%3E");
+}
+
+.rcpt__line--absent:nth-child(4n) .rcpt__item-text {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath d='M-3.1,8.5 C47.0,7.2 57.9,7.4 100,10.6 C112.7,13.0 157.8,4.6 201.7,12.5' fill='none' stroke='%23a23b3b' stroke-width='6.7' stroke-linecap='round' opacity='0.9'/%3E%3C/svg%3E");
+}
+
 .rcpt__line--absent .rcpt__leader {
   border-bottom-style: dotted;
   opacity: 0.55;
