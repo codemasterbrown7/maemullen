@@ -104,6 +104,21 @@ export default function PackagesPage() {
                 data-panel={tab.key}
                 aria-label={tab.label}
               >
+                {tab.enquireOnly ? (
+                  /* Nothing to itemise, so nothing is printed. An empty receipt
+                     with a total of zero would be a joke at the expense of the
+                     person reading it. */
+                  <div className="rcpt__bespoke">
+                    <h2 className="rcpt__bespoke-heading">{packagesPage.bespoke.heading}</h2>
+                    <p className="rcpt__bespoke-line">{packagesPage.bespoke.line}</p>
+                    <Link
+                      href={packagesPage.bespoke.href}
+                      className="mm-cta-bracket rcpt__bespoke-cta"
+                    >
+                      {packagesPage.bespoke.label}
+                    </Link>
+                  </div>
+                ) : (
                 <div className={`rcpt__strips${tab.compare ? " rcpt__strips--three" : ""}`}>
                   {tab.cards.map((card, cardIndex) => {
                     /* The comparison tab reads its rows off the shared matrix so
@@ -207,19 +222,17 @@ export default function PackagesPage() {
                     );
                   })}
                 </div>
+                )}
               </section>
             ))}
           </div>
         </div>
 
-        <section className="rcpt__bespoke">
-          <p className="rcpt__price-note">{packagesPage.priceNote}</p>
-          <h2 className="rcpt__bespoke-heading">{packagesPage.bespoke.heading}</h2>
-          <p className="rcpt__bespoke-line">{packagesPage.bespoke.line}</p>
-          <Link href={packagesPage.bespoke.href} className="mm-cta-bracket rcpt__bespoke-cta">
-            {packagesPage.bespoke.label}
-          </Link>
-        </section>
+        {/* Kept, and kept OUT of the bespoke panel: it explains why no tab
+            quotes a figure, so it belongs to the whole page rather than to one
+            of them. Next to the bespoke line it would also read as a repeat —
+            both sentences end in "tell us and we will". */}
+        <p className="rcpt__price-note">{packagesPage.priceNote}</p>
       </main>
 
       <ChromeFooter />

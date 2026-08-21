@@ -122,6 +122,13 @@ export type PackageTab = {
   cards: PackageCard[];
   /** Renders the three-column comparison rather than a single wide block. */
   compare?: boolean;
+  /**
+   * A tab that is not a package. Bespoke has nothing to print — no rows, no
+   * total, no figure — so it holds `packagesPage.bespoke` as plain type rather
+   * than a receipt (2026-08-21). `cards` stays empty and the panel renders
+   * from the bespoke block instead.
+   */
+  enquireOnly?: boolean;
 };
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -524,6 +531,14 @@ export const packageTabs: PackageTab[] = [
       },
     ],
   },
+
+  /* The ninth way to work together. No cards: see `enquireOnly` above. */
+  {
+    key: "bespoke",
+    label: "Bespoke",
+    enquireOnly: true,
+    cards: [],
+  }
 ];
 
 /** Flat list, for the index range in the masthead. */
@@ -559,12 +574,18 @@ export const packagesPage = {
   priceNote:
     "Prices are quoted to each brand rather than listed — tell us what you need and we will put a figure to it.",
   /**
-   * The bespoke band, and the page's closing CTA in one.
+   * Bespoke. Asked for directly: "don't see a package that fits you? contact us
+   * for a bespoke package".
    *
-   * Asked for directly: "don't see a package that fits you? contact us for a
-   * bespoke package". ONE band rather than a bespoke block plus a generic CTA
-   * band, because every card already ends in Enquire — a second "let's work
-   * together" underneath would be the third ask on a screen.
+   * IT IS A TAB NOW, not a band under the page (2026-08-21). As a band it read
+   * as the page's closing CTA, which put it after everything and made it look
+   * like the thing you land on when you have given up. As a tab it sits beside
+   * the eight things you can buy, which is what it actually is: the ninth way
+   * to work together.
+   *
+   * Deliberately NOT a receipt. There is nothing to itemise — no rows, no
+   * total, no figure — and printing an empty one would be a joke at the
+   * expense of the person reading it.
    */
   bespoke: {
     heading: "Bespoke",
