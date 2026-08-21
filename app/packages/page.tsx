@@ -18,6 +18,35 @@ export const metadata: Metadata = {
 const TAB_GROUP = "rcpt-tab";
 
 /**
+ * Which crumpled sheet a given strip gets.
+ *
+ * THE BUG THIS FIXES. The crumple was keyed off `:nth-child`, and seven of the
+ * nine tabs hold exactly one package — so every one of them matched
+ * `nth-child(1)` and got the same sheet. Only the social comparison, with three
+ * strips, ever showed more than one. Every single-package tab was the identical
+ * piece of paper (2026-08-21).
+ *
+ * Numbering is global across the whole page rather than per panel, so no two
+ * strips anywhere share a sheet — including across tabs, which is where it was
+ * visible.
+ *
+ * TWELVE VARIANTS OUT OF THREE SHEETS. The CSS carries three generated sheets
+ * and flips each one four ways (as-is, mirrored, inverted, both). A crumple has
+ * no grain direction and no readable orientation, so a flipped sheet reads as a
+ * different sheet — and it costs nothing, where three more generated sheets
+ * would be roughly 12KB gzipped each. Ten strips into twelve variants means
+ * every one is distinct with room to spare.
+ */
+const sheetOfStrip = (() => {
+  const index = new Map<string, number>();
+  let n = 0;
+  for (const tab of packageTabs) {
+    for (const card of tab.cards) index.set(`${tab.key}/${card.slug}`, n++);
+  }
+  return (tabKey: string, slug: string) => (index.get(`${tabKey}/${slug}`) ?? 0) % 12;
+})();
+
+/**
  * /packages — one receipt per thing you can buy.
  *
  * WHY A RECEIPT. Chosen on 2026-08-21 out of three directions built side by
@@ -137,7 +166,12 @@ export default function PackagesPage() {
                     const included = rows.filter((r) => r.cell).length;
 
                     return (
-                      <article key={card.slug} id={card.slug} className="rcpt__strip">
+                      <article
+                        key={card.slug}
+                        id={card.slug}
+                        className="rcpt__strip"
+                        data-sheet={sheetOfStrip(tab.key, card.slug)}
+                      >
                         {/* Two bars of torn paper, drawn as page-coloured teeth
                             over the strip's own ends. */}
                         <span className="rcpt__tear rcpt__tear--top" aria-hidden="true" />
@@ -194,10 +228,10 @@ export default function PackagesPage() {
                           </div>
 
                           {/* No "quoted per brand" line here, tempting as the
-                              money slot is: that sentence already exists once on
-                              the page as `priceNote`, and inventing a second
-                              wording for it would be writing client copy to fill
-                              a shape. The slot stays a count. */}
+                              money slot is. Inventing a wording for it would be
+                              writing client copy to fill a shape, and Bespoke
+                              already makes the point in its own tab. The slot
+                              stays a count. */}
                           <p className="rcpt__meta">
                             {card.number} &nbsp; {tab.label} &nbsp; {siteName}
                           </p>
@@ -228,11 +262,6 @@ export default function PackagesPage() {
           </div>
         </div>
 
-        {/* Kept, and kept OUT of the bespoke panel: it explains why no tab
-            quotes a figure, so it belongs to the whole page rather than to one
-            of them. Next to the bespoke line it would also read as a repeat —
-            both sentences end in "tell us and we will". */}
-        <p className="rcpt__price-note">{packagesPage.priceNote}</p>
       </main>
 
       <ChromeFooter />
