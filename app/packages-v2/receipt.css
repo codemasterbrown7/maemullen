@@ -29,10 +29,24 @@
   color: var(--brand-black);
 }
 
+/* BORDER-BOX, EXPLICITLY. This site ships no reset on purpose — app/globals.css
+   says so and warns that adding one would change the layout maths — so every
+   element is content-box, and `width: 100%` next to horizontal padding means
+   100% PLUS that padding. Here that came to 85rem + two 4rem gutters = 1488px
+   inside a 1440px window, which is the horizontal scroll reported on
+   2026-08-21: the page could be dragged sideways, taking the fixed header's
+   background off the left and showing bare ground on the right.
+
+   Scoped to this element rather than fixed with a global `* { box-sizing }`,
+   which would silently re-lay-out every other page on the site.
+
+   The max-width then has to carry the gutters too, so the STRIPS still get
+   their 85rem and the padding sits inside it. */
 .rcpt__main {
+  box-sizing: border-box;
   flex: 1;
   width: 100%;
-  max-width: var(--rcpt-max);
+  max-width: calc(var(--rcpt-max) + 2 * var(--gutter));
   margin: 0 auto;
   padding: clamp(var(--space-10), 6vw, var(--space-20)) var(--gutter) var(--space-24);
 }
@@ -81,11 +95,34 @@
   scrollbar-width: none;
 }
 
+/* `width: max-content` with `min-width: 100%`, and NOT `margin: 0 auto` — the
+   pattern /packages already proves. When the labels fit, the track is the full
+   bar and `justify-content` centres them; when they do not, the track is wider
+   than the bar and the centring stops applying because there is no free space
+   left to distribute.
+
+   `margin: 0 auto` was the first attempt and it leaked: an auto-margined track
+   wider than its scrollport pushed the document itself sideways below about
+   800px, so the whole page could be dragged rather than just the tab bar.
+   /packages does not do it and /packages does not leak. */
 .rcpt__tabtrack {
+  /* POSITIONED, and it is load-bearing rather than tidiness. The letter-split
+     the site runs over every label leaves a `.mm-visually-hidden` copy of the
+     text behind, and that helper is `position: absolute`. With no positioned
+     ancestor its containing block was the document itself, so the tab bar's
+     `overflow-x: auto` never clipped it — overflow only clips a descendant
+     whose containing block is inside the scroller — and a 1px span sitting at
+     x=799 dragged the whole page sideways below 800px.
+
+     /packages has this already, for the moving rule to measure against; the
+     clipping is a second job the same declaration does. */
+  position: relative;
   display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
   gap: var(--space-2);
   width: max-content;
-  margin: 0 auto;
+  min-width: 100%;
 }
 
 .rcpt__tab {
@@ -157,20 +194,12 @@
   max-width: 24rem;
   color: var(--rcpt-ink);
   background-color: var(--rcpt-paper);
-  /* ── CRINKLE ──
-     "right now it looks too perfect" (2026-08-21). A flat rectangle of one
-     colour is a rendering of paper; this is meant to look like a slip that has
-     been in someone's pocket.
-
-     Creases are pairs — a thin shadow with a thin highlight immediately beside
-     it — because that is what a fold actually is: one plane tipped away from
-     the light and the next tipped into it. Each pair sits at its own angle and
-     its own position, and the positions are deliberately NOT on a rhythm. A
-     regular interval would read as a generated pattern, which is the thing
-     this site has already rejected once; irregular ones read as damage.
-
-     Under the creases, two very wide soft washes stop the sheet being evenly
-     lit, so it reads as not quite lying flat. */
+  /* Two very wide, very soft washes so the sheet is not evenly lit and reads as
+     not quite lying flat. These can stay straight: they are lighting, not
+     folds. */
+  background-image:
+    radial-gradient(125% 48% at 22% 9%, rgb(255 255 255 / 0.42), transparent 64%),
+    radial-gradient(115% 42% at 82% 74%, rgb(0 0 0 / 0.02), transparent 66%);
   /* Sits on the page like a slip of paper: one tight contact shadow and one
      wide soft one. Same recipe as the /enquire letter panel. */
   box-shadow: 0 1px 1px rgb(0 0 0 / 0.05), 0 10px 24px rgb(0 0 0 / 0.07),
@@ -178,65 +207,48 @@
 }
 
 /* ── CRINKLE ──
-   "it should look random and look like someone has scrunched it up and then
-   unravled it" (2026-08-21). The first pass was one set of near-vertical
-   creases shared by all three strips, which is why it read as a texture rather
-   than as damage: parallel, evenly spaced, and identical three times over.
+   Two notes on 2026-08-21: "the crinkles are too explicit, youve overdone it",
+   and "each line is perfectly straight, an actual crinkles reciept woulnt have
+   perfect straight lines".
 
-   These are generated, not hand-placed — nine creases per strip, each drawn
-   from one of four angle families so the sheet folds in every direction at
-   once rather than only downward, and each at its own position, width and
-   depth. THE THREE SETS ARE DIFFERENT, which is the half of the note that
-   mattered most: the same slip printed three times is the tell.
+   The second one was a limit of the technique, not a setting. A
+   `linear-gradient` IS a straight line — the colour stops run along one axis
+   across the whole box and there is no way to bend one. Any number of them
+   only ever gives a fan of straight lines, which is what was on the page.
 
-   A crease is still a PAIR, a thin shadow with a highlight beside it, because
-   that is what a fold is. What changed is that the pairs no longer line up.
+   So the creases are an SVG now, and each is a POLYLINE: a chain of short runs
+   that changes direction at every kink, which is what a fold actually does.
+   Each runs edge to edge, because a crease does not start in the middle of a
+   sheet. Shadow and highlight still come as a pair — the same polyline drawn
+   twice, about a pixel apart — and the whole set is blurred, so what lands is
+   a soft ridge rather than a drawn line.
 
-   Fixed seed, so the creases are stable between builds. A sheet that
-   re-crumples itself on every deploy is a different kind of wrong. */
-.rcpt__strip:nth-child(1) {
-  background-image:
-    linear-gradient(76deg, transparent 0 80.8%, rgb(0 0 0 / 0.023) 81.3%, rgb(255 255 255 / 0.59) 81.9%, transparent 82.6%),
-    linear-gradient(166deg, transparent 0 61.6%, rgb(0 0 0 / 0.028) 62.0%, rgb(255 255 255 / 0.43) 62.5%, transparent 63.0%),
-    linear-gradient(34deg, transparent 0 70.6%, rgb(0 0 0 / 0.034) 71.1%, rgb(255 255 255 / 0.44) 71.6%, transparent 72.2%),
-    linear-gradient(144deg, transparent 0 70.8%, rgb(0 0 0 / 0.026) 71.2%, rgb(255 255 255 / 0.35) 71.8%, transparent 72.5%),
-    linear-gradient(81deg, transparent 0 38.4%, rgb(0 0 0 / 0.028) 38.7%, rgb(255 255 255 / 0.32) 39.0%, transparent 39.4%),
-    linear-gradient(166deg, transparent 0 75.6%, rgb(0 0 0 / 0.015) 75.9%, rgb(255 255 255 / 0.50) 76.2%, transparent 76.6%),
-    linear-gradient(41deg, transparent 0 31.5%, rgb(0 0 0 / 0.025) 31.9%, rgb(255 255 255 / 0.32) 32.5%, transparent 33.1%),
-    linear-gradient(138deg, transparent 0 40.7%, rgb(0 0 0 / 0.027) 41.4%, rgb(255 255 255 / 0.57) 42.1%, transparent 43.0%),
-    linear-gradient(74deg, transparent 0 38.7%, rgb(0 0 0 / 0.022) 39.0%, rgb(255 255 255 / 0.39) 39.3%, transparent 39.7%),
-    radial-gradient(137% 43% at 26% 4%, rgb(255 255 255 / 0.56), transparent 58%),
-    radial-gradient(112% 32% at 77% 78%, rgb(0 0 0 / 0.026), transparent 66%);
+   Much fainter than the first pass, which is the other half of the note.
+
+   Fixed seeds, three different sheets. Stable between builds: a receipt that
+   re-crumples itself on every deploy is its own kind of wrong. */
+.rcpt__strip:nth-child(1)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 700' preserveAspectRatio='none'%3E%3Cfilter id='s'%3E%3CfeGaussianBlur stdDeviation='0.7'/%3E%3C/filter%3E%3Cg filter='url(%23s)'%3E%3Cpath d='M232.5,700.0 L173.3,443.3 L66.4,224.9 L4.3,0.0' stroke='rgba(0,0,0,0.040)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M233.7,700.7 L174.5,444.0 L67.6,225.6 L5.5,0.7' stroke='rgba(255,255,255,0.28)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,591.5 L283.2,428.2 L290.4,235.5 L300.0,47.5' stroke='rgba(0,0,0,0.053)' stroke-width='1.7' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.3,592.2 L284.5,429.0 L291.7,236.2 L301.3,48.3' stroke='rgba(255,255,255,0.23)' stroke-width='1.7' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M0.0,68.6 L-0.1,206.5 L53.5,364.7 L37.8,526.7 L66.5,700.0' stroke='rgba(0,0,0,0.046)' stroke-width='1.1' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M1.8,69.1 L1.6,207.0 L55.2,365.2 L39.6,527.2 L68.3,700.5' stroke='rgba(255,255,255,0.34)' stroke-width='1.1' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M38.7,0.0 L7.3,210.0 L28.6,393.6 L0.0,581.0' stroke='rgba(0,0,0,0.032)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M39.7,1.4 L8.4,211.4 L29.6,395.0 L1.0,582.3' stroke='rgba(255,255,255,0.30)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M0.0,78.9 L52.6,200.2 L131.5,371.4 L206.3,525.4 L300.0,655.5' stroke='rgba(0,0,0,0.045)' stroke-width='1.4' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M1.6,80.1 L54.2,201.4 L133.1,372.6 L207.9,526.6 L301.6,656.7' stroke='rgba(255,255,255,0.26)' stroke-width='1.4' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,251.8 L324.8,296.4 L290.2,311.8 L302.0,394.4 L307.0,411.6 L324.9,434.1 L300.0,500.2' stroke='rgba(0,0,0,0.054)' stroke-width='1.6' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.3,252.5 L326.2,297.1 L291.6,312.5 L303.4,395.1 L308.3,412.3 L326.3,434.8 L301.3,500.9' stroke='rgba(255,255,255,0.36)' stroke-width='1.6' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,202.4 L205.5,198.7 L133.9,252.4 L83.2,258.8 L0.0,255.0' stroke='rgba(0,0,0,0.047)' stroke-width='1.4' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.4,203.4 L207.0,199.7 L135.4,253.4 L84.7,259.8 L1.4,256.0' stroke='rgba(255,255,255,0.26)' stroke-width='1.4' fill='none' stroke-linejoin='round'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-.rcpt__strip:nth-child(2) {
-  background-image:
-    linear-gradient(87deg, transparent 0 23.3%, rgb(0 0 0 / 0.027) 23.8%, rgb(255 255 255 / 0.57) 24.4%, transparent 25.1%),
-    linear-gradient(179deg, transparent 0 55.6%, rgb(0 0 0 / 0.023) 56.1%, rgb(255 255 255 / 0.59) 56.8%, transparent 57.6%),
-    linear-gradient(40deg, transparent 0 26.3%, rgb(0 0 0 / 0.023) 26.6%, rgb(255 255 255 / 0.55) 27.0%, transparent 27.4%),
-    linear-gradient(143deg, transparent 0 55.1%, rgb(0 0 0 / 0.021) 55.5%, rgb(255 255 255 / 0.54) 56.1%, transparent 56.7%),
-    linear-gradient(104deg, transparent 0 32.0%, rgb(0 0 0 / 0.023) 32.3%, rgb(255 255 255 / 0.40) 32.6%, transparent 33.0%),
-    linear-gradient(169deg, transparent 0 45.9%, rgb(0 0 0 / 0.018) 46.2%, rgb(255 255 255 / 0.58) 46.6%, transparent 47.1%),
-    linear-gradient(46deg, transparent 0 38.0%, rgb(0 0 0 / 0.016) 38.3%, rgb(255 255 255 / 0.46) 38.7%, transparent 39.0%),
-    linear-gradient(119deg, transparent 0 6.7%, rgb(0 0 0 / 0.017) 7.0%, rgb(255 255 255 / 0.36) 7.4%, transparent 7.8%),
-    linear-gradient(95deg, transparent 0 83.5%, rgb(0 0 0 / 0.034) 84.1%, rgb(255 255 255 / 0.42) 84.9%, transparent 85.7%),
-    radial-gradient(108% 47% at 24% 4%, rgb(255 255 255 / 0.55), transparent 68%),
-    radial-gradient(103% 45% at 81% 80%, rgb(0 0 0 / 0.021), transparent 63%);
+.rcpt__strip:nth-child(2)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 700' preserveAspectRatio='none'%3E%3Cfilter id='s'%3E%3CfeGaussianBlur stdDeviation='0.7'/%3E%3C/filter%3E%3Cg filter='url(%23s)'%3E%3Cpath d='M300.0,668.0 L272.5,532.2 L204.9,432.4 L191.4,335.5 L131.0,238.1 L92.5,116.3 L59.6,0.0' stroke='rgba(0,0,0,0.033)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.6,669.1 L274.1,533.3 L206.5,433.5 L193.0,336.6 L132.6,239.2 L94.1,117.5 L61.2,1.1' stroke='rgba(255,255,255,0.27)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M60.0,700.0 L97.0,686.9 L126.8,719.8 L117.4,682.7 L144.7,724.8 L186.8,719.7 L206.3,700.0' stroke='rgba(0,0,0,0.051)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M61.2,701.1 L98.3,688.0 L128.0,720.9 L118.6,683.8 L145.9,725.9 L188.0,720.8 L207.5,701.1' stroke='rgba(255,255,255,0.39)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,382.6 L230.9,247.6 L195.1,128.5 L111.4,0.0' stroke='rgba(0,0,0,0.034)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.5,383.6 L232.4,248.6 L196.6,129.5 L112.9,1.0' stroke='rgba(255,255,255,0.26)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,483.4 L213.4,400.8 L145.6,341.7 L76.9,241.2 L0.0,162.5' stroke='rgba(0,0,0,0.052)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.7,484.7 L215.1,402.1 L147.3,343.0 L78.6,242.5 L1.7,163.8' stroke='rgba(255,255,255,0.26)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,511.3 L282.6,450.0 L276.4,316.5 L293.9,231.0 L319.3,153.9 L302.2,78.3 L294.2,0.0' stroke='rgba(0,0,0,0.041)' stroke-width='1.1' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.5,512.4 L284.1,451.0 L277.9,317.6 L295.4,232.0 L320.8,155.0 L303.7,79.3 L295.7,1.0' stroke='rgba(255,255,255,0.29)' stroke-width='1.1' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M279.8,0.0 L296.7,99.7 L257.2,242.6 L273.8,356.4 L272.7,464.4 L256.7,595.5 L252.4,700.0' stroke='rgba(0,0,0,0.031)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M280.9,1.3 L297.8,100.9 L258.2,243.8 L274.9,357.7 L273.8,465.6 L257.8,596.8 L253.5,701.3' stroke='rgba(255,255,255,0.39)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,559.0 L220.3,556.2 L97.6,536.5 L0.0,496.6' stroke='rgba(0,0,0,0.042)' stroke-width='1.6' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.1,560.3 L221.5,557.4 L98.7,537.8 L1.1,497.9' stroke='rgba(255,255,255,0.26)' stroke-width='1.6' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M78.7,700.0 L43.4,687.3 L52.5,630.5 L8.1,569.2 L0.0,549.6' stroke='rgba(0,0,0,0.042)' stroke-width='1.6' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M80.1,700.7 L44.7,688.0 L53.8,631.2 L9.4,569.9 L1.3,550.2' stroke='rgba(255,255,255,0.30)' stroke-width='1.6' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,613.5 L301.5,610.7 L267.0,635.4 L237.1,651.5 L242.9,690.2 L206.6,681.0 L200.0,700.0' stroke='rgba(0,0,0,0.050)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M301.6,614.5 L303.0,611.8 L268.6,636.5 L238.7,652.6 L244.5,691.2 L208.1,682.0 L201.6,701.1' stroke='rgba(255,255,255,0.32)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-.rcpt__strip:nth-child(3) {
-  background-image:
-    linear-gradient(107deg, transparent 0 69.9%, rgb(0 0 0 / 0.022) 70.2%, rgb(255 255 255 / 0.58) 70.6%, transparent 71.0%),
-    linear-gradient(175deg, transparent 0 78.0%, rgb(0 0 0 / 0.030) 78.4%, rgb(255 255 255 / 0.39) 78.8%, transparent 79.2%),
-    linear-gradient(49deg, transparent 0 36.6%, rgb(0 0 0 / 0.023) 36.8%, rgb(255 255 255 / 0.32) 37.2%, transparent 37.5%),
-    linear-gradient(120deg, transparent 0 32.2%, rgb(0 0 0 / 0.026) 32.7%, rgb(255 255 255 / 0.44) 33.4%, transparent 34.2%),
-    linear-gradient(81deg, transparent 0 6.0%, rgb(0 0 0 / 0.034) 6.3%, rgb(255 255 255 / 0.43) 6.6%, transparent 7.0%),
-    linear-gradient(165deg, transparent 0 80.8%, rgb(0 0 0 / 0.027) 81.2%, rgb(255 255 255 / 0.50) 81.7%, transparent 82.2%),
-    linear-gradient(44deg, transparent 0 71.5%, rgb(0 0 0 / 0.031) 72.1%, rgb(255 255 255 / 0.34) 72.9%, transparent 73.8%),
-    linear-gradient(118deg, transparent 0 68.4%, rgb(0 0 0 / 0.024) 68.7%, rgb(255 255 255 / 0.43) 69.2%, transparent 69.7%),
-    linear-gradient(78deg, transparent 0 42.2%, rgb(0 0 0 / 0.032) 42.6%, rgb(255 255 255 / 0.45) 43.0%, transparent 43.5%),
-    radial-gradient(106% 39% at 11% 17%, rgb(255 255 255 / 0.53), transparent 59%),
-    radial-gradient(95% 36% at 66% 63%, rgb(0 0 0 / 0.024), transparent 55%);
+.rcpt__strip:nth-child(3)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 700' preserveAspectRatio='none'%3E%3Cfilter id='s'%3E%3CfeGaussianBlur stdDeviation='0.7'/%3E%3C/filter%3E%3Cg filter='url(%23s)'%3E%3Cpath d='M0.0,580.3 L26.2,439.2 L100.4,278.9 L141.6,149.0 L185.8,0.0' stroke='rgba(0,0,0,0.037)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M1.0,580.9 L27.1,439.8 L101.4,279.5 L142.5,149.6 L186.8,0.6' stroke='rgba(255,255,255,0.39)' stroke-width='1.0' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M3.9,700.0 L51.6,508.2 L75.6,337.2 L106.3,164.3 L165.1,0.0' stroke='rgba(0,0,0,0.036)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M5.2,700.6 L52.9,508.8 L76.9,337.8 L107.5,164.9 L166.4,0.6' stroke='rgba(255,255,255,0.25)' stroke-width='1.3' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M114.1,0.0 L121.6,16.7 L177.0,20.1 L202.0,17.1 L208.6,0.0' stroke='rgba(0,0,0,0.033)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M115.7,0.7 L123.2,17.5 L178.5,20.8 L203.6,17.8 L210.1,0.7' stroke='rgba(255,255,255,0.33)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M292.0,700.0 L287.2,587.5 L283.5,530.3 L300.0,434.5' stroke='rgba(0,0,0,0.055)' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M293.5,700.8 L288.8,588.3 L285.0,531.1 L301.5,435.3' stroke='rgba(255,255,255,0.39)' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M97.8,700.0 L118.3,559.8 L120.6,479.2 L157.9,347.4 L196.0,255.9 L163.7,131.7 L207.5,0.0' stroke='rgba(0,0,0,0.045)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M99.4,701.0 L119.9,560.8 L122.2,480.2 L159.5,348.4 L197.5,256.9 L165.2,132.8 L209.0,1.0' stroke='rgba(255,255,255,0.31)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M226.3,0.0 L232.8,118.1 L206.9,269.5 L208.5,401.0 L194.3,564.6 L158.4,700.0' stroke='rgba(0,0,0,0.041)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M227.3,0.9 L233.8,119.0 L207.9,270.4 L209.5,401.9 L195.3,565.5 L159.4,700.9' stroke='rgba(255,255,255,0.34)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.0,574.7 L182.3,380.4 L131.1,178.9 L9.1,0.0' stroke='rgba(0,0,0,0.046)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M300.9,575.9 L183.2,381.6 L132.0,180.1 L10.0,1.2' stroke='rgba(255,255,255,0.24)' stroke-width='1.2' fill='none' stroke-linejoin='round'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* The creases sit ABOVE the paper colour and BELOW the print, on their own
+   layer, so their opacity can be tuned without touching the stock. */
+.rcpt__strip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.92;
+  pointer-events: none;
 }
 
 /* The tooth of the stock, over the creases and under the print. Fractal noise
