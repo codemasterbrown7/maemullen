@@ -42,7 +42,7 @@ about instead of asking the visitor to say it again.
 
 ## Visual — in progress
 
-- **Optional: photograph a crumpled receipt for `/packages-v2`.** The crumple is
+- **Optional: photograph a crumpled receipt for `/packages`.** The crumple is
   generated (lit facets in SVG) and now reads as paper, but a real photographed
   sheet would beat it. The surface is already its own layer
   (`.rcpt__strip::after`), so a texture drops in as a `background-image` swap
@@ -52,16 +52,6 @@ about instead of asking the visitor to say it again.
   the texture wants to be vertically seamless, `cover` on a tall source, or a
   9-slice `border-image`. Licensing matters if the image is not shot in-house.
 
-- **Pick a /packages direction, then delete the losers.** Three routes exist to
-  be compared (2026-08-20): `/packages` (the live one), `/packages-v2` (receipt)
-  and `/packages-v3` (paper). v2 and v3 are `noindex` and are linked from
-  nowhere. Whichever wins gets folded back into `/packages` and the other two
-  routes come out — they duplicate layout, and left alone they will drift.
-
-- `/packages` — comparison rows: banding and type treatment (2026-08-20).
-- Corner radius on the package cards is `--radius-panel` (16px), which matches
-  `/enquire` but contradicts the design system's "radius 0 everywhere".
-  Undecided.
 - `--brand-black` is `#000000`. Both design skills flag pure black in favour of
   a near-black tinted toward the brand hue. Site-wide change, not yet made.
 
@@ -71,3 +61,7 @@ about instead of asking the visitor to say it again.
 
 - `/packages` built and shipped (PR #17, 2026-08-20).
 - `/packages` — each tier on its own white card, centred (PR #18).
+- `/packages` is the receipt now (2026-08-21). Chosen out of three directions
+  built side by side; the card and paper versions are deleted along with
+  `components/ui/tab-line.tsx`, which only those two used. Git history has all
+  of it if the decision needs revisiting.
