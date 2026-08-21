@@ -569,10 +569,16 @@ export const packagesPage = {
     "Ways to work with us — monthly, by the day, or by the project. Everything here can be shaped around what you need.",
   /** Heading over the includes list on a single-package tab. */
   includesLabel: "What’s included",
-  /* OURS, and it earns its place: a menu with no prices looks like an oversight
-     unless the page says otherwise. */
-  priceNote:
-    "Prices are quoted to each brand rather than listed — tell us what you need and we will put a figure to it.",
+  /* A `priceNote` was here — "prices are quoted to each brand rather than
+     listed" — written on the reasoning that a menu with no prices looks like an
+     oversight unless the page says so. Cut on 2026-08-21: "i dont like this
+     text randomly shoved into the left hand side, in one block of text i think
+     we can get rid of it all together."
+
+     It was the last thing on the page and had nothing to sit against, so it
+     read as a leftover rather than as a note. Bespoke now makes the same point
+     in the place someone actually looks for it — its own tab, beside the eight
+     things you can buy. The sentence is in git history if it is ever wanted. */
   /**
    * Bespoke. Asked for directly: "don't see a package that fits you? contact us
    * for a bespoke package".
