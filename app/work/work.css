@@ -120,8 +120,9 @@
    placeholder note and the toggle. They are the same size and tracking on
    purpose — this is a register, not four decisions. */
 .pf__discipline,
+.pf__hint,
 .pf__term,
-.pf__pending-note,
+.pf__plate-note,
 .pf__toggle {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -226,7 +227,7 @@
   /* Room for the half of the name that hangs below the picture, plus the air
      between it and the hairline. See the note at the top about why this is
      margin and can never be padding. */
-  margin-bottom: calc(var(--pf-name-drop) + var(--space-5));
+  margin-bottom: calc(var(--pf-name-drop) + var(--space-4));
 }
 
 .pf__crop {
@@ -236,30 +237,96 @@
   z-index: 1;
   overflow: hidden;
   aspect-ratio: 2 / 1;
-  min-height: 13rem;
-  max-height: 68vh;
   background: var(--surface);
 }
 
-/* Two screenshots butted together with no gutter — the landing page's first
-   screen, and here it says "two websites" before a word is read. Below 700px
-   they would be ~150px wide each, so the pair stacks and the plate goes square
-   to give each of them a real width. */
-.pf__pair {
+/* NO max-height HERE, AND NO min-height EITHER — both are traps next to
+   aspect-ratio, and one of them shipped as a bug. A box with an aspect ratio
+   and a clamped height does not keep its width and lose height: it resolves the
+   OTHER axis from the constrained one, so `max-height: 68vh` quietly narrowed
+   the whole plate. On a 1440x800 laptop every picture pulled ~150px in from the
+   right margin and sat in a column of its own while the hairline underneath ran
+   full width. It looked like a broken grid and it was a sizing rule.
+
+   The plate never needs a height cap anyway: --pf-max bounds the band at 85rem,
+   so 2:1 tops out at ~616px whatever the screen does. Narrow screens get a
+   taller ratio instead of a minimum, which keeps every height in this file
+   derived from the ratio and nothing else. */
+@media (max-width: 640px) {
+  .pf__crop {
+    aspect-ratio: 3 / 2;
+  }
+}
+
+/* ── Live panes ───────────────────────────────────────────────────────────
+   The two websites, running, butted together with no gutter — the landing
+   page's first screen, and here it says "two websites" before a word is read.
+   Below 700px they would be ~150px wide each, so they stack and the plate goes
+   square to give each of them a real width.
+
+   THIS REPLACED TWO SCREENSHOTS, and the reason is worth keeping: a screenshot
+   has one aspect ratio and the plate has another, so `object-fit: cover` ate
+   whichever side did not fit and both sites arrived chopped down the middle.
+   See the note on the `live` hero kind in content/work.ts. */
+.pf__panes {
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: 100%;
   height: 100%;
+  background: var(--surface);
 }
 
 @media (max-width: 699px) {
-  .pf__crop[data-hero="pair"] {
+  .pf__crop[data-hero="live"] {
     aspect-ratio: 1 / 1;
   }
-  .pf__pair {
+  .pf__panes {
     grid-template-columns: none;
     grid-template-rows: 1fr 1fr;
   }
+}
+
+/* THE WHOLE TRICK IS THAT --pf-live-k IS A CONSTANT, and the pane's own size is
+   what varies. The frame is laid out at 1/k of the pane and then scaled by k,
+   so it always ends up exactly filling the pane — while the SITE inside it
+   believes it has a viewport 1/k times the pane's width. At k = 0.5 a 616px
+   pane hands the site 1232px, which is a desktop layout, and it keeps being a
+   desktop layout as the page narrows because the multiplier is fixed.
+
+   That is the difference from a screenshot: there is no crop anywhere in this,
+   because the frame's box and the pane's box are the same box. The site is
+   reduced, never cut.
+
+   It also degrades sensibly. On a phone the pane is ~340px, so the site is
+   handed ~810px and lays out as a tablet — which is a real layout it was built
+   to produce, rather than a desktop one squeezed until the type vanishes. */
+/* The wrapper is not scenery. It is the grid item, and the frame inside it is
+   taken out of flow — which is the only reason a box laid out at 200% of its
+   column does not blow the column out to 200%. Drop the wrapper and the two
+   panes fight the track sizing. */
+.pf__pane {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pf__live {
+  /* 0.42, not 0.5, and the extra 8% is not fussiness. At 0.5 a 616px pane hands
+     the site a 1232px viewport, which is inside both of these sites' own
+     tablet breakpoint — so both collapsed their navigation to a hamburger and
+     the panes showed a tablet layout of a desktop site. 0.42 hands them ~1470px
+     and they lay out the way they were designed to. Check this again if either
+     site's breakpoints move. */
+  --pf-live-k: 0.42;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / var(--pf-live-k));
+  height: calc(100% / var(--pf-live-k));
+  border: 0;
+  transform: scale(var(--pf-live-k));
+  transform-origin: top left;
 }
 
 .pf__img {
@@ -268,12 +335,6 @@
   height: 100%;
   min-height: 0;
   object-fit: cover;
-}
-
-/* A website's identity is in its top left corner — logotype, then the first
-   line of the headline. Centre-cropping a screenshot throws both away. */
-.pf__pair .pf__img {
-  object-position: left top;
 }
 
 /* The scrim. The cream half of the name sits on photography, and photography is
@@ -289,10 +350,26 @@
   position: absolute;
   inset: auto 0 0 0;
   z-index: 1;
-  height: 38%;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.42), rgb(0 0 0 / 0.08) 60%, transparent);
+  height: 16%;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.72), rgb(0 0 0 / 0.52) 45%, transparent);
   pointer-events: none;
 }
+
+/* SHORT AND FIRM, NOT LONG AND SOFT — and it took two goes to get there. The
+   first version was a 38% fade at 0.42, tuned against a dark photograph, and
+   the Bendito plate ends on a white tablecloth: cream on pale grey made the top
+   half of the name vanish. Turning it up to 0.62 over 30% fixed the legibility
+   and introduced a worse problem — a long grey wash across the bottom third of
+   a white cloth reads as a stain on the photograph rather than as a treatment.
+
+   16% at 0.72 is the answer to both. The name is only ~45px tall above the
+   plate's edge, so the dark only has to exist in the strip the letters actually
+   cross; confined to a sixth of the picture with a firm ramp it reads as a foot
+   band, which is a decision, instead of a gradient, which looks like a fault.
+
+   It has to hold for every ground on this page at once: a white tablecloth, a
+   near-black conference stage, a white SaaS hero and a pink field. That is why
+   it is a scrim and not an ink choice — no single colour reads on all four. */
 
 /* NOT over the placeholder. The scrim exists because photography is a colour
    you do not control; the pink field is a colour we chose, and cream on it is
@@ -303,6 +380,14 @@
   content: none;
 }
 
+/* Over the live panes it is a thin bar rather than a third of the plate. The
+   name still needs a ground to sit on — one of these two sites is white where
+   the word crosses it — but dimming the bottom third of a website that is
+   actually running reads as a fault in the site rather than as a treatment. */
+.pf__crop[data-hero="live"]::after {
+  height: 20%;
+}
+
 /* No photography yet, and it says so. NOT a grey box: the field is the brand's
    own second surface — pink is the header — and cream on it is the pairing the
    site already proves at 11px. It reads unmistakably as a gap, which is the
@@ -310,19 +395,30 @@
 
    The note sits top right because the name owns the bottom left. */
 .pf__pending {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
   width: 100%;
   height: 100%;
-  padding: var(--space-6);
-  box-sizing: border-box;
   background: var(--brand-pink);
 }
 
-.pf__pending-note {
+/* The placeholder's label, top right — clear of the name at the foot, and on a
+   flat pink field it is legible without help from the scrim.
+
+   THE LIVE PANES' NOTE IS NOT HERE, and that is the second thing this file got
+   wrong. "Live — scroll either one" started in the same corner and landed on
+   top of the Trifecta site's own headline: cream 11px over somebody else's
+   running page, which is unreadable and looks like two designs colliding. It
+   moved into the bar under the plate, beside the discipline — see .pf__hint.
+   The two notes were never really the same annotation. One labels a rectangle
+   that is standing in for a photograph; the other tells you what you can do
+   with the thing you are looking at, which belongs with the controls. */
+.pf__plate-note {
+  position: absolute;
+  z-index: 3;
+  top: var(--space-6);
+  right: var(--space-6);
   margin: 0;
   color: var(--brand-cream);
+  pointer-events: none;
 }
 
 /* ── The split name ───────────────────────────────────────────────────────
@@ -361,26 +457,56 @@
 }
 
 /* ── The bar under the plate ──────────────────────────────────────────────
-   The hairline is the page's state indicator: black at rest, blue on hover and
-   blue while the band is open. One accent, two states, no extra furniture. */
+   THE RULE IS UNDER THIS ROW, NOT OVER IT, and that is a fix rather than a
+   preference. It was a border-top, which put a full-width line between the
+   name and the [ Open ] bracket belonging to it — so the bracket sat in the gap
+   between two projects with a rule pointing at the wrong one, and you could not
+   tell which band you were about to open (reported 2026-08-24).
+
+   Underneath, the line closes the entry. Everything above it — picture, name,
+   discipline, bracket — is one project, and the gap below it is the gap between
+   projects. It is also then exactly where the band opens, which is the second
+   thing it should say.
+
+   The hairline stays the page's state indicator: black at rest, blue on hover
+   and blue while the band is open. One accent, two states, no extra furniture. */
 .pf__bar {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3) var(--space-6);
-  padding-top: var(--space-3);
-  border-top: var(--border-hairline) solid var(--pf-hairline);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-hairline) solid var(--pf-hairline);
   transition: border-color var(--duration-base) var(--ease-standard);
 }
 
 .pf__summary:hover .pf__bar,
 .pf__band[open] .pf__bar {
-  border-top-color: var(--pf-blue);
+  border-bottom-color: var(--pf-blue);
 }
 
 .pf__discipline {
   margin: 0;
+}
+
+/* Muted, so it reads as a note on the discipline rather than as a second
+   discipline. It is the only interaction hint on the page and it earns its
+   place: nothing else tells you those two panes are the real sites and that you
+   can move around inside them. */
+.pf__hint {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+/* The discipline and its hint travel together at the left of the bar; the
+   bracket stays hard right. Without this the flex row spreads all three evenly
+   and the hint drifts into the middle of the band, attached to nothing. */
+.pf__bar-lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
 }
 
 /* The bracket CTA carries the slide on its own hover; this extends it to the

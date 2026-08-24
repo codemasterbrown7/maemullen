@@ -59,12 +59,17 @@ about instead of asking the visitor to say it again.
 
 ## Done
 
-- `/work` is the portfolio (2026-08-24). Four projects — Harmony Hub, The Loft,
-  Bendito, Websites — each a full-width plate whose name straddles the plate's
+- `/work` is the portfolio (2026-08-24). Four projects — Bendito, Harmony Hub,
+  The Loft, Websites — each a full-width plate whose name straddles the plate's
   bottom edge, opening in place on a native `<details>`. No JavaScript. The two
   projects with no photography yet show a brand-pink field saying so; swapping
   in the real pictures is `kind: "pending"` → `kind: "photo"` in
   `content/work.ts` and nothing else on the page moves.
+  - Second pass the same day: the Websites plate is now the two sites **live in
+    iframes** rather than screenshots, which were cropped by the plate's aspect
+    ratio; Bendito leads, because opening on two placeholders argued against the
+    page; and the rule moved under the `[ Open ]` bracket so it closes each
+    entry instead of floating between two of them.
   - **Still needed from the client:** photography for Harmony Hub and The Loft,
     dates for all four (the label renders a Year row only when one is set), and
     a read of the two written descriptions — neither is deck copy.
