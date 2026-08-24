@@ -197,6 +197,15 @@
   border-bottom: 1px solid var(--border);
 }
 
+/* Open the select and the block stops being a statement and becomes a field —
+   so it loses the rule and sits in the column like every other one. Keeping
+   both drew the select's own underline and this rule 20px apart, which reads
+   as one doubled line rather than as two things. */
+.enq__subject--picking {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
 /* Key on the left, Change on the right. The row holds the button's height even
    while the button is gone, so opening the select does not shift the block. */
 .enq__subject-head {

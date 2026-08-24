@@ -397,7 +397,7 @@ export function EnquireSection({ subjects }: { subjects: EnquirySubject[] }) {
               visit — it appears only because a CTA somewhere named something,
               and it stays until the visitor says otherwise. */}
           {(subject || picking) && (
-            <div className="enq__subject">
+            <div className={`enq__subject${picking ? " enq__subject--picking" : ""}`}>
               <div className="enq__subject-head">
                 <p className="enq__subject-key" id="enq-subject-key">
                   {enquiryPage.subject.key}
