@@ -504,17 +504,33 @@ case-study pages sketched in §1 were not built: with the copy and photography t
 each one would have been close to empty, and the deck's own instruction is a reveal on the same
 page. Everything opens in place.
 
+In page order — **Bendito leads because it is the only one with photography**, and a portfolio
+that opens on two placeholder fields argues against itself. Worth revisiting once the other two
+are shot; there is no other reason it is first.
+
 | Slug | Project | What it is | Assets |
 |---|---|---|---|
+| `bendito` | Bendito | Menu design & illustration | ✅ artwork + in-situ photo |
 | `harmony-hub` | Harmony Hub | A massage therapist working from home — her website, her social, and the content for both | ❌ photography to come |
 | `the-loft` | The Loft | The Airbnb. **This is the project this table used to call `airbnb`** | ❌ photography to come |
-| `bendito` | Bendito | Menu design & illustration | ✅ artwork + in-situ photo |
-| `websites` | Websites | tfest.ai and trifectaproperty.co.uk — **one entry, two sites** | ✅ screenshots |
+| `websites` | Websites | tfest.ai and trifectaproperty.co.uk — **one entry, two sites** | ✅ the sites themselves, live |
 
 **Interaction:** each project is a full-width plate with its name straddling the plate's bottom
-edge, and the whole band is a native `<details>` — click or Enter opens the description and a
-label of facts underneath. No JavaScript, and every project's copy is in the HTML whether or not
-it is open, so find-in-page and indexing both reach it.
+edge, and the whole band is a native `<details>` — the `[ Open ]` bracket sits directly under the
+name and above the rule that closes the entry, so it is unambiguous which project it belongs to.
+No JavaScript, and every project's copy is in the HTML whether or not it is open, so find-in-page
+and indexing both reach it.
+
+**The Websites plate is the two sites themselves, running in iframes** — not screenshots. It
+shipped with screenshots first and they were rejected as cropped and not premium (2026-08-24),
+which was right: a screenshot has one aspect ratio and the plate has another, so one side always
+got eaten. A live pane cannot be cropped — the site lays out at full desktop width inside the pane
+and is scaled down whole — and it scrolls. Neither site sets `X-Frame-Options` or CSP
+`frame-ancestors`; re-check that first if a pane ever goes blank in a real browser.
+
+⚠ **Plain headless Chrome renders the Trifecta pane blank** — it is a client-rendered SPA and the
+virtual-time budget gives up before it paints. It is fine in a real browser. Verify that plate
+through the chrome-devtools MCP, never off a `--screenshot` run.
 
 **Two projects have no photography yet**, and the page says so rather than hiding it: a brand-pink
 field carrying "Photography to come". Dropping the real pictures in is a three-line change per

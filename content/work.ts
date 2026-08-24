@@ -57,16 +57,41 @@ import { services } from "@/content/home";
  * · `photo`   one picture, filling the plate.
  * · `pair`    two butted together — the Websites entry, and the same
  *             arrangement as the landing page's first screen.
+ * · `live`    the sites themselves, running, side by side and scrollable. See
+ *             below — this replaced a pair of screenshots.
  * · `pending` no photography yet. NOT an empty box and not a grey rectangle:
  *             a pink field carrying a line that says what is missing. Pink
  *             because it is the brand's own second surface (it is the header),
  *             cream type on it is the proven pairing, and it is unmistakably a
  *             placeholder — which is the point. Nobody sends the photographs
  *             for a hole that already looks finished.
+ *
+ * WHY `live` EXISTS, AND WHY SCREENSHOTS WERE NOT GOOD ENOUGH. The Websites
+ * entry shipped with two captured screenshots first, and the note was that they
+ * looked cropped and not premium (2026-08-24) — which was exactly right. A
+ * screenshot has one fixed aspect ratio and the plate has another, so `cover`
+ * ate whichever side did not fit, and a website chopped down its middle reads
+ * as a mistake rather than as work.
+ *
+ * A live pane cannot be cropped, because it is not an image: the site lays
+ * itself out inside the pane at full desktop width and is then scaled down
+ * whole, so the composition the studio actually built is the thing on screen.
+ * It also scrolls, which no screenshot does.
+ *
+ * Both sites were checked for `X-Frame-Options` and CSP `frame-ancestors`
+ * before this was built. Neither sets either, so neither refuses to be framed —
+ * re-check that if a pane ever goes blank in a real browser, because it is the
+ * one thing that would break this silently and it is a header, not code.
+ *
+ * NOTE FOR ANYONE SCREENSHOTTING THIS PAGE: plain headless Chrome renders the
+ * Trifecta pane BLANK. It is a client-rendered SPA and the virtual-time budget
+ * gives up before it paints. It is fine in a real browser, which is what
+ * visitors use — verify live panes through the chrome-devtools MCP, never off a
+ * `--screenshot` run. Cost a wasted debugging pass on 2026-08-24.
  */
 export type Hero =
   | { kind: "photo"; src: string; alt: string; dim: [number, number] }
-  | { kind: "pair"; cells: { src: string; alt: string; dim: [number, number] }[] }
+  | { kind: "live"; note: string; frames: { src: string; title: string }[] }
   | { kind: "pending"; note: string };
 
 /** A supporting picture inside an opened band. Only Bendito has one. */
@@ -117,7 +142,7 @@ export const workPage = {
    *  only instruction on the page, and it is here rather than repeated four
    *  times as a hint under every band. */
   standfirst:
-    "Four projects: a whole online presence, a short-let flat, a printed menu, and two websites built end to end. Open one to see what we made.",
+    "Four projects: a printed menu, a whole online presence, a short-let flat, and two websites you can scroll here without leaving the page. Open one to see what we made.",
   cta: {
     heading: "Something like one of these?",
     label: "Enquire",
@@ -131,7 +156,47 @@ export const workPage = {
 export const workDescription =
   "Selected work from MaeMüllen — social, content, design and websites for four clients.";
 
+/**
+ * ORDER IS A DECISION, NOT THE ORDER THEY WERE LISTED IN. Bendito leads because
+ * it is the only project with photography, and a portfolio that opens on two
+ * placeholder fields argues against itself before a visitor has read a word
+ * (asked for directly, 2026-08-24). When Harmony Hub and The Loft have their
+ * pictures this is worth revisiting — there is no other reason Bendito is
+ * first.
+ */
 export const projects: Project[] = [
+  {
+    slug: "bendito",
+    name: "Bendito",
+    discipline: "Menu design and illustration",
+    hero: {
+      /* Cropped to 2:1 from the supplied portrait original, which is a 20 MB
+         JPEG and has no business being fetched by a browser. The master stays
+         in the repo at menu-in-situ.jpg; this is the derived plate. */
+      kind: "photo",
+      src: "/work/bendito/menu-in-situ-wide.webp",
+      alt: "The Bendito menu laid on a set table, beside a glass of red wine",
+      dim: [2400, 1200],
+    },
+    prose: [
+      "Hand-drawn menu artwork for Bendito — every dish illustrated, drawn to be printed rather than posted. Red line work and blue type on a cream card.",
+      "It is the one piece of design on this page a guest picks up and holds, and it does its work before a single dish has been read.",
+    ],
+    label: [
+      { term: "Client", items: [{ text: "Bendito" }] },
+      { term: "We made", items: [service("Design & illustration")] },
+      { term: "Printed", items: [{ text: "Single-sheet menu card" }] },
+    ],
+    stills: [
+      {
+        src: "/work/bendito/menu-artwork.png",
+        alt: "The Bendito menu artwork flat: hand-drawn illustrations in red around blue type",
+        dim: [943, 2000],
+        caption: "The artwork, flat",
+      },
+    ],
+  },
+
   {
     slug: "harmony-hub",
     name: "Harmony Hub",
@@ -177,53 +242,21 @@ export const projects: Project[] = [
   },
 
   {
-    slug: "bendito",
-    name: "Bendito",
-    discipline: "Menu design and illustration",
-    hero: {
-      /* Cropped to 2:1 from the supplied portrait original, which is a 20 MB
-         JPEG and has no business being fetched by a browser. The master stays
-         in the repo at menu-in-situ.jpg; this is the derived plate. */
-      kind: "photo",
-      src: "/work/bendito/menu-in-situ-wide.webp",
-      alt: "The Bendito menu laid on a set table, beside a glass of red wine",
-      dim: [2400, 1200],
-    },
-    prose: [
-      "Hand-drawn menu artwork for Bendito — every dish illustrated, drawn to be printed rather than posted. Red line work and blue type on a cream card.",
-      "It is the one piece of design on this page a guest picks up and holds, and it does its work before a single dish has been read.",
-    ],
-    label: [
-      { term: "Client", items: [{ text: "Bendito" }] },
-      { term: "We made", items: [service("Design & illustration")] },
-      { term: "Printed", items: [{ text: "Single-sheet menu card" }] },
-    ],
-    stills: [
-      {
-        src: "/work/bendito/menu-artwork.png",
-        alt: "The Bendito menu artwork flat: hand-drawn illustrations in red around blue type",
-        dim: [943, 2000],
-        caption: "The artwork, flat",
-      },
-    ],
-  },
-
-  {
     slug: "websites",
     name: "Websites",
     discipline: "Design and build",
     hero: {
-      kind: "pair",
-      cells: [
+      kind: "live",
+      /* The plate's own annotation, in the corner the placeholder note uses on
+         the other projects. It is doing a job rather than decorating: nothing
+         else on the page tells you these two are the real sites and that you
+         can move around inside them. */
+      note: "Live — scroll either one",
+      frames: [
+        { src: "https://tfest.ai/", title: "tfest.ai — the TFEST26 website, live" },
         {
-          src: "/work/websites/tfest.webp",
-          alt: "The TFEST26 website: a white headline over a photograph of a conference stage",
-          dim: [1600, 1000],
-        },
-        {
-          src: "/work/websites/trifecta.webp",
-          alt: "The Trifecta Property website: a dark headline on white over a fine line-drawn landscape",
-          dim: [1600, 743],
+          src: "https://trifectaproperty.co.uk/",
+          title: "trifectaproperty.co.uk — the Trifecta Property website, live",
         },
       ],
     },

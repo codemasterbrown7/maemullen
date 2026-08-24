@@ -61,25 +61,36 @@ function Plate({ hero }: { hero: Hero }) {
   if (hero.kind === "pending") {
     return (
       <div className="pf__pending">
-        <p className="pf__pending-note">{hero.note}</p>
+        <p className="pf__plate-note">{hero.note}</p>
       </div>
     );
   }
 
-  if (hero.kind === "pair") {
+  if (hero.kind === "live") {
     return (
-      <div className="pf__pair">
-        {hero.cells.map((cell) => (
-          <img
-            key={cell.src}
-            src={asset(cell.src)}
-            alt={cell.alt}
-            className="pf__img"
-            width={cell.dim[0]}
-            height={cell.dim[1]}
-            loading="lazy"
-            decoding="async"
-          />
+      <div className="pf__panes">
+        {hero.frames.map((frame) => (
+          /* The site itself, laid out at desktop width inside the pane and
+             scaled down whole — see work.css. A cross-origin frame swallows its
+             own clicks, so clicking INSIDE a pane does not toggle the band; the
+             bracket below is the control, which is the other half of why it
+             moved there.
+
+             `sandbox` deliberately omits allow-top-navigation: an embedded page
+             can do whatever it likes inside its own pane and can never navigate
+             the portfolio out from under a visitor. The three it does grant are
+             what a modern site needs to render at all — both of these are
+             client-rendered and would be a white rectangle without scripts. */
+          <div key={frame.src} className="pf__pane">
+            <iframe
+              src={frame.src}
+              title={frame.title}
+              className="pf__live"
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin allow-popups"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
         ))}
       </div>
     );
@@ -122,7 +133,14 @@ function Band({ project }: { project: Project }) {
         </div>
 
         <div className="pf__bar">
-          <p className="pf__discipline">{project.discipline}</p>
+          <div className="pf__bar-lead">
+            <p className="pf__discipline">{project.discipline}</p>
+
+            {/* Only the live panes carry one. It says what you can do with the
+                plate above, so it sits with the controls rather than on top of
+                somebody else's running website. */}
+            {project.hero.kind === "live" && <p className="pf__hint">{project.hero.note}</p>}
+          </div>
 
           {/* Both states are in the DOM and CSS shows one, so the label cannot
               lag the element it describes. `aria-hidden` because <summary> is
