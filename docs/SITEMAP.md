@@ -515,8 +515,9 @@ are shot; there is no other reason it is first.
 | `the-loft` | The Loft | The Airbnb. **This is the project this table used to call `airbnb`** | ❌ photography to come |
 | `websites` | Websites | tfest.ai and trifectaproperty.co.uk — **one entry, two sites** | ✅ the sites themselves, live |
 
-**Interaction:** each project is a full-width plate with its name straddling the plate's bottom
-edge, and the whole band is a native `<details>` — the `[ Open ]` bracket sits directly under the
+**Interaction:** each project is a full-bleed plate at 3:1 — full width of the band, deliberately,
+after an inset version left an identical empty column down the right of every band — with its name
+straddling the plate's bottom edge, and the whole band is a native `<details>` — the `[ Open ]` bracket sits directly under the
 name and above the rule that closes the entry, so it is unambiguous which project it belongs to.
 No JavaScript, and every project's copy is in the HTML whether or not it is open, so find-in-page
 and indexing both reach it.
