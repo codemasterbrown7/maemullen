@@ -43,10 +43,23 @@ export const enquiryPage = {
     "Tell us a little about you and your brand. We read every enquiry and will be in touch by email soon.",
   submitLabel: "Send enquiry",
   sendingLabel: "Sending…",
-  /** Shown in place of the form on success; focus moves to the heading. */
+  /**
+   * Shown in place of the masthead AND the form on success; focus moves to the
+   * heading. It is the whole page at that point, not a panel tucked under a
+   * masthead still asking you to start a project — so it carries its own mark,
+   * its own eyebrow and its own onward link.
+   *
+   * `replyLabel` sits in front of the address the visitor typed. Nothing is
+   * sent TO that address (FormSubmit has no autoresponder here), so the line
+   * promises only what is true: that is where the reply will go.
+   */
   confirmation: {
+    eyebrow: "Enquiry received",
     heading: "Thank you — your enquiry is on its way.",
-    body: "We've got your details and will reply by email shortly. In the meantime, come and find us on Instagram.",
+    body: "We've got your details and we'll be in touch shortly. In the meantime, come and find us on Instagram.",
+    replyLabel: "Reply to",
+    instagramLabel: "Follow on Instagram",
+    note: "Need to add anything? Email us at",
   },
   /** Shown above the form if the send fails; the form stays so it can be retried. */
   error: {
