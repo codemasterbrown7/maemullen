@@ -76,13 +76,17 @@ noted 2026-08-20.
     ratio; Bendito leads, because opening on two placeholders argued against the
     page; and the rule moved under the `[ Open ]` bracket so it closes each
     entry instead of floating between two of them.
-  - Third pass: the pictures were too big. The plate is now 13:5 instead of 2:1
-    and inset to 78% of the band on desktop, so each one sits in a field of
-    cream rather than filling one — the page went from ~4300px to ~3200px. Both
-    are single variables at the top of `app/work/work.css`
-    (`--pf-plate-ratio`, `--pf-plate-width`) if they want dialling again; note
-    that `--pf-live-k` and the Bendito crop are derived from them and have to
-    move too.
+  - Third pass: the pictures were too big. Briefly fixed by insetting the plate
+    to 78% of the band, which was rejected — it left an identical empty column
+    down the right of all four bands and read as a margin error. The plates are
+    **full-bleed at 3:1** instead, so the height does the work the inset was
+    doing (~411px against 2:1's 616px) with no column to justify. Page height
+    ~4300px → ~3350px.
+  - `--pf-plate-ratio` at the top of `app/work/work.css` is the single lever on
+    picture size. `--pf-live-k` and the crop of `menu-in-situ-wide.webp` are
+    derived from it and have to move with it — the first must keep pane ÷ k
+    above ~1400px or both embedded sites collapse to a hamburger, and the
+    second is cut to the ratio and centred at 45%.
   - **Still needed from the client:** photography for Harmony Hub and The Loft,
     dates for all four (the label renders a Year row only when one is set), and
     a read of the two written descriptions — neither is deck copy.

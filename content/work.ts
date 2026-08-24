@@ -174,14 +174,16 @@ export const projects: Project[] = [
          has no business being fetched by a browser. The master stays in the
          repo at menu-in-situ.jpg; this is the derived plate.
 
-         IT IS CUT TO --pf-plate-ratio IN work.css, currently 13:5, and centred
-         at 47% of the original's height so the "menú" heading and every course
-         stay in frame. Change that ratio and this has to be re-cut to match, or
-         object-fit crops the crop and the bottom of the menu goes. */
+         IT IS CUT TO --pf-plate-ratio IN work.css, currently 3:1, and centred
+         at 45% of the original's height — the one placement at this ratio that
+         keeps the "menú" heading whole and still shows the table it is lying
+         on, which is the whole point of an in-situ shot. Change that ratio and
+         this has to be re-cut to match, or object-fit crops the crop and the
+         menu goes with it. */
       kind: "photo",
       src: "/work/bendito/menu-in-situ-wide.webp",
       alt: "The Bendito menu laid on a set table, beside a glass of red wine",
-      dim: [2600, 1000],
+      dim: [2700, 900],
     },
     prose: [
       "Hand-drawn menu artwork for Bendito — every dish illustrated, drawn to be printed rather than posted. Red line work and blue type on a cream card.",

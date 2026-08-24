@@ -104,26 +104,26 @@
      desktop breakpoint and collapse to a hamburger. Going wider means dropping
      --pf-live-k to compensate and re-cropping menu-in-situ-wide.webp to match.
 
-     --pf-plate-width is the other half of the same note. The plates ran the
-     full width of the band and were still too big once the ratio came down: a
-     full-bleed picture is the loudest thing a page can do, and four of them
-     running left no cream between the work and the edge of the screen. Inset,
-     each picture sits in a field rather than filling one — which is the
-     treatment every reference the client sent actually uses — while the rule
-     and the meta row still run the full measure past it, so the page keeps its
-     grid and only the pictures get quieter.
+     THE PLATES ARE FULL-BLEED, AND THE RATIO IS THE ONLY LEVER ON THEIR SIZE.
+     That is a decision, not a default. They were briefly inset to 78% of the
+     band, which made them smaller in both directions at once — and left an
+     identical empty column down the right of all four bands. It read as a
+     margin error rather than as composition, and it was rejected (2026-08-24).
 
-     DESKTOP ONLY. On a phone there is no field to sit in and 78% of 337px is a
-     stamp, so the inset lives in the 900px query further down and narrow
-     screens keep the full width. */
-  --pf-plate-ratio: 13 / 5;
-  --pf-plate-width: 100%;
+     An empty column earns its place one of two ways: something varies, or
+     something lives in it. Varying the widths would have made four different
+     empty columns instead of four identical ones, and filling them would have
+     meant inventing content to plug a hole — this page has no fifth thing to
+     say about a project. So the column goes, and the height does the work the
+     inset was doing: 3/1 puts a plate at ~411px against 2/1's 616px, which is
+     the size the inset version arrived at anyway. */
+  --pf-plate-ratio: 3 / 1;
 
   /* Down from 8rem, with the plates. The name is measured against the picture
-     it crosses rather than against the screen: at 8rem "Harmony Hub" was wider
-     than an inset plate and ran off the end of it, which turns the seam from a
-     device into an accident. This keeps the longest name on the page inside the
-     narrowest plate at every width. */
+     it crosses rather than against the screen, and a 107px cap over a 411px
+     plate was top-heavy. At 6.5rem the longest name on the page fills about
+     three-fifths of the widest plate, which is where it sat when the plates
+     were half as tall again. */
   --pf-name-size: clamp(2rem, 7vw, 6.5rem);
   --pf-name-lh: 0.78;
   --pf-name-cut: 0.5;
@@ -241,10 +241,9 @@
 /* ── The bands ────────────────────────────────────────────────────────────
    Four <details>, stacked. Nothing separates them but the space the split name
    already needs, so the rhythm down the page is picture, name, rule, picture. */
-/* The gap came down with the plates. It is measured against a picture, not
-   against the page: 128px between two full-bleed plates is a pause, and between
-   two inset ones it is a hole. This keeps it at roughly a quarter of a plate's
-   height at every width. */
+/* Measured against a picture, not against the page — roughly a quarter of a
+   plate's height at every width. It was 128px when the plates were 616px tall
+   and that is a hole under a 411px one. */
 .pf__bands {
   display: flex;
   flex-direction: column;
@@ -278,18 +277,8 @@
      makes the picture the cut line: it paints over the top half of the word. */
   z-index: 1;
   overflow: hidden;
-  /* max-width rather than width: aspect-ratio then derives the height from the
-     constrained axis, which is the safe direction round. Constraining the
-     HEIGHT is what caused the bug documented just below. */
-  max-width: var(--pf-plate-width);
   aspect-ratio: var(--pf-plate-ratio);
   background: var(--surface);
-}
-
-@media (min-width: 900px) {
-  .pf {
-    --pf-plate-width: 78%;
-  }
 }
 
 /* NO max-height HERE, AND NO min-height EITHER — both are traps next to
@@ -304,6 +293,18 @@
    so the ratio tops the height out at ~474px whatever the screen does. Narrow
    screens get a taller ratio instead of a minimum, which keeps every height in
    this file derived from the ratio and nothing else. */
+/* A LADDER, not one breakpoint. 3/1 is a desktop proportion: at 375px the band
+   is ~337px wide, so it would be a 112px slot with a photograph squinting out
+   of it. The plate gets taller as the page gets narrower — which is also the
+   only way the two live panes stay usable once they stack. Source order matters
+   between these two: they set the same property on the same selector, so the
+   narrower query has to come second to win. */
+@media (max-width: 899px) {
+  .pf__crop {
+    --pf-plate-ratio: 2 / 1;
+  }
+}
+
 @media (max-width: 640px) {
   .pf__crop {
     --pf-plate-ratio: 4 / 3;
@@ -366,11 +367,10 @@
   /* DERIVED FROM THE SITES' OWN BREAKPOINTS, not picked by eye. Both of these
      collapse their navigation to a hamburger below ~1400px, so a pane handing
      them less than that shows a tablet layout of a desktop site. k is whatever
-     puts pane ÷ k above 1400: it was 0.42 when the plate was full-bleed and the
-     pane 616px, and came down with the plate to 0.33, which holds the frames at
-     ~1460px on a 480px pane. Re-derive it the same way if --pf-plate-width or
-     --pf-plate-ratio move again. */
-  --pf-live-k: 0.33;
+     puts pane ÷ k above 1400 — at a full-bleed plate the pane is 616px, so 0.42
+     holds the frames at ~1470px. Re-derive it the same way if the plate's width
+     ever changes. */
+  --pf-live-k: 0.42;
 
   position: absolute;
   top: 0;
