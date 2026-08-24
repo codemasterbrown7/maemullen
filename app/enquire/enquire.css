@@ -144,18 +144,6 @@
   }
 }
 
-.enq__legend {
-  /* The visual "Your name" heading over the paired name fields. Spans the row
-     so it does not squeeze the grid. */
-  grid-column: 1 / -1;
-  padding: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-eyebrow);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-
 .enq__field {
   display: flex;
   flex-direction: column;
@@ -173,20 +161,48 @@
   padding: 0;
 }
 
-.enq__req {
+/* The exception mark. Only the optional fields carry one — the note above the
+   form states the rule, so seven repetitions of "(required)" go away. Lower
+   case and untracked, so it reads as an aside to the label rather than part
+   of it. */
+.enq__opt {
   text-transform: none;
   letter-spacing: 0;
   color: var(--ink-muted);
   font-size: var(--text-body-sm);
 }
 
-/* The underline input. Transparent, a single hairline under it, a comfortable
-   but not cavernous height. Focus thickens the rule to the accent; the outline
-   ring is removed here (see the header note) — the thicker coloured underline is
-   the focus indicator for these. */
+.enq__required-note {
+  margin: 0;
+  font-size: var(--text-body-sm);
+  color: var(--ink-muted);
+}
+
+/* What a field says when it is wrong. Red is the page's accent as well as its
+   error colour, so the message itself does the telling — the underline only
+   confirms which field is meant. */
+.enq__message {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-body-sm);
+  line-height: 1.4;
+  color: var(--enq-accent);
+}
+
+/* The underline input. Transparent, a single hairline under it. Focus thickens
+   the rule to the accent; the outline ring is removed here (see the header
+   note) — the thicker coloured underline is the focus indicator for these.
+
+   HEIGHT IS THE PADDING, NOTHING ELSE. The first build set `min-height: 40px`
+   on top of the padding, which gave a 57px field around a 22.5px line of type:
+   an input centres its text, so 17px of nothing sat above what you typed and
+   17px more below it, and the words floated in the middle of a gap instead of
+   sitting on their rule. Now the box is the line plus 8px each side — the same
+   normal-density figure Material uses between label, text and rule — so the
+   type sits 8px off the hairline and 12px under its label. Touch is not lost
+   with the box at ~40px: every label carries `for`, so the label and the field
+   are one 60px tap target. */
 .enq__input {
   width: 100%;
-  min-height: 40px;
   padding: var(--space-2) 0;
   background: transparent;
   border: 0;
@@ -209,11 +225,42 @@
   outline: none;
   border-bottom: var(--border-medium) solid var(--enq-accent);
 }
+/* A flagged field keeps the thick accent rule whether or not it has focus, so
+   the message under it has something to point at. */
+.enq__input[aria-invalid="true"] {
+  border-bottom: var(--border-medium) solid var(--enq-accent);
+}
 
+/* THE ONE BOXED CONTROL. A single-line field needs no outline: its label sits
+   directly above it and its rule directly under it, so the gap between the two
+   IS the field. A multi-line field has no such pair — the rule ends up 130px
+   from the label with nothing in between, and the space reads as blank paper
+   rather than as somewhere to write. So this one gets a hairline all the way
+   round: the boundary is the affordance. Focus doubles the edge in the accent
+   with an inset shadow rather than a thicker border, which would shift the
+   text inside it by a pixel on every focus. `border-box` because there is no
+   reset in this project (see globals.css) — without it the padding would push
+   a `width: 100%` field past the column. */
 .enq__textarea {
+  box-sizing: border-box;
   min-height: 7rem;
-  padding: var(--space-2) 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  line-height: 1.6;
   resize: vertical;
+}
+.enq__textarea:hover {
+  border-color: rgb(0 0 0 / 0.4);
+}
+.enq__textarea:focus,
+.enq__textarea:focus-visible {
+  outline: none;
+  border: 1px solid var(--enq-accent);
+  box-shadow: inset 0 0 0 1px var(--enq-accent);
+}
+.enq__textarea[aria-invalid="true"] {
+  border: 1px solid var(--enq-accent);
 }
 
 /* ── Service checkboxes — optional multi-select ──────────────────────────── */
