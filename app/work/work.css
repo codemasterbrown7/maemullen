@@ -1,0 +1,586 @@
+/* ============================================================================
+   /work — the portfolio. Built 2026-08-24.
+
+   Scoped under .pf so nothing here can reach another route. Single-class BEM
+   throughout, no element selectors, so no later rule of equal weight can cancel
+   one of these out.
+
+   COLOUR — the settled scheme for every page after /v3: cream ground, black
+   type, one blue accent. Brand red is cut. Blue appears exactly twice, and both
+   times it is state rather than decoration: the band you are hovering, and the
+   band that is open. Brand pink appears once, as the placeholder field for a
+   project with no photography yet.
+
+   TYPE — the site's three registers, unchanged:
+     display    TeX Gyre Heros Bold — the masthead word and every project name.
+     body       Switzer — anything that is a sentence.
+     annotation IBM Plex Mono, 11px, +0.08em — the discipline line, the wall
+                label's terms, the [ Open ] toggle, the placeholder note.
+
+   ── THE SIGNATURE: THE SPLIT NAME ─────────────────────────────────────────
+
+   Each project's name straddles the bottom edge of its plate: cream above the
+   edge where it crosses the picture, black below it on the page. The cut is the
+   picture's own edge.
+
+   HOW, and why it is two elements rather than one clever one. `.pf__crop` has
+   `overflow: hidden` and holds the cream copy; `.pf__frame` is the same box
+   without the clipping and holds the black copy. Both copies are absolutely
+   positioned `bottom: 0` and pushed down by the same `translateY`, and because
+   `.pf__crop` fills `.pf__frame` exactly, "bottom: 0" resolves to the same line
+   for both. The seam is therefore the plate's real bottom edge at every
+   viewport width, with no coordinate written down anywhere.
+
+   THE MARGIN ON .pf__frame IS LOAD-BEARING AND MUST NOT BECOME PADDING. An
+   absolutely positioned child resolves `bottom: 0` against its containing
+   block's PADDING box, so padding-bottom on the frame would drop the black copy
+   below the cream one and split the word twice. Margin leaves the padding box
+   alone and still reserves the room underneath.
+
+   WHY NOT background-clip: text over a gradient, or one element with two
+   colours: both need the cut expressed as a length, and the whole point is that
+   it is an edge. A number would drift the moment the plate changed height.
+
+   THE BLACK COPY IS THE <h2>. The cream one is aria-hidden. Only one of them
+   can be the heading, and it has to be the one that carries the name where the
+   page keeps its heading structure — the visible half over the picture is the
+   duplicate, not the original.
+
+   NOWRAP IS NOT COSMETIC. A wrapped name would put whole lines either side of
+   the seam instead of cutting through the letters, which is a different and
+   much weaker effect. --pf-name-size is clamped so the longest name on the page
+   holds one line down to 320px; a longer name than "Harmony Hub" needs that
+   ceiling lowered rather than the nowrap removed.
+
+   ── WHAT IS DELIBERATELY ABSENT ───────────────────────────────────────────
+
+   No scroll-drawn line — that is /services' and belongs only there. No receipt
+   strip, no dotted leaders — /packages'. No scattered plates — /services'
+   again. No hover scale on the photography: the client's pictures are shown as
+   shot, and a 1.03 zoom is the default gesture this page is meant not to reach
+   for. The affordance is the bracket and the hairline.
+   ============================================================================ */
+
+.pf {
+  --pf-ink: var(--brand-black);
+  --pf-blue: var(--brand-blue);
+  --pf-hairline: rgb(0 0 0 / 0.2);
+  --pf-edge-col: 34px;
+  --pf-max: 85rem;
+
+  /* The split name.
+
+     --pf-name-cut is the one number worth touching: how far down its own line
+     box the plate's edge cuts, and therefore where the letters divide. Half the
+     line box, which for Heros Bold at this leading cuts the capitals at roughly
+     42% — measured off a render, not assumed, because a line box is not the
+     letters and the two only line up by accident. The black half coming out the
+     heavier of the two is right: it is the half sitting on the page, and it
+     wants the weight to carry down to the hairline under it.
+
+     RE-MEASURE IT IF --pf-name-lh OR THE FACE CHANGES. Where the seam lands on
+     the letters does not follow from the leading, so it takes a render to know.
+     Values well away from 0.5 stop cutting the capitals at all and start
+     cutting the space above or below them, which is not the same effect.
+
+     --pf-name-drop is DERIVED from all three: it is exactly the part of the
+     line box that hangs below the plate, and therefore the room the frame has
+     to reserve underneath. */
+  --pf-name-size: clamp(2rem, 9vw, 8rem);
+  --pf-name-lh: 0.78;
+  --pf-name-cut: 0.5;
+  --pf-name-drop: calc(var(--pf-name-size) * var(--pf-name-lh) * var(--pf-name-cut));
+
+  background: var(--bg);
+  color: var(--pf-ink);
+  font-family: var(--font-body);
+  min-width: 320px;
+}
+
+/* Every band opens and closes, so the page's height changes constantly. The
+   keyword interpolation is what lets that be a transition rather than a jump;
+   see the ::details-content rule at the foot of this file. */
+@supports (interpolate-size: allow-keywords) {
+  .pf {
+    interpolate-size: allow-keywords;
+  }
+}
+
+.pf__masthead,
+.pf__bands,
+.pf__cta {
+  max-width: var(--pf-max);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+  box-sizing: border-box;
+}
+
+/* ── Annotation register ──────────────────────────────────────────────────
+   One rule, four uses: the discipline line, the wall label's terms, the
+   placeholder note and the toggle. They are the same size and tracking on
+   purpose — this is a register, not four decisions. */
+.pf__discipline,
+.pf__term,
+.pf__pending-note,
+.pf__toggle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Global a:hover is brand red, which is cut on every page after /v3. */
+.pf .mm-cta-bracket:hover,
+.pf__link:hover {
+  color: var(--pf-blue);
+}
+
+/* ── Masthead ─────────────────────────────────────────────────────────────
+   Short on purpose. On a portfolio the work is the argument, so this gets the
+   visitor to the first plate rather than filling a screen of its own —
+   noticeably less room than /services gives the same block, which needs the
+   depth because a drawn knot lives in it. */
+.pf__masthead {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  padding-top: clamp(var(--space-10), 6vh, var(--space-16));
+  padding-bottom: clamp(var(--space-10), 7vh, var(--space-20));
+}
+
+@media (min-width: 900px) {
+  .pf__masthead {
+    grid-template-columns: var(--pf-edge-col) 1fr;
+    gap: var(--space-10);
+    align-items: start;
+  }
+}
+
+/* Left edges read bottom-to-top — the site's settled direction for edge type,
+   because it keeps the eye travelling into the page rather than away from it. */
+.pf__edge {
+  margin: 0;
+  align-self: start;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 899px) {
+  /* Vertical type in a single-column layout is a stripe down an otherwise
+     horizontal page and costs a line of height to say one word. */
+  .pf__edge {
+    display: none;
+  }
+}
+
+.pf__title {
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(3rem, 13vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+/* Narrow measure, and it carries the page's only instruction — "Open one to
+   see what we made" — so it is not decoration either. */
+.pf__standfirst {
+  margin: var(--space-6) 0 0;
+  max-width: 58ch;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ── The bands ────────────────────────────────────────────────────────────
+   Four <details>, stacked. Nothing separates them but the space the split name
+   already needs, so the rhythm down the page is picture, name, rule, picture. */
+.pf__bands {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--space-16), 9vw, var(--space-32));
+}
+
+.pf__summary {
+  /* Both of these remove the disclosure triangle — `display` covers Safari,
+     `list-style` the rest — and `display: block` is also what lets the summary
+     hold a picture at all. */
+  display: block;
+  list-style: none;
+  cursor: pointer;
+}
+
+/* ── Plate ────────────────────────────────────────────────────────────────
+   2:1, which is the widest the Bendito photograph crops to without losing the
+   menu, bounded top and bottom so a phone does not get a letterbox slot and a
+   tall desktop does not get a plate taller than its own screen. */
+.pf__frame {
+  position: relative;
+  /* Room for the half of the name that hangs below the picture, plus the air
+     between it and the hairline. See the note at the top about why this is
+     margin and can never be padding. */
+  margin-bottom: calc(var(--pf-name-drop) + var(--space-5));
+}
+
+.pf__crop {
+  position: relative;
+  /* Above the black copy of the name, which is the sibling below. This is what
+     makes the picture the cut line: it paints over the top half of the word. */
+  z-index: 1;
+  overflow: hidden;
+  aspect-ratio: 2 / 1;
+  min-height: 13rem;
+  max-height: 68vh;
+  background: var(--surface);
+}
+
+/* Two screenshots butted together with no gutter — the landing page's first
+   screen, and here it says "two websites" before a word is read. Below 700px
+   they would be ~150px wide each, so the pair stacks and the plate goes square
+   to give each of them a real width. */
+.pf__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 699px) {
+  .pf__crop[data-hero="pair"] {
+    aspect-ratio: 1 / 1;
+  }
+  .pf__pair {
+    grid-template-columns: none;
+    grid-template-rows: 1fr 1fr;
+  }
+}
+
+.pf__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+}
+
+/* A website's identity is in its top left corner — logotype, then the first
+   line of the headline. Centre-cropping a screenshot throws both away. */
+.pf__pair .pf__img {
+  object-position: left top;
+}
+
+/* The scrim. The cream half of the name sits on photography, and photography is
+   not a colour you control — a bright patch under the letters would sink them.
+   Same device and same reasoning as the landing page's hero captions, over the
+   bottom strip only, so it costs the picture almost nothing.
+
+   z-index 1: above the image, below the name at 2. Without it the ::after would
+   paint last, being the crop's final child, and grey out the word it exists to
+   protect. */
+.pf__crop::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 1;
+  height: 38%;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.42), rgb(0 0 0 / 0.08) 60%, transparent);
+  pointer-events: none;
+}
+
+/* NOT over the placeholder. The scrim exists because photography is a colour
+   you do not control; the pink field is a colour we chose, and cream on it is
+   already the pairing the header proves at 11px. Left on, it read as a vignette
+   on a picture that is not there — the one thing a placeholder must not do is
+   look like a photograph. */
+.pf__crop[data-hero="pending"]::after {
+  content: none;
+}
+
+/* No photography yet, and it says so. NOT a grey box: the field is the brand's
+   own second surface — pink is the header — and cream on it is the pairing the
+   site already proves at 11px. It reads unmistakably as a gap, which is the
+   point; a placeholder that looks finished never gets replaced.
+
+   The note sits top right because the name owns the bottom left. */
+.pf__pending {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-6);
+  box-sizing: border-box;
+  background: var(--brand-pink);
+}
+
+.pf__pending-note {
+  margin: 0;
+  color: var(--brand-cream);
+}
+
+/* ── The split name ───────────────────────────────────────────────────────
+   Two copies, identical geometry, cut by the plate's bottom edge. The whole
+   mechanism is described at the top of this file — the only numbers here are
+   the type's own. */
+.pf__name {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  /* The seam. Same number the frame reserves its room from, so the two can
+     never disagree — see --pf-name-cut at the top of this file. */
+  transform: translateY(calc(var(--pf-name-cut) * 100%));
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: var(--pf-name-size);
+  line-height: var(--pf-name-lh);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Inside the crop, so the plate clips it — and above the scrim. */
+.pf__name--over {
+  z-index: 2;
+  color: var(--brand-cream);
+}
+
+/* Outside the crop, so it shows in full — and under it, so the picture covers
+   the half that overlaps. */
+.pf__name--under {
+  z-index: 0;
+  color: var(--pf-ink);
+}
+
+/* ── The bar under the plate ──────────────────────────────────────────────
+   The hairline is the page's state indicator: black at rest, blue on hover and
+   blue while the band is open. One accent, two states, no extra furniture. */
+.pf__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+  padding-top: var(--space-3);
+  border-top: var(--border-hairline) solid var(--pf-hairline);
+  transition: border-color var(--duration-base) var(--ease-standard);
+}
+
+.pf__summary:hover .pf__bar,
+.pf__band[open] .pf__bar {
+  border-top-color: var(--pf-blue);
+}
+
+.pf__discipline {
+  margin: 0;
+}
+
+/* The bracket CTA carries the slide on its own hover; this extends it to the
+   whole band, because the band is the control and the bracket is only its
+   label. Colour follows for the same reason. */
+.pf__summary:hover .pf__toggle {
+  color: var(--pf-blue);
+}
+.pf__summary:hover .pf__toggle::before {
+  transform: translateX(calc(-1 * var(--space-1)));
+}
+.pf__summary:hover .pf__toggle::after {
+  transform: translateX(var(--space-1));
+}
+
+/* Inline, not the bracket's default inline-flex with a 42px minimum: this one
+   sits on a baseline beside 11px mono, and a 42px box would push the hairline
+   away from the type it belongs to. */
+.pf__toggle {
+  display: inline;
+  min-height: 0;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+/* Both labels ship; CSS shows the one that is true. */
+.pf__toggle-open {
+  display: none;
+}
+.pf__band[open] .pf__toggle-closed {
+  display: none;
+}
+.pf__band[open] .pf__toggle-open {
+  display: inline;
+}
+
+/* ── The opened detail ────────────────────────────────────────────────────
+   Prose one side, the wall label the other. Two treatments and no more: one
+   body size for every sentence, and the annotation register for the facts.
+   Padding rather than margin, because a margin on the only child would collapse
+   straight out through ::details-content. */
+.pf__detail {
+  display: grid;
+  gap: var(--space-10);
+  padding: var(--space-10) 0 var(--space-6);
+}
+
+@media (min-width: 900px) {
+  .pf__detail {
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 20rem);
+    gap: var(--space-16);
+    align-items: start;
+  }
+}
+
+.pf__para {
+  margin: 0 0 var(--space-5);
+  max-width: 62ch;
+  font-size: var(--text-body-lg);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.pf__para:last-child {
+  margin-bottom: 0;
+}
+
+/* The Bendito artwork flat, beside the photograph of it in use. Small and
+   hard-edged, no frame and no shadow — the site's settled treatment for a
+   picture that is evidence rather than a hero. */
+.pf__still {
+  margin: var(--space-10) 0 0;
+  width: min(14rem, 60%);
+}
+
+.pf__still-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pf__still-note {
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ── The wall label ───────────────────────────────────────────────────────
+   Term left, values right, a hairline over each row. Aligned on a grid rather
+   than joined by dotted leaders — the leader is the receipt's, and it belongs
+   to /packages. */
+.pf__label {
+  margin: 0;
+}
+
+.pf__row {
+  display: grid;
+  grid-template-columns: minmax(0, 6rem) minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: var(--border-hairline) solid var(--pf-hairline);
+}
+
+.pf__term {
+  color: var(--ink-muted);
+}
+
+/* Stacked, because most rows hold two or three things and a comma-separated run
+   of links reads as one link with punctuation in it. */
+.pf__def {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+.pf__link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: var(--border-hairline) solid var(--pf-hairline);
+  transition: color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+.pf__link:hover {
+  border-bottom-color: var(--pf-blue);
+}
+
+/* Marks the links that leave the site. A pseudo-element so it is never read
+   aloud — the anchor already carries where it goes. */
+.pf__link--out::after {
+  content: " ↗";
+}
+
+/* ── CTA band ─────────────────────────────────────────────────────────────
+   The same shape /services ends on — heading left, bracket beside it on the
+   baseline — minus the drawn flourish, which is that page's alone. */
+.pf__cta {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: baseline;
+  column-gap: clamp(var(--space-8), 8vw, var(--space-24));
+  row-gap: var(--space-6);
+  padding-top: clamp(var(--space-20), 12vw, var(--space-40));
+  padding-bottom: var(--space-16);
+}
+
+.pf__cta-heading {
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Up a register from the 11px annotations. This is the one thing on the page
+   a visitor is meant to click through to, and beside a 64px heading the
+   annotation size read as a footnote. */
+.pf .mm-cta-bracket.pf__cta-link {
+  font-size: 14px;
+}
+
+/* ── Opening ──────────────────────────────────────────────────────────────
+   A height transition on a box whose height is `auto` needs the keyword to be
+   interpolable, which is what `interpolate-size` at the top of this file
+   enables. Where it is not supported the whole block is skipped and <details>
+   opens instantly, which is the behaviour the element has always had — nothing
+   depends on this.
+
+   `content-visibility` has to transition too, with allow-discrete: the closed
+   content is `content-visibility: hidden`, and without carrying it through the
+   transition the box animates open around content that is not painted yet. */
+@supports (interpolate-size: allow-keywords) {
+  .pf__band::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size var(--duration-slow) var(--ease-standard),
+      content-visibility var(--duration-slow) var(--ease-standard) allow-discrete;
+  }
+
+  .pf__band[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* The bracket slide, the hairline colour and the opening are all motion. The
+   global reduced-motion rule flattens transition durations site-wide; this
+   removes the transform outright, since a 0.01ms slide is still a jump. */
+@media (prefers-reduced-motion: reduce) {
+  .pf__summary:hover .pf__toggle::before,
+  .pf__summary:hover .pf__toggle::after {
+    transform: none;
+  }
+}
