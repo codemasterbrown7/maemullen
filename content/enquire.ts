@@ -44,6 +44,14 @@ export const enquiryPage = {
   submitLabel: "Send enquiry",
   sendingLabel: "Sending…",
   /**
+   * MOST FIELDS ARE REQUIRED, so the optional ones carry the mark and this line
+   * covers the rest. Seven of ten labels ending in "(required)" is noise that
+   * says the same thing seven times; marking the exception is the long-standing
+   * recommendation when the majority are compulsory (Nielsen).
+   */
+  requiredNote: "All fields are required unless marked optional.",
+  optionalLabel: "(optional)",
+  /**
    * Shown in place of the masthead AND the form on success; focus moves to the
    * heading. It is the whole page at that point, not a panel tucked under a
    * masthead still asking you to start a project — so it carries its own mark,
@@ -67,6 +75,38 @@ export const enquiryPage = {
     body: "Something went wrong on the way. Please try again in a moment — or email us directly and we'll pick it up.",
     retryLabel: "Email us instead",
   },
+};
+
+/**
+ * What a field says when it is wrong, keyed by input id.
+ *
+ * WHY NOT THE BROWSER'S OWN STRINGS. "Please fill out this field" is the same
+ * sentence for ten different questions and names none of them; these say what
+ * the field wants. `missing` covers an empty required field, `invalid` a value
+ * of the wrong shape (a malformed email, a URL with no scheme). A field with no
+ * `invalid` entry falls back to `missing`.
+ *
+ * WHEN THEY APPEAR — components/EnquireSection.tsx. A format error shows the
+ * moment you leave the field, because you typed something and it cannot work;
+ * an empty required field says nothing until you press Send, because tabbing
+ * past a field you have not reached yet is not a mistake. Once a message is up
+ * it clears as soon as the field is fixed, on the keystroke.
+ */
+export const enquiryFieldErrors: Record<string, { missing: string; invalid?: string }> = {
+  firstName: { missing: "Enter your first name." },
+  lastName: { missing: "Enter your last name." },
+  brand: { missing: "Enter your brand or company name." },
+  email: {
+    missing: "Enter your email address.",
+    invalid: "That address doesn't look right — check for a typo.",
+  },
+  social: { missing: "Enter at least one handle, like @yourbrand." },
+  location: { missing: "Enter where you're based." },
+  website: {
+    missing: "Enter your website address.",
+    invalid: "Enter the full address, starting with https://",
+  },
+  brief: { missing: "Tell us a little about your brand." },
 };
 
 /**
