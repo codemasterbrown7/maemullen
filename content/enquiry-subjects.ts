@@ -4,41 +4,42 @@
  *
  * THE PROBLEM THIS SOLVES. Every `[ ENQUIRE ]` on the site pointed at the same
  * blank form, so someone who had just read the Signature package and pressed the
- * button attached to it arrived at a page that asked them what they wanted. The
- * bracket knows; the form did not.
+ * bracket attached to it arrived at a page that asked them what they wanted. The
+ * bracket knew; the form did not.
  *
- * THE CONTRACT IS A QUERY STRING. `/enquire?package=signature`,
- * `/enquire?service=design-illustration`. A query string is the only thing that
- * survives here: the site is a static export (next.config.ts), so there is no
- * per-package route to prerender and no server to read a POST. `?package=…`
- * still serves the same /enquire/index.html and the form reads the value after
- * hydration.
+ * THE CONTRACT IS A QUERY STRING. `/enquire?package=signature`. A query string
+ * is the only thing that survives here: the site is a static export
+ * (next.config.ts), so there is no per-package route to prerender and no server
+ * to read a POST. `?package=…` still serves the same /enquire/index.html and the
+ * form reads the value after hydration.
  *
- * TWO PARAMS, NOT ONE, because the two id spaces collide — `ugc` and `tiktok`
- * are both a package slug AND a service anchor, and one shared `?about=` would
- * have to disambiguate them by guessing.
+ * PACKAGES ONLY, AND ON PURPOSE. The other enquire CTAs — home, /about, /work,
+ * the two on /services, both in the chrome — are page-level. They sit at the
+ * bottom of a page about everything, so there is nothing specific for them to
+ * carry and they stay pointed at the bare form. A `?service=` half was built
+ * and cut the same day: nothing linked with it, and it put "TikTok management"
+ * and "UGC & brand content" into the Change picker twice over, once as a
+ * package and once as a service, with no way for a reader to tell which was
+ * which. If /services ever grows a bracket per section, this file is where the
+ * second kind goes back.
  *
- * NOTHING HERE IS NEW CONTENT. Every label is derived from the package or
- * service it names, so a rename in content/packages.ts moves the enquiry line
- * with it and the two can never disagree.
+ * NOTHING HERE IS NEW CONTENT. Every label is derived from the package it
+ * names, so a rename in content/packages.ts moves the enquiry line with it and
+ * the two can never disagree.
  *
  * WHY IT IS NOT IMPORTED BY THE FORM. components/EnquireSection.tsx is a client
  * component; importing this would pull all of content/packages.ts into the
  * browser bundle — every line of copy for ten packages, plus the build-time
  * assertions in that file, re-run on every page load. So /enquire's server
- * component imports it and hands the derived list down as a prop: ten short
+ * component imports it and hands the derived list down as a prop: eleven short
  * records instead of the whole file.
  */
 
 import { enquiryServices } from "@/content/enquire";
-import { services } from "@/content/home";
 import { packageTabs, packagesPage } from "@/content/packages";
 
-export type EnquirySubjectKind = "package" | "service";
-
 export type EnquirySubject = {
-  kind: EnquirySubjectKind;
-  /** The value in the URL: `?package=<id>` / `?service=<id>`. */
+  /** The value in the URL: `?package=<id>`. A package slug, or the Bespoke tab. */
   id: string;
   /** What the line on the form reads. */
   label: string;
@@ -51,9 +52,8 @@ export type EnquirySubject = {
   service: string | null;
 };
 
-const packageSubjects: EnquirySubject[] = packageTabs.flatMap((tab) =>
+const cardSubjects: EnquirySubject[] = packageTabs.flatMap((tab) =>
   tab.cards.map((card) => ({
-    kind: "package" as const,
     id: card.slug,
     /* Only the social tab holds alternatives to each other, and only there does
        the tab name have to lead: "Essential" on its own names nothing. Every
@@ -70,48 +70,39 @@ const packageSubjects: EnquirySubject[] = packageTabs.flatMap((tab) =>
  */
 const bespokeTab = packageTabs.find((tab) => tab.enquireOnly);
 const bespokeSubject: EnquirySubject[] = bespokeTab
-  ? [{ kind: "package", id: bespokeTab.key, label: "A bespoke package", service: null }]
+  ? [{ id: bespokeTab.key, label: "A bespoke package", service: null }]
   : [];
 
-const serviceSubjects: EnquirySubject[] = services.map((service) => ({
-  kind: "service" as const,
-  id: service.anchor,
-  label: service.name,
-  service: service.name,
-}));
-
-export const enquirySubjects: EnquirySubject[] = [
-  ...packageSubjects,
-  ...bespokeSubject,
-  ...serviceSubjects,
-];
+export const enquirySubjects: EnquirySubject[] = [...cardSubjects, ...bespokeSubject];
 
 /* Two things that would fail silently on the page, failed loudly at build time
    instead: a subject naming a service the form has no box for, and two subjects
-   of the same kind sharing an id (the second would be unreachable). */
+   sharing an id (the second would be unreachable). */
 for (const subject of enquirySubjects) {
   if (subject.service && !enquiryServices.includes(subject.service)) {
     throw new Error(
       `content/enquiry-subjects.ts: "${subject.label}" points at the service ` +
-        `"${subject.service}", which is not in enquiryServices. The names in ` +
-        `content/packages.ts must match content/home.ts exactly.`,
+        `"${subject.service}", which is not in enquiryServices. The service names ` +
+        `in content/packages.ts must match content/home.ts exactly.`,
     );
   }
 }
 const seen = new Set<string>();
 for (const subject of enquirySubjects) {
-  const key = `${subject.kind}/${subject.id}`;
-  if (seen.has(key)) {
-    throw new Error(`content/enquiry-subjects.ts: two subjects share the id ${key}.`);
+  if (seen.has(subject.id)) {
+    throw new Error(`content/enquiry-subjects.ts: two subjects share the id "${subject.id}".`);
   }
-  seen.add(key);
+  seen.add(subject.id);
 }
 
+/** The query param the id travels in. One name, one place. */
+export const enquirySubjectParam = "package";
+
 /**
- * The href a CTA uses, so no page hand-builds the query string and the param
- * names live in one file. `/enquire` comes from the same place the CTA label
- * does rather than being written out again.
+ * The href a CTA uses, so no page hand-builds the query string. `/enquire`
+ * comes from the same place the CTA label does rather than being written out
+ * again.
  */
-export function enquireHref(kind: EnquirySubjectKind, id: string): string {
-  return `${packagesPage.bespoke.href}?${kind}=${encodeURIComponent(id)}`;
+export function enquireHref(id: string): string {
+  return `${packagesPage.bespoke.href}?${enquirySubjectParam}=${encodeURIComponent(id)}`;
 }

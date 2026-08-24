@@ -35,9 +35,9 @@ import "./enquire.css";
  * the enquiry lands. This page stays a server component so it can own the
  * metadata and the chrome. Fields and where submissions go: content/enquire.ts.
  *
- * WHAT THE ENQUIRY IS ABOUT. A CTA elsewhere can name the package or service it
- * sat next to — `/enquire?package=signature` — and the form shows that back
- * above the fields. The list of what can be named is derived here, on the
+ * WHAT THE ENQUIRY IS ABOUT. A CTA on /packages names the package it sat next
+ * to — `/enquire?package=signature` — and the form shows that back above the
+ * fields. Every other enquire CTA on the site is page-level and stays bare. The list of what can be named is derived here, on the
  * server, and passed down: importing content/enquiry-subjects.ts inside the
  * client island would drag all of content/packages.ts into the browser bundle
  * for the sake of ten short labels.
