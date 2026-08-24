@@ -10,20 +10,6 @@ noted 2026-08-20.
 
 ## Functionality — after the visuals are done
 
-### Enquire form: prefill from context
-
-Every `[ ENQUIRE ]` on the site points at the same blank form. It should carry
-where it was pressed, so the form arrives already knowing what the enquiry is
-about instead of asking the visitor to say it again.
-
-- The bracket CTA appears on `/packages` (once per tier, plus once per
-  single-package tab), on `/services`, and in the site chrome.
-- Each one should prefill the relevant fields — at minimum which package or
-  service it came from.
-- Open questions for when this is picked up: does it prefill a visible field
-  the visitor can change, or a hidden one? And does the form show what it
-  thinks the enquiry is about, so the visitor can correct it?
-
 ### Shop: quantities
 
 - No way to add more than one of something. There should be a quantity control.
@@ -58,6 +44,26 @@ about instead of asking the visitor to say it again.
 ---
 
 ## Done
+
+- **Enquire form prefills from context** (2026-08-24, PRs #37 and #38). The
+  eleven `[ ENQUIRE ]` brackets on `/packages` — one per receipt plus Bespoke —
+  now link to `/enquire?package=<slug>`, and the form shows that back as an
+  ENQUIRING ABOUT line above the fields, ticks the service the package draws
+  on, and sends it as the email's first row. Both open questions were answered
+  visible: the line has a Change control that opens a select of all eleven, and
+  the tick is a real checkbox. A hidden field would have submitted a claim about
+  the visitor they could neither see nor correct.
+  - **The other enquire CTAs stay bare, deliberately** — home, `/about`,
+    `/work`, the two on `/services`, both in the chrome. They sit at the bottom
+    of a page about everything, so there is nothing specific for them to carry.
+    A `?service=` half was built and cut the same day: nothing linked with it,
+    and it put "TikTok management" and "UGC & brand content" in the Change
+    picker twice over with no way to tell which was which. If `/services` ever
+    grows a bracket per section, `content/enquiry-subjects.ts` says where the
+    second kind goes back.
+  - The subject list is DERIVED from `content/packages.ts`, so a package rename
+    moves the enquiry line with it, and a build-time assertion catches a subject
+    naming a service the form has no box for.
 
 - `/work` is the portfolio (2026-08-24). Four projects — Bendito, Harmony Hub,
   The Loft, Websites — each a full-width plate whose name straddles the plate's
