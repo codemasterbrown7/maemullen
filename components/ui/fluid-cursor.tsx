@@ -72,6 +72,11 @@ import "./fluid-cursor.css";
  * rejected before any real maths, and no text inside a marquee is split at all —
  * a permanently running animation would keep the loop awake forever.
  *
+ * ONE POINTER, ALWAYS. `cursor: none` is only safe while the replacement can
+ * actually follow the pointer. It cannot over a native `<select>` menu, which
+ * the OS draws outside the page and which sends no events back — so the drop
+ * stands down over a select and the real arrow comes back (onPointerOver).
+ *
  * QUALITY FLOOR
  * Coarse pointers and prefers-reduced-motion never get here: the overlay is
  * hidden in CSS (so there is no hydration mismatch) and the loop refuses to
@@ -177,6 +182,8 @@ export function FluidCursor() {
     let started = false;
     /** Pointer has left the window: park the dots and release every letter. */
     let suppressed = false;
+    /** Pointer is over a control whose menu the OS draws — see onPointerOver. */
+    let overNative = false;
     let raf = 0;
     /** Last shape written to the lead, so a round drop is not rewritten every
      *  frame while the pointer sits still. */
@@ -253,11 +260,47 @@ export function FluidCursor() {
         lead.y = trail.y = pointer.y;
         root.dataset.visible = "true";
       }
-      if (suppressed) {
+      if (suppressed && !overNative) {
         suppressed = false;
         root.dataset.visible = "true";
       }
 
+      wake();
+    };
+
+    /**
+     * THE ONE CONTROL WE HAND THE POINTER BACK FOR.
+     *
+     * A `<select>` opens a menu the OS draws over the page, not in it. The
+     * moment it opens the document gets a `mouseleave`, so the drop parks and
+     * every letter is released — and no `pointermove` arrives again until the
+     * menu is gone, so nothing wakes it. With `cursor: none` still in force
+     * that leaves NO pointer on screen for as long as the menu is open, and it
+     * only comes back when you click away and move, which is how it was
+     * reported (2026-08-24).
+     *
+     * The drop cannot follow the pointer over an OS-drawn menu — no events
+     * reach the page from there — so the honest fix is to stop pretending: for
+     * as long as the pointer is over a select, the class comes off and the real
+     * arrow returns, the drop parks and the letters let go, so there is exactly
+     * one pointer on screen and never none. Everything resumes on the way out.
+     *
+     * Hover, not the menu itself: the menu opens under a pointer that is
+     * already over the select, so the handover has happened before the click,
+     * and nothing has to detect a popup that fires no events.
+     */
+    const onPointerOver = (event: PointerEvent) => {
+      const native = event.target instanceof HTMLSelectElement;
+      if (native === overNative) return;
+      overNative = native;
+      document.documentElement.classList.toggle("mm-cursor-on", !native);
+      if (native) {
+        suppressed = true;
+        root.dataset.visible = "false";
+      } else if (started) {
+        suppressed = false;
+        root.dataset.visible = "true";
+      }
       wake();
     };
 
@@ -272,12 +315,14 @@ export function FluidCursor() {
     const onScroll = () => wake();
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerover", onPointerOver, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("blur", onLeave);
     document.addEventListener("mouseleave", onLeave);
 
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerover", onPointerOver);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("blur", onLeave);
       document.removeEventListener("mouseleave", onLeave);
