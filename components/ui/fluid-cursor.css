@@ -121,6 +121,17 @@ html.mm-cursor-on * {
   cursor: none;
 }
 
+/* Except over a `<select>`, which opens a menu the OS draws outside the page:
+   the drop cannot follow the pointer there, so it stands down and the real one
+   comes back (fluid-cursor.tsx, onPointerOver). The class is pulled off the
+   root for the duration, so this rule is only the belt to that braces — it
+   keeps the pointer honest for the frame in between, and for anyone whose JS
+   never ran. Same specificity as the rule above (0,1,1) and it comes after, so
+   it wins without !important. */
+html.mm-cursor-on select {
+  cursor: pointer;
+}
+
 /* ── The letters ────────────────────────────────────────────────────────── */
 
 /* Words stay whole: each letter is an inline-block, which is a line break
