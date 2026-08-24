@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChromeFooter, ChromeHeader } from "@/components/chrome/SiteChrome";
+import { enquireHref } from "@/content/enquiry-subjects";
 import {
   packageTabs,
   packagesDescription,
@@ -141,7 +142,7 @@ export default function PackagesPage() {
                     <h2 className="rcpt__bespoke-heading">{packagesPage.bespoke.heading}</h2>
                     <p className="rcpt__bespoke-line">{packagesPage.bespoke.line}</p>
                     <Link
-                      href={packagesPage.bespoke.href}
+                      href={enquireHref("package", tab.key)}
                       className="mm-cta-bracket rcpt__bespoke-cta"
                     >
                       {packagesPage.bespoke.label}
@@ -238,7 +239,7 @@ export default function PackagesPage() {
 
                           <div className="rcpt__foot">
                             <Link
-                              href={packagesPage.bespoke.href}
+                              href={enquireHref("package", card.slug)}
                               className="mm-cta-bracket rcpt__cta"
                             >
                               {packagesPage.bespoke.label}

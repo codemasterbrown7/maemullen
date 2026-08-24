@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { FocusEvent, FormEvent } from "react";
 import Link from "next/link";
 import { instagramUrl } from "@/content/site";
@@ -14,6 +14,7 @@ import {
   enquiryPage,
   enquiryServices,
 } from "@/content/enquire";
+import type { EnquirySubject } from "@/content/enquiry-subjects";
 import { asset } from "@/lib/asset";
 
 /**
@@ -46,14 +47,58 @@ import { asset } from "@/lib/asset";
  * form in place with an error banner and a mailto fallback, so an enquiry is
  * never lost to a network blip.
  *
+ * THE FORM ARRIVES KNOWING WHAT IT IS ABOUT. A CTA elsewhere on the site can
+ * name what it was pressed next to — `/enquire?package=signature` — and the
+ * form shows that back as a line above the fields and ticks the service it
+ * draws on. Both are visible and both can be changed: the line has a Change
+ * control that opens a select of everything on offer, and the tick is a real
+ * checkbox the visitor can clear. Nothing is claimed on their behalf that they
+ * cannot see. The contract, and the list of what can be named, is in
+ * content/enquiry-subjects.ts; it is handed down as a prop rather than imported
+ * here so that content/packages.ts stays out of the browser bundle.
+ *
+ * WHY NOT `useSearchParams`. The hook forces the page behind a Suspense
+ * boundary under `output: "export"`, which would prerender the FALLBACK into
+ * enquire/index.html and leave the form itself absent from the static HTML
+ * until JavaScript ran. `useSyncExternalStore` instead: the whole form
+ * prerenders, and the search string is declared as a value the server does not
+ * have (`serverSearch` returns "") and the browser does, which is precisely
+ * what that hook is for — no hydration mismatch, and no setState in an effect.
+ *
+ * The URL is then left alone. It records where the visitor came FROM; the form
+ * records what they chose; the form is what gets sent. Rewriting the query
+ * string when they press Change would make the two agree at the cost of making
+ * the history lie about where they had been.
+ *
  * The multi-select services collapse to one comma-separated field so the email
  * reads as a line rather than as repeated keys, and `_honey` is a honeypot: a
  * field a human never sees and a bot fills, which we treat as a silent success.
  */
 type Status = "idle" | "sending" | "success" | "error";
 
-export function EnquireSection() {
+/* The URL, as an external store. Back and forward are the only things that can
+   change it under a mounted form — nothing here writes to the history — so
+   `popstate` is the whole subscription. */
+function subscribeToUrl(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+}
+const clientSearch = () => window.location.search;
+const serverSearch = () => "";
+
+export function EnquireSection({ subjects }: { subjects: EnquirySubject[] }) {
   const [status, setStatus] = useState<Status>("idle");
+  /** Whether the subject line has been swapped for its select. */
+  const [picking, setPicking] = useState(false);
+  /**
+   * What the visitor chose, versus what they arrived with. `undefined` means
+   * they have not said — so the URL still speaks. Keeping the two apart is what
+   * lets the arrival be derived rather than copied into state.
+   */
+  const [picked, setPicked] = useState<EnquirySubject | null | undefined>(undefined);
+  /** Ticked service boxes; `undefined` while the subject's own service stands.
+      Controlled, because a prefilled tick cannot be a `defaultChecked`. */
+  const [ticked, setTicked] = useState<string[] | undefined>(undefined);
   /** The address the visitor typed, echoed back on the slip. "" for a bot. */
   const [replyTo, setReplyTo] = useState("");
   /** Live messages, keyed by input id. A field with no key here is clean. */
@@ -96,6 +141,37 @@ export function EnquireSection() {
     const el = event.currentTarget;
     if (!errors[el.id]) return;
     if (el.checkValidity()) setMessage(el.id, "");
+  }
+
+  const search = useSyncExternalStore(subscribeToUrl, clientSearch, serverSearch);
+
+  /**
+   * What the CTA said, if anything. An id we do not recognise is ignored rather
+   * than shown: the line is only ever words this site chose, never a string
+   * someone put in a query param.
+   */
+  const arrived = useMemo(() => {
+    const params = new URLSearchParams(search);
+    return subjects.find((candidate) => params.get(candidate.kind) === candidate.id) ?? null;
+  }, [search, subjects]);
+
+  const subject = picked === undefined ? arrived : picked;
+  const chosenServices = ticked ?? (arrived?.service ? [arrived.service] : []);
+
+  /** Picking a different subject re-points the ticked service with it, rather
+      than leaving the box from the package they arrived on standing. */
+  function chooseSubject(id: string) {
+    const next = subjects.find((candidate) => `${candidate.kind}/${candidate.id}` === id) ?? null;
+    setPicked(next);
+    setTicked(next?.service ? [next.service] : []);
+  }
+
+  function toggleService(service: string, checked: boolean) {
+    setTicked(
+      checked
+        ? [...chosenServices, service]
+        : chosenServices.filter((name) => name !== service),
+    );
   }
 
   // Move focus to the confirmation heading the moment it appears.
@@ -291,6 +367,12 @@ export function EnquireSection() {
           height={48}
         />
         <form className="enq__form" onSubmit={onSubmit} noValidate>
+          {/* The subject rides into the inbox as the email's first row, under
+              the same words the visitor read on the line above the fields. */}
+          {subject && (
+            <input type="hidden" name={enquiryPage.subject.key} value={subject.label} />
+          )}
+
           {status === "error" && (
             <div className="enq__error" role="alert">
               <p className="enq__error-heading">{enquiryPage.error.heading}</p>
@@ -310,6 +392,69 @@ export function EnquireSection() {
           </div>
 
           <p className="enq__required-note">{enquiryPage.requiredNote}</p>
+
+          {/* What the form thinks this is about. Absent entirely on a cold
+              visit — it appears only because a CTA somewhere named something,
+              and it stays until the visitor says otherwise. */}
+          {(subject || picking) && (
+            <div className="enq__subject">
+              <div className="enq__subject-head">
+                <p className="enq__subject-key" id="enq-subject-key">
+                  {enquiryPage.subject.key}
+                </p>
+                {!picking && (
+                  <button
+                    type="button"
+                    className="mm-cta-bracket enq__subject-change"
+                    onClick={() => setPicking(true)}
+                  >
+                    {enquiryPage.subject.changeLabel}
+                    <span className="mm-visually-hidden"> what this enquiry is about</span>
+                  </button>
+                )}
+              </div>
+
+              {picking ? (
+                <div className="enq__select-wrap">
+                  <select
+                    className="enq__input enq__select enq__subject-select"
+                    aria-labelledby="enq-subject-key"
+                    value={subject ? `${subject.kind}/${subject.id}` : ""}
+                    onChange={(event) => chooseSubject(event.currentTarget.value)}
+                  >
+                    <option value="">{enquiryPage.subject.noneLabel}</option>
+                    <optgroup label={enquiryPage.subject.packagesLabel}>
+                      {subjects
+                        .filter((candidate) => candidate.kind === "package")
+                        .map((candidate) => (
+                          <option
+                            key={candidate.id}
+                            value={`${candidate.kind}/${candidate.id}`}
+                          >
+                            {candidate.label}
+                          </option>
+                        ))}
+                    </optgroup>
+                    <optgroup label={enquiryPage.subject.servicesLabel}>
+                      {subjects
+                        .filter((candidate) => candidate.kind === "service")
+                        .map((candidate) => (
+                          <option
+                            key={candidate.id}
+                            value={`${candidate.kind}/${candidate.id}`}
+                          >
+                            {candidate.label}
+                          </option>
+                        ))}
+                    </optgroup>
+                  </select>
+                  <span className="enq__select-chevron" aria-hidden="true" />
+                </div>
+              ) : (
+                <p className="enq__subject-value">{subject?.label}</p>
+              )}
+            </div>
+          )}
 
           {/* Name — the one pair that stays side by side: two halves of a single
               answer, read as one line. Every other field gets its own row —
@@ -385,7 +530,10 @@ export function EnquireSection() {
             required: true,
           })}
 
-          {/* Service(s) of interest — optional multi-select as checkboxes. */}
+          {/* Service(s) of interest — optional multi-select as checkboxes.
+              Controlled rather than uncontrolled: a subject arriving from a CTA
+              ticks the service it draws on, and that happens in an effect after
+              mount, which `defaultChecked` cannot express. */}
           <fieldset className="enq__field enq__checks">
             <legend className="enq__label enq__label--legend">
               Service(s) of interest <span className="enq__opt">{enquiryPage.optionalLabel}</span>
@@ -399,6 +547,8 @@ export function EnquireSection() {
                       type="checkbox"
                       name="Services of interest"
                       value={service}
+                      checked={chosenServices.includes(service)}
+                      onChange={(event) => toggleService(service, event.currentTarget.checked)}
                     />
                     <span>{service}</span>
                   </label>

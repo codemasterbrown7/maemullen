@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ChromeFooter, ChromeHeader } from "@/components/chrome/SiteChrome";
 import { EnquireSection } from "@/components/EnquireSection";
+import { enquirySubjects } from "@/content/enquiry-subjects";
 import { siteName } from "@/content/site";
 import "./enquire.css";
 
@@ -33,6 +34,13 @@ import "./enquire.css";
  * (components/EnquireSection.tsx) — it owns the h1, because the h1 changes when
  * the enquiry lands. This page stays a server component so it can own the
  * metadata and the chrome. Fields and where submissions go: content/enquire.ts.
+ *
+ * WHAT THE ENQUIRY IS ABOUT. A CTA elsewhere can name the package or service it
+ * sat next to — `/enquire?package=signature` — and the form shows that back
+ * above the fields. The list of what can be named is derived here, on the
+ * server, and passed down: importing content/enquiry-subjects.ts inside the
+ * client island would drag all of content/packages.ts into the browser bundle
+ * for the sake of ten short labels.
  */
 export const metadata: Metadata = {
   title: `Enquire — ${siteName}`,
@@ -45,7 +53,7 @@ export default function EnquirePage() {
       <ChromeHeader current="/enquire" />
 
       <main className="enq__main">
-        <EnquireSection />
+        <EnquireSection subjects={enquirySubjects} />
       </main>
 
       <ChromeFooter />
