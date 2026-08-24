@@ -142,7 +142,7 @@ export default function PackagesPage() {
                     <h2 className="rcpt__bespoke-heading">{packagesPage.bespoke.heading}</h2>
                     <p className="rcpt__bespoke-line">{packagesPage.bespoke.line}</p>
                     <Link
-                      href={enquireHref("package", tab.key)}
+                      href={enquireHref(tab.key)}
                       className="mm-cta-bracket rcpt__bespoke-cta"
                     >
                       {packagesPage.bespoke.label}
@@ -239,7 +239,7 @@ export default function PackagesPage() {
 
                           <div className="rcpt__foot">
                             <Link
-                              href={enquireHref("package", card.slug)}
+                              href={enquireHref(card.slug)}
                               className="mm-cta-bracket rcpt__cta"
                             >
                               {packagesPage.bespoke.label}

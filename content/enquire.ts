@@ -69,8 +69,6 @@ export const enquiryPage = {
     key: "Enquiring about",
     changeLabel: "Change",
     noneLabel: "Something else",
-    packagesLabel: "Packages",
-    servicesLabel: "Services",
   },
   /**
    * Shown in place of the masthead AND the form on success; focus moves to the

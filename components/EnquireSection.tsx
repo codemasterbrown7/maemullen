@@ -14,7 +14,7 @@ import {
   enquiryPage,
   enquiryServices,
 } from "@/content/enquire";
-import type { EnquirySubject } from "@/content/enquiry-subjects";
+import { enquirySubjectParam, type EnquirySubject } from "@/content/enquiry-subjects";
 import { asset } from "@/lib/asset";
 
 /**
@@ -151,8 +151,8 @@ export function EnquireSection({ subjects }: { subjects: EnquirySubject[] }) {
    * someone put in a query param.
    */
   const arrived = useMemo(() => {
-    const params = new URLSearchParams(search);
-    return subjects.find((candidate) => params.get(candidate.kind) === candidate.id) ?? null;
+    const id = new URLSearchParams(search).get(enquirySubjectParam);
+    return subjects.find((candidate) => candidate.id === id) ?? null;
   }, [search, subjects]);
 
   const subject = picked === undefined ? arrived : picked;
@@ -161,7 +161,7 @@ export function EnquireSection({ subjects }: { subjects: EnquirySubject[] }) {
   /** Picking a different subject re-points the ticked service with it, rather
       than leaving the box from the package they arrived on standing. */
   function chooseSubject(id: string) {
-    const next = subjects.find((candidate) => `${candidate.kind}/${candidate.id}` === id) ?? null;
+    const next = subjects.find((candidate) => candidate.id === id) ?? null;
     setPicked(next);
     setTicked(next?.service ? [next.service] : []);
   }
@@ -397,7 +397,7 @@ export function EnquireSection({ subjects }: { subjects: EnquirySubject[] }) {
               visit — it appears only because a CTA somewhere named something,
               and it stays until the visitor says otherwise. */}
           {(subject || picking) && (
-            <div className="enq__subject">
+            <div className={`enq__subject${picking ? " enq__subject--picking" : ""}`}>
               <div className="enq__subject-head">
                 <p className="enq__subject-key" id="enq-subject-key">
                   {enquiryPage.subject.key}
@@ -419,34 +419,15 @@ export function EnquireSection({ subjects }: { subjects: EnquirySubject[] }) {
                   <select
                     className="enq__input enq__select enq__subject-select"
                     aria-labelledby="enq-subject-key"
-                    value={subject ? `${subject.kind}/${subject.id}` : ""}
+                    value={subject?.id ?? ""}
                     onChange={(event) => chooseSubject(event.currentTarget.value)}
                   >
                     <option value="">{enquiryPage.subject.noneLabel}</option>
-                    <optgroup label={enquiryPage.subject.packagesLabel}>
-                      {subjects
-                        .filter((candidate) => candidate.kind === "package")
-                        .map((candidate) => (
-                          <option
-                            key={candidate.id}
-                            value={`${candidate.kind}/${candidate.id}`}
-                          >
-                            {candidate.label}
-                          </option>
-                        ))}
-                    </optgroup>
-                    <optgroup label={enquiryPage.subject.servicesLabel}>
-                      {subjects
-                        .filter((candidate) => candidate.kind === "service")
-                        .map((candidate) => (
-                          <option
-                            key={candidate.id}
-                            value={`${candidate.kind}/${candidate.id}`}
-                          >
-                            {candidate.label}
-                          </option>
-                        ))}
-                    </optgroup>
+                    {subjects.map((candidate) => (
+                      <option key={candidate.id} value={candidate.id}>
+                        {candidate.label}
+                      </option>
+                    ))}
                   </select>
                   <span className="enq__select-chevron" aria-hidden="true" />
                 </div>
