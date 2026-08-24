@@ -178,6 +178,72 @@
   color: var(--ink-muted);
 }
 
+/* ── The subject line — what the form arrived already knowing ──────────────
+   Present ONLY when a CTA elsewhere named something (`?package=signature`); a
+   cold visit never sees this block, so the form does not grow a permanent
+   eleventh row for the sake of the visitors who came in cold.
+
+   It is a line and a rule, not a badge — the same register as the label above
+   a field, with the answer set at reading size beneath it, so it reads as the
+   first thing the form knows rather than as a tag stuck to the top of it. The
+   rule underneath is what separates it from the questions: everything above
+   the line is what we already have, everything below is what we are asking
+   for. */
+.enq__subject {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Key on the left, Change on the right. The row holds the button's height even
+   while the button is gone, so opening the select does not shift the block. */
+.enq__subject-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--btn-height);
+}
+
+.enq__subject-key {
+  margin: 0;
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* A bracket CTA that is a button rather than a link — it changes this page
+   instead of going anywhere. Only the UA's button chrome is stripped; the type
+   is left to .mm-cta-bracket, so the two never disagree about what a bracket
+   looks like. `font-family` is the exception, because a button does not
+   inherit it. */
+.enq__subject-change {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.enq__subject-value {
+  margin: 0;
+  font-size: var(--text-body-lg);
+  line-height: 1.35;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* The select Change opens, set at the size of the line it replaces so the
+   block keeps its height. */
+.enq__subject-select {
+  font-size: var(--text-body-lg);
+}
+
 /* What a field says when it is wrong. Red is the page's accent as well as its
    error colour, so the message itself does the telling — the underline only
    confirms which field is meant. */

@@ -52,6 +52,27 @@ export const enquiryPage = {
   requiredNote: "All fields are required unless marked optional.",
   optionalLabel: "(optional)",
   /**
+   * THE SUBJECT LINE — what the form says it already knows.
+   *
+   * Shown only when the visitor arrived from a CTA that named something
+   * (`/enquire?package=signature`); a cold visit sees nothing here at all. It
+   * is deliberately VISIBLE and changeable rather than a hidden field: a form
+   * that quietly submits a claim about what you want, with no way to see or
+   * correct it, is the thing that makes people distrust forms. `changeLabel`
+   * swaps the line for a select of everything on offer, `noneLabel` is that
+   * select's way out.
+   *
+   * `key` doubles as the name of the field that is submitted, so the line the
+   * visitor reads and the row in the email are the same words.
+   */
+  subject: {
+    key: "Enquiring about",
+    changeLabel: "Change",
+    noneLabel: "Something else",
+    packagesLabel: "Packages",
+    servicesLabel: "Services",
+  },
+  /**
    * Shown in place of the masthead AND the form on success; focus moves to the
    * heading. It is the whole page at that point, not a panel tucked under a
    * masthead still asking you to start a project — so it carries its own mark,

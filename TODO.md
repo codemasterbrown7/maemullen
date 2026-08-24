@@ -70,6 +70,13 @@ about instead of asking the visitor to say it again.
     ratio; Bendito leads, because opening on two placeholders argued against the
     page; and the rule moved under the `[ Open ]` bracket so it closes each
     entry instead of floating between two of them.
+  - Third pass: the pictures were too big. The plate is now 13:5 instead of 2:1
+    and inset to 78% of the band on desktop, so each one sits in a field of
+    cream rather than filling one — the page went from ~4300px to ~3200px. Both
+    are single variables at the top of `app/work/work.css`
+    (`--pf-plate-ratio`, `--pf-plate-width`) if they want dialling again; note
+    that `--pf-live-k` and the Bendito crop are derived from them and have to
+    move too.
   - **Still needed from the client:** photography for Harmony Hub and The Loft,
     dates for all four (the label renders a Year row only when one is set), and
     a read of the two written descriptions — neither is deck copy.
