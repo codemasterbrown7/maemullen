@@ -59,6 +59,15 @@ about instead of asking the visitor to say it again.
 
 ## Done
 
+- `/work` is the portfolio (2026-08-24). Four projects — Harmony Hub, The Loft,
+  Bendito, Websites — each a full-width plate whose name straddles the plate's
+  bottom edge, opening in place on a native `<details>`. No JavaScript. The two
+  projects with no photography yet show a brand-pink field saying so; swapping
+  in the real pictures is `kind: "pending"` → `kind: "photo"` in
+  `content/work.ts` and nothing else on the page moves.
+  - **Still needed from the client:** photography for Harmony Hub and The Loft,
+    dates for all four (the label renders a Year row only when one is set), and
+    a read of the two written descriptions — neither is deck copy.
 - `/packages` built and shipped (PR #17, 2026-08-20).
 - `/packages` — each tier on its own white card, centred (PR #18).
 - `/packages` is the receipt now (2026-08-21). Chosen out of three directions

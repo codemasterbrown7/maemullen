@@ -1,12 +1,14 @@
 /**
- * The pages that exist in the navigation but are not built yet.
+ * The pages that exist in the navigation but are not built yet — and as of
+ * 2026-08-24 there are none. /work was the last one, and it is now the
+ * portfolio (app/work/page.tsx, content/work.ts). All six header links lead
+ * somewhere real.
  *
- * WHY THEY EXIST AS PAGES AT ALL. The header carries six links and one of them
- * does not lead anywhere yet — /work is still to come. On a live site that is a
- * dead end, and a dead end that returns the host's default 404 reads as a broken
- * site rather than an unfinished one.
- * (/about, /services, /packages, /shop and /enquire are built; the stub below is
- * what remains.)
+ * WHY THE MACHINERY STAYS. `soonPages` is empty rather than deleted because
+ * what it is for has not gone away: the moment a seventh link goes in the
+ * header ahead of the page behind it, a dead end that returns the host's
+ * default 404 reads as a broken site rather than an unfinished one. One entry
+ * here plus a four-line route is the whole cost of avoiding that.
  *
  * DELIBERATELY PLAIN, by request (2026-08-04). The first version carried a
  * contents list of what was coming and the scroll-drawn knot from /services;
@@ -48,18 +50,10 @@ export const soonOnward = {
 };
 
 export const soonPages: Record<string, SoonPage> = {
-  /* /packages was here. It shipped 2026-08-06 — both of the contradictions in
-     docs/SITEMAP.md §4.4 that were blocking it are resolved, and the reasoning
-     is recorded at the top of content/packages.ts.
-
-     /about and /enquire were here too, and shipped ahead of it. */
-
-  work: {
-    href: "/work",
-    title: "Work",
-    metaTitle: "Selected work",
-    description: "Selected projects, one screen each.",
-  },
+  /* Emptied 2026-08-24, when /work shipped as the portfolio — four projects,
+     each a hero plate that opens in place. /about, /enquire and /packages left
+     ahead of it; /packages' reasoning is recorded at the top of
+     content/packages.ts. */
 };
 
 /**

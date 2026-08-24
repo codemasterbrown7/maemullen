@@ -52,11 +52,12 @@ the `#social-media` service block link into it.
 |---|---|---|
 | About · Services · Packages | **MaeMüllen** | Portfolio · Work · Enquire |
 
-`OPEN:` **Are "Portfolio" and "Work" two different pages?** — **deferred by decision.** Deck p8
-lists them as one item, *"CASE STUDIES / PORTFOLIO"*. For now: build `/work` only, and point the
-Portfolio nav item at it so the 3+3 balance holds. Settle the split when we build that page —
-either Portfolio becomes a visual gallery separate from the written case studies, or one gets
-renamed.
+~~`OPEN:` **Are "Portfolio" and "Work" two different pages?**~~ — **settled 2026-08-24, as one
+page.** Deck p8 lists them as one item, *"CASE STUDIES / PORTFOLIO"*, and that is what shipped:
+the route stays `/work`, the nav item and the page's own title are both "Portfolio", and the
+second "Work" link went months ago when the right-hand group became Portfolio · Shop · Enquire.
+There is no separate visual gallery, because the page IS one — every project leads with a
+full-width plate and the written case study is what opens underneath it.
 
 - The wordmark sits **centred in the header** (locked, `DESIGN.md` §0) and always links to `/`.
 - The services marquee is a *secondary* route into `/services` — deck p4:
@@ -138,7 +139,7 @@ Deck p3–p7.
 | 4 | Moving collage | Drifting overlapping photo tiles | ⚠ needs photography |
 | 5 | About summary | Verbatim below | 🔒 |
 | 6 | Services teaser | Numbered `001…` list → `/services` | 🔒 structure |
-| 7 | Selected work | 3 case studies → `/work` | ⚠ 1 of 3 has assets |
+| 7 | Selected work | 4 projects → `/work` | ⚠ 2 of 4 have assets |
 | 8 | CTA band | → `/enquire` | 🔒 |
 | 9 | Footer | | 🔒 |
 
@@ -491,27 +492,43 @@ against, so it is a deliberate follow-up rather than a free change.
 
 ---
 
-### 4.5 `/work` — Selected work
+### 4.5 `/work` — Portfolio — ✅ built 2026-08-24
 
 Deck p19:
 > Include menu, airbnb and mia massage
 > Layout nicely with photos and short description
 > 3 photos take up the whole screen click to view desctiption
 
-**Interaction:** three full-bleed, full-height panels stacked vertically. Click (or Enter on a
-focused panel) reveals the description over the image. Keyboard-operable; `Esc` closes.
+**Built as four projects, not three, and there are no per-project routes.** The `/work/[slug]`
+case-study pages sketched in §1 were not built: with the copy and photography that exist today
+each one would have been close to empty, and the deck's own instruction is a reveal on the same
+page. Everything opens in place.
 
-| Slug | Project | Assets |
-|---|---|---|
-| `bendito` | Menu design & illustration | ✅ artwork + in-situ photo supplied |
-| `airbnb` | `OPEN:` real project name | ❌ |
-| `mia-massage` | Mia Massage | ❌ |
+| Slug | Project | What it is | Assets |
+|---|---|---|---|
+| `harmony-hub` | Harmony Hub | A massage therapist working from home — her website, her social, and the content for both | ❌ photography to come |
+| `the-loft` | The Loft | The Airbnb. **This is the project this table used to call `airbnb`** | ❌ photography to come |
+| `bendito` | Bendito | Menu design & illustration | ✅ artwork + in-situ photo |
+| `websites` | Websites | tfest.ai and trifectaproperty.co.uk — **one entry, two sites** | ✅ screenshots |
 
-**Bendito** is the only one that can be built fully today. It demonstrates the Design &
-Illustration service: hand-drawn menu artwork, printed and photographed in situ.
+**Interaction:** each project is a full-width plate with its name straddling the plate's bottom
+edge, and the whole band is a native `<details>` — click or Enter opens the description and a
+label of facts underneath. No JavaScript, and every project's copy is in the HTML whether or not
+it is open, so find-in-page and indexing both reach it.
 
-`OPEN:` per-project description copy · the client's real name for "airbnb" · whether the in-situ
-photography is cleared for public use · results/metrics if any.
+**Two projects have no photography yet**, and the page says so rather than hiding it: a brand-pink
+field carrying "Photography to come". Dropping the real pictures in is a three-line change per
+project in `content/work.ts` — swap `kind: "pending"` for `kind: "photo"` — and nothing else on
+the page moves.
+
+`OPEN:` **is Harmony Hub the project this table used to call `mia-massage`?** A one-person massage
+practice is suspiciously close to "Mia Massage". If it is the same job under its business name,
+that is three of the deck's three, not two of three plus a new one.
+
+`OPEN:` the per-project copy for Harmony Hub and The Loft is **written, not quoted** — there is no
+deck page for either — and is marked as provisional in `content/work.ts`. Also still open: dates
+for all four (the label renders a Year row only when one is set), and whether the Bendito in-situ
+photography is cleared for public use.
 
 ---
 
@@ -555,9 +572,13 @@ like a default.
 
 ### 4.8 The unbuilt pages — ✅ stubbed 2026-08-04
 
-`/about`, `/packages`, `/work` and `/enquire` all exist as real pages that say what is coming,
-rather than returning the host's 404. Four of the six links in the header lead to one of them, so
-on a live site the alternative was a header that mostly breaks.
+`/about`, `/packages`, `/work` and `/enquire` all existed as real pages that said what was
+coming, rather than returning the host's 404. Four of the six links in the header led to one of
+them, so on a live site the alternative was a header that mostly breaks.
+
+**All four have since been built — `/work` last, on 2026-08-24 — so there are no stubs left and
+`soonPages` in `content/soon.ts` is empty.** The component and its copy stay for the next time a
+header link lands ahead of the page behind it; the 404 uses the same layout.
 
 One component — `components/InProgress.tsx`, copy in `content/soon.ts` — and it is **deliberately
 plain**: a mono `[ IN PROGRESS ]` mark, the page's name, one sentence saying it is being built,
@@ -613,7 +634,7 @@ is blocked, and nothing can ship looking finished when it isn't.
 | 10 | Bendito — client name to credit, photo cleared? | Work |
 | 11 | Envelope artwork | Entry |
 | 12 | Photo of Laura & Poppy; which doodles | About |
-| 13 | Real client name behind "airbnb"; case-study copy | Work |
+| 13 | ~~Real client name behind "airbnb"~~ — it is **The Loft** (2026-08-24). Case-study copy for it and Harmony Hub is written, not confirmed | Work |
 | 14 | Where enquiry submissions are delivered | Enquire |
 | 15 | Is a cart / shop ever needed? | IA |
 
