@@ -1,6 +1,6 @@
 "use client";
 
-import { Anton, Silkscreen, UnifrakturCook } from "next/font/google";
+import { Anton, Instrument_Serif, Syncopate } from "next/font/google";
 import { type CSSProperties, useEffect, useEffectEvent, useRef, useState } from "react";
 import { siteName } from "@/content/site";
 import { GlitchText } from "./GlitchText";
@@ -15,27 +15,28 @@ const SCRAMBLE_FRAMES = 3;
 const SCRAMBLE_FRAME_S = 0.06;
 
 /**
- * The faces the word passes through once it has resolved, one per glitch,
- * ordered so each is as unlike the last as possible — in shape and in size,
- * swinging between huge and small (2026-09-21: the second set was still too
- * alike, so the sizes went further apart and two stranger shapes came in):
+ * The faces the word passes through once it has resolved, melting from one
+ * into the next. Chosen to be good-looking faces in their own right that are
+ * as unlike each other as possible, in shape and in size, swinging between
+ * large and small (2026-09-21: the pixel and blackletter faces were the
+ * worst of the last set, and the hairline was too thin to see):
  *
- *   Playfair 700      the Didone of the wordmark, at the base size
- *   Anton             towering — tall, narrow, heavy, at 1.7×
- *   Switzer 100       a small hairline, spaced wide open
- *   UnifrakturCook    blackletter, large
- *   Silkscreen        a small pixel face, the glitch's own register
- *   Playfair 700      back to the wordmark's face before the page opens
+ *   Playfair 700       the Didone of the wordmark, at the base size
+ *   Anton              towering — tall, narrow, heavy, at 1.7×
+ *   Switzer 400        small, light and spaced wide open
+ *   Instrument Serif   a tall, narrow, delicate serif, large
+ *   Syncopate 700      very wide, flat capitals, small
+ *   Playfair 700       back to the wordmark's face before the page opens
  *
  * Each name maps to a family, weight, size and spacing in intro.css.
  */
-const FACES = ["playfair", "anton", "switzer", "blackletter", "pixel", "playfair"] as const;
-type Face = (typeof FACES)[number];
+const FACES = ["playfair", "anton", "switzer", "instrument", "syncopate", "playfair"] as const;
 
 /* The three faces the site does not otherwise use, loaded here rather than in
    the root layout so only the page that plays the intro downloads them.
    next/font preloads them with the page, so they are in hand long before the
-   first swap. Playfair and Switzer come from the layout. */
+   first change. Playfair and Switzer come from the layout. Roman only —
+   italic is banned from this design. */
 const anton = Anton({
   subsets: ["latin"],
   weight: "400",
@@ -43,34 +44,37 @@ const anton = Anton({
   display: "swap",
 });
 
-const blackletter = UnifrakturCook({
-  subsets: ["latin"],
-  weight: "700",
-  variable: "--font-blackletter",
-  display: "swap",
-});
-
-const pixel = Silkscreen({
+const instrument = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-pixel",
+  style: "normal",
+  variable: "--font-instrument",
   display: "swap",
 });
 
-/** One glitch: how long it shakes before the face swaps, and how long it
- *  carries on after. The swap lands inside the burst rather than at the end
- *  of it, so the glitch is visibly still running on the new face — that
- *  overlap is what makes the glitch read as the cause of the change. Kept
- *  short and sharp (2026-09-21: 220/140ms read as slow); the first burst runs
- *  a little longer so it registers as a glitch before anything changes. */
-const LEAD_MS = 120;
-const FIRST_LEAD_MS = 250;
-const TAIL_MS = 90;
+const syncopate = Syncopate({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--font-syncopate",
+  display: "swap",
+});
+
+/** Each change: the glitch starts, and a beat later the word morphs into the
+ *  next face — the old one blurring out as the new one blurs in, through an
+ *  alpha threshold so the overlap reads as liquid letterforms rather than a
+ *  crossfade (2026-09-21: "she wants them to almost morph into each other").
+ *  The glitch runs over the whole morph and stops as it lands. The first
+ *  change waits a little longer so the glitch registers before anything
+ *  moves. */
+const LEAD_MS = 60;
+const FIRST_LEAD_MS = 200;
+const MORPH_MS = 380;
 
 /** How long the finished name sits still before the first glitch, and the
- *  still between glitches — both signed off as right (2026-09-21). */
+ *  still on each face between changes — quicker than the 650ms it was, so the
+ *  faces run into one another (2026-09-21). */
 const SETTLE_MS = 700;
-const HOLD_MS = 650;
+const HOLD_MS = 350;
 
 /** The white screen parting from the middle onto the home page beneath. */
 const REVEAL_MS = 1100;
@@ -82,13 +86,14 @@ const STILL_MS = 1500;
 type Stage = "scramble" | "glitch" | "reveal" | "done";
 
 /**
- * The intro — the studio's name on white: typed in, glitched through five
- * typefaces, then the screen parts down the middle onto the home page.
+ * The intro — the studio's name on white: typed in, glitched and morphed
+ * through five typefaces, then the screen parts down the middle onto the home
+ * page.
  *
  *   scramble  TextScramble types the name letter by letter, in Playfair, and
  *             it sits still for SETTLE_MS once it is complete.
- *   glitch    Bursts of RGB shake, the face swapping partway through each,
- *             a still beat on each new face — through FACES.
+ *   glitch    For each face in FACES: RGB shake, the word morphing into the
+ *             new face under it, then a still beat on the new face.
  *   reveal    The screen splits along its centre line — the top half, with the
  *             top of the word, rises; the bottom half falls — onto the home
  *             page, which has been sitting fully drawn underneath. (A TV
@@ -108,7 +113,10 @@ type Stage = "scramble" | "glitch" | "reveal" | "done";
  */
 export function Intro() {
   const [stage, setStage] = useState<Stage>("scramble");
-  const [face, setFace] = useState<Face>(FACES[0]);
+  /* Which face in FACES the word is on, and whether it is mid-morph from the
+     one before. */
+  const [step, setStep] = useState(0);
+  const [morphing, setMorphing] = useState(false);
   const [glitching, setGlitching] = useState(false);
 
   /* Every pending step of the timeline, so a skip can cancel whatever is left
@@ -130,12 +138,12 @@ export function Intro() {
   };
 
   /* The whole timeline from the moment the scramble lands, laid out in one
-     place: a still beat, then burst on, face swap, burst off, hold — once per
-     face after the first — and the reveal after the last hold.
+     place: a still beat, then for each face after the first — glitch on,
+     morph, glitch off as it lands, hold — and the reveal after the last hold.
 
      The stage stays "scramble" through the settle, so the finished word is
      still the scramble's own letters; the glitch layers only take over as the
-     first burst starts, under cover of the shake. The two set the word
+     first glitch starts, under cover of the shake. The two set the word
      slightly differently (the scramble's letters sit in cells, which drops
      kerning), and swapping them on a still word would show as a twitch. */
   const run = () => {
@@ -145,15 +153,21 @@ export function Intro() {
     }
 
     let t = SETTLE_MS;
-    FACES.slice(1).forEach((next, i) => {
+    FACES.slice(1).forEach((_, i) => {
       at(t, () => {
         setStage("glitch");
         setGlitching(true);
       });
       t += i === 0 ? FIRST_LEAD_MS : LEAD_MS;
-      at(t, () => setFace(next));
-      t += TAIL_MS;
-      at(t, () => setGlitching(false));
+      at(t, () => {
+        setStep(i + 1);
+        setMorphing(true);
+      });
+      t += MORPH_MS;
+      at(t, () => {
+        setMorphing(false);
+        setGlitching(false);
+      });
       t += HOLD_MS;
     });
     at(t, reveal);
@@ -189,8 +203,12 @@ export function Intro() {
 
   if (stage === "done") return null;
 
-  const fonts = `${anton.variable} ${blackletter.variable} ${pixel.variable}`;
-  const style = { "--intro-reveal": `${REVEAL_MS}ms` } as CSSProperties;
+  const face = FACES[step];
+  const fonts = `${anton.variable} ${instrument.variable} ${syncopate.variable}`;
+  const style = {
+    "--intro-reveal": `${REVEAL_MS}ms`,
+    "--intro-morph": `${MORPH_MS}ms`,
+  } as CSSProperties;
 
   /* The reveal: two copies of the screen, each clipped to one half and
      carrying its half of the word, sliding apart. The word is still by now,
@@ -207,8 +225,10 @@ export function Intro() {
       >
         {(["top", "bottom"] as const).map((half) => (
           <div key={half} className={`intro__half intro__half--${half}`}>
-            <span className="intro__word" data-face={face}>
-              {siteName}
+            <span className="intro__word">
+              <span className="intro__face" data-face={face}>
+                {siteName}
+              </span>
             </span>
           </div>
         ))}
@@ -216,24 +236,56 @@ export function Intro() {
     );
   }
 
-  /* The reveal length goes to CSS from here, so the keyframes and the
-     timeline above can never drift apart. data-no-proximity keeps the cursor's
-     letter split out: it would wrap these letters in spans of its own while
-     React is rewriting them every 60ms. */
+  /* During a morph the word is two copies in one grid cell — the face it is
+     leaving on its way out, the face it is going to on its way in — keyed by
+     their place in FACES, so the incoming copy of one change is the same
+     element as the outgoing copy of the next and never remounts mid-shake.
+
+     The morph lengths go to CSS from here, so the keyframes and the timeline
+     above can never drift apart. data-no-proximity keeps the cursor's letter
+     split out: it would wrap these letters in spans of its own while React is
+     rewriting them every 60ms. */
   return (
     <div className={`intro ${fonts}`} data-stage={stage} data-no-proximity style={style}>
-      <h1 className="intro__word" data-face={face}>
+      <svg className="intro__defs" aria-hidden="true">
+        <filter id="intro-melt">
+          <feColorMatrix
+            type="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"
+          />
+        </filter>
+      </svg>
+      <h1 className="intro__word">
         <span className="intro__name">{siteName}</span>
-        <span aria-hidden="true">
+        <span className="intro__morph" data-morphing={morphing} aria-hidden="true">
           {stage === "scramble" ? (
-            <TextScramble
-              text={siteName}
-              frames={SCRAMBLE_FRAMES}
-              speed={SCRAMBLE_FRAME_S}
-              onComplete={run}
-            />
+            <span className="intro__face" data-face={face}>
+              <TextScramble
+                text={siteName}
+                frames={SCRAMBLE_FRAMES}
+                speed={SCRAMBLE_FRAME_S}
+                onComplete={run}
+              />
+            </span>
           ) : (
-            <GlitchText text={siteName} active={glitching} />
+            <>
+              {morphing && (
+                <span
+                  key={step - 1}
+                  className="intro__face intro__face--out"
+                  data-face={FACES[step - 1]}
+                >
+                  <GlitchText text={siteName} active={glitching} />
+                </span>
+              )}
+              <span
+                key={step}
+                className={`intro__face${morphing ? " intro__face--in" : ""}`}
+                data-face={face}
+              >
+                <GlitchText text={siteName} active={glitching} />
+              </span>
+            </>
           )}
         </span>
       </h1>
