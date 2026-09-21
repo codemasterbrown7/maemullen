@@ -8,8 +8,83 @@
   z-index: 100;
   display: grid;
   place-items: center;
-  background: var(--brand-white);
   color: var(--brand-black);
+}
+
+/* The white ground is two halves, not one background, so it can part down the
+   middle at the end. Each half runs 1px past the centre line, so no seam of the
+   page beneath shows through while they are closed. z-index -1 puts them under
+   the word but still inside .intro, which is its own stacking context. */
+.intro::before,
+.intro::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(50% + 1px);
+  z-index: -1;
+  background: var(--brand-white);
+}
+
+.intro::before {
+  top: 0;
+}
+
+.intro::after {
+  bottom: 0;
+}
+
+/* ── Switching off ─────────────────────────────────────────────────────────
+   How a CRT went dark: the picture squashes to a thin line across the middle,
+   the line holds for a beat, shrinks to a dot, and the dot winks out. Each
+   step is quick at the start and slow at the end, the way the tube's charge
+   drained. Meanwhile the glitch runs at full strength — the reference's own
+   amplitude, three times what the bursts use — so the channels tear apart as
+   the picture goes, like a tape losing tracking. */
+.intro[data-stage="off"] .intro__word {
+  animation: intro-tv-off var(--intro-tv-off) ease-out forwards;
+}
+
+.intro[data-stage="off"] .intro-glitch {
+  --glitch-strength: 1;
+}
+
+@keyframes intro-tv-off {
+  0%   { transform: scale(1, 1); opacity: 1; }
+  35%  { transform: scale(1.1, 0.02); opacity: 1; }
+  50%  { transform: scale(1.1, 0.02); opacity: 1; }
+  85%  { transform: scale(0.01, 0.02); opacity: 1; }
+  100% { transform: scale(0, 0.02); opacity: 0; }
+}
+
+/* ── Opening onto the home page ────────────────────────────────────────────
+   The halves part along the centre line the picture collapsed into, top up and
+   bottom down, on a slow-fast-slow curve so it eases away rather than snapping.
+   The overlay stops taking clicks the moment it starts, so the page underneath
+   is usable while it is still being uncovered. The word is already gone by
+   now; visibility keeps it gone once the switch-off animation is removed. */
+.intro[data-stage="reveal"] {
+  pointer-events: none;
+}
+
+.intro[data-stage="reveal"] .intro__word {
+  visibility: hidden;
+}
+
+.intro[data-stage="reveal"]::before {
+  animation: intro-part-up var(--intro-reveal) cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+.intro[data-stage="reveal"]::after {
+  animation: intro-part-down var(--intro-reveal) cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+@keyframes intro-part-up {
+  to { transform: translateY(-100%); }
+}
+
+@keyframes intro-part-down {
+  to { transform: translateY(100%); }
 }
 
 /* Sized against height as well as width, like the rest of the site's display
