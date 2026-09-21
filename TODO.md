@@ -28,6 +28,11 @@ noted 2026-08-20.
 
 ## Visual — in progress
 
+- **The intro — being tuned at `/intro`, not live for visitors yet.** The name
+  types in, glitches through four faces, switches off like an old TV and parts
+  onto the home page (`components/intro/`). Once it is signed off: mount the
+  same `<Intro />` on `/` for a visitor's first load (sessionStorage), and
+  delete `app/intro/`.
 - **Optional: photograph a crumpled receipt for `/packages`.** The crumple is
   generated (lit facets in SVG) and now reads as paper, but a real photographed
   sheet would beat it. The surface is already its own layer
