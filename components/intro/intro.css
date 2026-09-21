@@ -1,0 +1,119 @@
+/* ============================================================================
+   The intro — see components/intro/Intro.tsx.
+   ============================================================================ */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--brand-white);
+  color: var(--brand-black);
+}
+
+/* Playfair 700 — the face of the logotype's roman half, so the capitals are
+   the wordmark's own letters rather than a stand-in. Sized against height as
+   well as width, like the rest of the site's display type: 11vw alone is
+   enormous on a short, wide laptop screen. */
+.intro__word {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: min(11vw, 20vh);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* The name for assistive tech — the visible letters are aria-hidden. */
+.intro__name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Scramble ──────────────────────────────────────────────────────────────
+   Each letter is a one-cell grid: the real character, invisible, sets the
+   cell's width, and the random one is drawn centred over it. */
+.intro-scramble__cell {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.intro-scramble__cell > * {
+  grid-area: 1 / 1;
+}
+
+.intro-scramble__hold {
+  visibility: hidden;
+}
+
+/* ── Glitch ────────────────────────────────────────────────────────────────
+   Three copies in one grid cell, multiplied onto the white. isolation keeps
+   the blend inside the word, so it only ever mixes with the intro's own
+   ground. Loop lengths are the reference's: 150, 130 and 110ms, each running
+   back and forth, so the three never settle into step. The curve stands in
+   for framer-motion's "anticipate" — a pull back before each move. */
+.intro-glitch {
+  display: inline-grid;
+  isolation: isolate;
+}
+
+.intro-glitch__layer {
+  grid-area: 1 / 1;
+  mix-blend-mode: multiply;
+  animation-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+/* Offsets are the reference's 2px and 1px at 60px type, as em: 0.033em and
+   0.017em. */
+.intro-glitch__layer--red {
+  color: #ff0000;
+  animation-name: intro-glitch-red;
+  animation-duration: 150ms;
+}
+
+.intro-glitch__layer--green {
+  color: #00ff00;
+  animation-name: intro-glitch-green;
+  animation-duration: 130ms;
+}
+
+.intro-glitch__layer--blue {
+  color: #0000ff;
+  animation-name: intro-glitch-blue;
+  animation-duration: 110ms;
+}
+
+@keyframes intro-glitch-red {
+  0%   { transform: translate(-0.033em, 0) skew(0deg); opacity: 1; }
+  50%  { transform: translate(0.033em, -0.017em) skew(-2deg); opacity: 0.8; }
+  100% { transform: translate(-0.033em, 0.017em) skew(2deg); opacity: 0.9; }
+}
+
+@keyframes intro-glitch-green {
+  0%   { transform: translate(0.033em, 0.017em) skew(-2deg); opacity: 0.9; }
+  50%  { transform: translate(-0.033em, -0.017em) skew(2deg); opacity: 1; }
+  100% { transform: translate(0.033em, 0) skew(0deg); opacity: 0.8; }
+}
+
+@keyframes intro-glitch-blue {
+  0%   { transform: translate(-0.017em, -0.017em) skew(2deg); opacity: 0.8; }
+  50%  { transform: translate(0.017em, 0.017em) skew(-2deg); opacity: 0.9; }
+  100% { transform: translate(-0.017em, 0) skew(0deg); opacity: 1; }
+}
+
+/* Still: the three layers sit exactly on top of each other and multiply to a
+   plain black word. */
+@media (prefers-reduced-motion: reduce) {
+  .intro-glitch__layer {
+    animation: none;
+  }
+}
