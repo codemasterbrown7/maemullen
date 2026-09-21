@@ -13,19 +13,23 @@
 }
 
 /* Sized against height as well as width, like the rest of the site's display
-   type: 11vw alone is enormous on a short, wide laptop screen. */
+   type: 11vw alone is enormous on a short, wide laptop screen. --intro-size is
+   the base; each face below sets its own multiple of it. */
 .intro__word {
+  --intro-size: min(11vw, 20vh);
   margin: 0;
-  font-size: min(11vw, 20vh);
+  font-size: var(--intro-size);
   line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 /* ── Faces ─────────────────────────────────────────────────────────────────
-   The typefaces the glitch swaps between — see FACES in Intro.tsx. Four of
-   the site's own, picked to differ as much as possible from each other, so
-   every swap is unmistakable: a Didone, a grotesque, a mono and a hairline.
+   The typefaces the glitch swaps between — see FACES in Intro.tsx. Each one
+   differs from its neighbours in shape AND in size, so every swap changes the
+   word's whole silhouette, not just its details: tall and narrow, then a small
+   hairline, then short and wide. The sizes are also what keep them all inside
+   the screen — Unbounded at the base size would run off both edges.
 
    Playfair 700 opens and closes: it is the face of the logotype's roman half,
    so those capitals are the wordmark's own letters rather than a stand-in. */
@@ -35,24 +39,30 @@
   letter-spacing: 0.02em;
 }
 
-.intro__word[data-face="heros"] {
-  font-family: var(--font-swiss);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.intro__word[data-face="mono"] {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  letter-spacing: 0;
+.intro__word[data-face="anton"] {
+  font-family: var(--font-anton), Impact, sans-serif;
+  font-weight: 400;
+  font-size: calc(var(--intro-size) * 1.5);
+  letter-spacing: 0.01em;
 }
 
 /* Switzer is variable, 100–900; 200 is the lightest cut that still carries
-   the glitch's fringes at this size. */
+   the glitch's fringes, and still reads at phone size. Letter-spacing trails
+   after the last letter too, so at 0.2em the word would sit visibly left of
+   centre; the matching padding on the other side evens it out. */
 .intro__word[data-face="switzer"] {
   font-family: var(--font-body);
   font-weight: 200;
-  letter-spacing: 0.04em;
+  font-size: calc(var(--intro-size) * 0.8);
+  letter-spacing: 0.2em;
+  padding-left: 0.2em;
+}
+
+.intro__word[data-face="unbounded"] {
+  font-family: var(--font-unbounded), "Arial Black", sans-serif;
+  font-weight: 900;
+  font-size: calc(var(--intro-size) * 0.7);
+  letter-spacing: -0.02em;
 }
 
 /* The name for assistive tech — the visible letters are aria-hidden. */
