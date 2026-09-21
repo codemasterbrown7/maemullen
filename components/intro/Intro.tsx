@@ -1,5 +1,6 @@
 "use client";
 
+import { Anton, Unbounded } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useState } from "react";
 import { siteName } from "@/content/site";
@@ -7,21 +8,47 @@ import { GlitchText } from "./GlitchText";
 import { TextScramble } from "./TextScramble";
 import "./intro.css";
 
-/** How long the scramble takes to resolve the whole word, in seconds, and how
- *  often it draws a new set of letters. The reference's 0.8s and 40ms read as
- *  a blur (2026-09-21), so it runs at 2s and 60ms. */
+/** How long the scramble takes to type the whole word, in seconds, and how
+ *  often the letter being typed flickers. The reference's 0.8s and 40ms read
+ *  as a blur (2026-09-21). At 2s and 60ms each letter gets four frames —
+ *  three random capitals, then itself — so the word types at a readable
+ *  quarter of a second a letter. */
 const SCRAMBLE_S = 2;
 const SCRAMBLE_FRAME_S = 0.06;
 
 /**
- * The faces the word passes through once it has resolved, one per glitch. All
- * four are the site's own, already preloaded on every page, so a swap never
- * waits on a download or flashes a fallback. It ends where it started, on
- * Playfair — the wordmark's face is the last thing seen before the site opens.
- * Each name maps to a family and weight in intro.css.
+ * The faces the word passes through once it has resolved, one per glitch,
+ * ordered so each one is as unlike the last as possible — in shape and in
+ * size, not just in family (2026-09-21: the first set was too alike):
+ *
+ *   Playfair 700   the Didone of the wordmark, at the base size
+ *   Anton          tall, narrow, heavy — set half as large again
+ *   Switzer 200    a hairline, small and widely spaced
+ *   Unbounded 900  squat, very wide, heavy — set small to fit
+ *   Playfair 700   back to the wordmark's face, last before the site opens
+ *
+ * Each name maps to a family, weight, size and spacing in intro.css.
  */
-const FACES = ["playfair", "heros", "mono", "switzer", "playfair"] as const;
+const FACES = ["playfair", "anton", "switzer", "unbounded", "playfair"] as const;
 type Face = (typeof FACES)[number];
+
+/* The two faces the site does not otherwise use, loaded here rather than in
+   the root layout so only the page that plays the intro downloads them.
+   next/font preloads them with the page, so they are in hand long before the
+   first swap two seconds in. Playfair and Switzer come from the layout. */
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-anton",
+  display: "swap",
+});
+
+const unbounded = Unbounded({
+  subsets: ["latin"],
+  weight: "900",
+  variable: "--font-unbounded",
+  display: "swap",
+});
 
 /** One glitch: how long it shakes, and how far into the shake the face swaps.
  *  The swap lands inside the burst rather than at the end of it, so the glitch
@@ -107,7 +134,7 @@ export function Intro() {
   /* data-no-proximity keeps the cursor's letter split out: it would wrap these
      letters in spans of its own while React is rewriting them every 60ms. */
   return (
-    <div className="intro" data-no-proximity>
+    <div className={`intro ${anton.variable} ${unbounded.variable}`} data-no-proximity>
       <h1 className="intro__word" data-face={face}>
         <span className="intro__name">{siteName}</span>
         <span aria-hidden="true">
