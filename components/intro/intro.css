@@ -6,15 +6,13 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  display: grid;
-  place-items: center;
   color: var(--brand-black);
 }
 
-/* The white ground is two halves, not one background, so it can part down the
-   middle at the end. Each half runs 1px past the centre line, so no seam of the
-   page beneath shows through while they are closed. z-index -1 puts them under
-   the word but still inside .intro, which is its own stacking context. */
+/* The black behind the screen is two halves, not one background, so it can
+   part down the middle at the end. Each half runs 1px past the centre line, so
+   no seam of the page beneath shows through while they are closed. z-index -1
+   keeps them under the screen but inside .intro, its own stacking context. */
 .intro::before,
 .intro::after {
   content: "";
@@ -23,7 +21,7 @@
   right: 0;
   height: calc(50% + 1px);
   z-index: -1;
-  background: var(--brand-white);
+  background: var(--brand-black);
 }
 
 .intro::before {
@@ -34,40 +32,75 @@
   bottom: 0;
 }
 
+/* The screen — the white picture the name is shown on. The switch-off happens
+   to this, not to the word: it is clipped, never scaled, so the letters stay
+   exactly as they were while the picture closes over them. */
+.intro__screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--brand-white);
+}
+
 /* ── Switching off ─────────────────────────────────────────────────────────
-   How a CRT went dark: the picture squashes to a thin line across the middle,
-   the line holds for a beat, shrinks to a dot, and the dot winks out. Each
-   step is quick at the start and slow at the end, the way the tube's charge
-   drained. Meanwhile the glitch runs at full strength — the reference's own
-   amplitude, three times what the bursts use — so the channels tear apart as
-   the picture goes, like a tape losing tracking. */
-.intro[data-stage="off"] .intro__word {
-  animation: intro-tv-off var(--intro-tv-off) ease-out forwards;
+   How a CRT went dark, in black: the picture closes from top and bottom to a
+   thin line across the middle — fast at first, slowing as it narrows — then
+   the beam takes over from the last sliver of picture: a white line, held for
+   a beat, drawing in to a glowing dot, which fades out. Percentages are of
+   TV_OFF_MS in Intro.tsx. */
+.intro[data-stage="off"] .intro__screen {
+  animation: intro-screen-off var(--intro-tv-off) forwards;
 }
 
-.intro[data-stage="off"] .intro-glitch {
-  --glitch-strength: 1;
+@keyframes intro-screen-off {
+  0%        { clip-path: inset(0 0 0 0); animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
+  38%       { clip-path: inset(calc(50% - 1.5px) 0 calc(50% - 1.5px) 0); }
+  40%, 100% { clip-path: inset(50% 0 50% 0); }
 }
 
-@keyframes intro-tv-off {
-  0%   { transform: scale(1, 1); opacity: 1; }
-  35%  { transform: scale(1.1, 0.02); opacity: 1; }
-  50%  { transform: scale(1.1, 0.02); opacity: 1; }
-  85%  { transform: scale(0.01, 0.02); opacity: 1; }
-  100% { transform: scale(0, 0.02); opacity: 0; }
+/* The beam: the line and then the dot. Width and height animate rather than a
+   scale, because a scaled box-shadow would squash the glow along with the box
+   and the dot would come out as a smear. */
+.intro__beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  border-radius: 3px;
+  transform: translate(-50%, -50%);
+  background: var(--brand-white);
+  box-shadow: 0 0 12px 2px rgb(255 255 255 / 0.6);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro[data-stage="off"] .intro__beam {
+  animation: intro-beam var(--intro-tv-off) forwards;
+}
+
+@keyframes intro-beam {
+  0%, 36% { opacity: 0; width: 100%; height: 3px; }
+  40%     { opacity: 1; width: 100%; height: 3px; }
+  58%     { opacity: 1; width: 100%; height: 3px; animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  84%     { opacity: 1; width: 6px; height: 6px; box-shadow: 0 0 14px 4px rgb(255 255 255 / 0.8); }
+  100%    { opacity: 0; width: 3px; height: 3px; box-shadow: 0 0 4px 1px rgb(255 255 255 / 0); }
 }
 
 /* ── Opening onto the home page ────────────────────────────────────────────
-   The halves part along the centre line the picture collapsed into, top up and
-   bottom down, on a slow-fast-slow curve so it eases away rather than snapping.
-   The overlay stops taking clicks the moment it starts, so the page underneath
-   is usable while it is still being uncovered. The word is already gone by
-   now; visibility keeps it gone once the switch-off animation is removed. */
+   The black halves part along the centre line the picture closed to, top up
+   and bottom down, on a slow-fast-slow curve so it eases away rather than
+   snapping. The overlay stops taking clicks the moment it starts, so the page
+   underneath is usable while it is still being uncovered. Screen and beam are
+   gone by now — hidden outright, so a skip mid-glitch goes straight to black
+   rather than showing the white screen over the parting. */
 .intro[data-stage="reveal"] {
   pointer-events: none;
 }
 
-.intro[data-stage="reveal"] .intro__word {
+.intro[data-stage="reveal"] .intro__screen,
+.intro[data-stage="reveal"] .intro__beam {
   visibility: hidden;
 }
 
