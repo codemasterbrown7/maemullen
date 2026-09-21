@@ -11,11 +11,15 @@
  * the reference's 60px type, so the shake stays in proportion to a word that
  * is sized to the viewport rather than fixed.
  *
+ * `active` switches the shake on and off. Off, the layers sit exactly on top
+ * of each other and the word is plain black; on, each burst starts from the
+ * top of its loop.
+ *
  * No state and no effects — this is plain markup, the motion is all CSS.
  */
-export function GlitchText({ text }: { text: string }) {
+export function GlitchText({ text, active = true }: { text: string; active?: boolean }) {
   return (
-    <span className="intro-glitch">
+    <span className="intro-glitch" data-active={active}>
       <span className="intro-glitch__layer intro-glitch__layer--red">{text}</span>
       <span className="intro-glitch__layer intro-glitch__layer--green">{text}</span>
       <span className="intro-glitch__layer intro-glitch__layer--blue">{text}</span>
