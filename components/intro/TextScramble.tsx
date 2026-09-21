@@ -32,19 +32,22 @@ const CAPITALS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
  *  - **Nothing shows until it starts.** On a static page, rendering the
  *    finished word first would flash the answer before the puzzle.
  *
- * `duration` is the whole word; each letter gets an equal share of it, drawn
- * as a new random capital every `speed` seconds. Under prefers-reduced-motion
- * the word appears already resolved.
+ * Each letter gets `frames` frames of `speed` seconds: a new random capital on
+ * every frame but the last, which is the letter itself, so it is seen to land
+ * before the next one starts. Timing is set per letter rather than for the
+ * whole word, because a total divided across the letters has to round to
+ * whole frames — and that rounding silently swallowed a 5% speed-up once.
+ * Under prefers-reduced-motion the word appears already resolved.
  */
 export function TextScramble({
   text,
-  duration = 2,
-  speed = 0.05,
+  frames = 4,
+  speed = 0.06,
   characterSet = CAPITALS,
   onComplete,
 }: {
   text: string;
-  duration?: number;
+  frames?: number;
   speed?: number;
   characterSet?: string;
   onComplete?: () => void;
@@ -60,9 +63,7 @@ export function TextScramble({
   useEffect(() => {
     const target = Array.from(text);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    /* Frames per letter, at least one. The last frame of each letter's share is
-       the real character, so it is seen to land before the next one starts. */
-    const perLetter = Math.max(1, Math.round(duration / speed / target.length));
+    const perLetter = Math.max(1, Math.round(frames));
     const total = reduced ? 0 : perLetter * target.length;
     let step = 0;
     let last = "";
@@ -99,7 +100,7 @@ export function TextScramble({
     }, speed * 1000);
 
     return () => clearInterval(id);
-  }, [text, duration, speed, characterSet]);
+  }, [text, frames, speed, characterSet]);
 
   return (
     <span className="intro-scramble">
