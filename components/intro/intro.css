@@ -64,48 +64,96 @@
 }
 
 /* ── Faces ─────────────────────────────────────────────────────────────────
-   The typefaces the glitch swaps between — see FACES in Intro.tsx. Each one
-   differs from its neighbours in shape AND size, swinging huge, small, large,
-   small, so every swap changes the word's whole silhouette. The sizes are also
-   what keep the wide ones inside the screen.
+   The typefaces the word morphs through — see FACES in Intro.tsx. Each one
+   differs from its neighbours in shape AND size, swinging large, small, large,
+   small, so every change alters the word's whole silhouette. The sizes are
+   also what keep the wide ones inside the screen.
 
    Playfair 700 opens and closes: it is the face of the logotype's roman half,
    so those capitals are the wordmark's own letters rather than a stand-in. */
-.intro__word[data-face="playfair"] {
+.intro__face[data-face="playfair"] {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
-.intro__word[data-face="anton"] {
+.intro__face[data-face="anton"] {
   font-family: var(--font-anton), Impact, sans-serif;
   font-weight: 400;
   font-size: calc(var(--intro-size) * 1.7);
   letter-spacing: 0.01em;
 }
 
-/* Letter-spacing trails after the last letter too, so at 0.5em the word would
-   sit well left of centre; the matching padding on the other side evens it. */
-.intro__word[data-face="switzer"] {
+/* Letter-spacing trails after the last letter too, so at 0.35em the word
+   would sit left of centre; the matching padding on the other side evens it. */
+.intro__face[data-face="switzer"] {
   font-family: var(--font-body);
-  font-weight: 100;
-  font-size: calc(var(--intro-size) * 0.45);
-  letter-spacing: 0.5em;
-  padding-left: 0.5em;
+  font-weight: 400;
+  font-size: calc(var(--intro-size) * 0.6);
+  letter-spacing: 0.35em;
+  padding-left: 0.35em;
 }
 
-.intro__word[data-face="blackletter"] {
-  font-family: var(--font-blackletter), serif;
-  font-weight: 700;
-  font-size: calc(var(--intro-size) * 1.1);
+.intro__face[data-face="instrument"] {
+  font-family: var(--font-instrument), serif;
+  font-weight: 400;
+  font-size: calc(var(--intro-size) * 1.35);
   letter-spacing: 0;
 }
 
-.intro__word[data-face="pixel"] {
-  font-family: var(--font-pixel), monospace;
-  font-weight: 400;
+.intro__face[data-face="syncopate"] {
+  font-family: var(--font-syncopate), sans-serif;
+  font-weight: 700;
   font-size: calc(var(--intro-size) * 0.55);
   letter-spacing: 0.04em;
+}
+
+/* ── Morph ─────────────────────────────────────────────────────────────────
+   Both faces sit in one grid cell. The outgoing one blurs out as the incoming
+   one blurs in, and while that happens the pair is run through an alpha
+   threshold (#intro-melt in Intro.tsx): every soft, half-transparent edge is
+   forced back to either solid or gone. So instead of two words crossfading,
+   the letterforms look like they flow from one shape into the other.
+
+   The threshold is only on during the morph. Left on, it would strip the
+   anti-aliasing from the word at rest and every face would look jagged.
+   Blur is in em so it melts each face in proportion to its own size. */
+.intro__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.intro__morph {
+  display: grid;
+  place-items: center;
+}
+
+.intro__morph[data-morphing="true"] {
+  filter: url(#intro-melt);
+}
+
+.intro__face {
+  grid-area: 1 / 1;
+  font-size: var(--intro-size);
+}
+
+.intro__face--out {
+  animation: intro-melt-out var(--intro-morph) ease-in forwards;
+}
+
+.intro__face--in {
+  animation: intro-melt-in var(--intro-morph) ease-out forwards;
+}
+
+@keyframes intro-melt-out {
+  from { filter: blur(0); opacity: 1; }
+  to   { filter: blur(0.1em); opacity: 0; }
+}
+
+@keyframes intro-melt-in {
+  from { filter: blur(0.1em); opacity: 0; }
+  to   { filter: blur(0); opacity: 1; }
 }
 
 /* The name for assistive tech — the visible letters are aria-hidden. */

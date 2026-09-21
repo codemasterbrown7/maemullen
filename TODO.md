@@ -29,7 +29,7 @@ noted 2026-08-20.
 ## Visual — in progress
 
 - **The intro — being tuned at `/intro`, not live for visitors yet.** The name
-  types in, glitches through five faces and the screen parts onto the home
+  types in, glitches and morphs through five faces and the screen parts onto the home
   page (`components/intro/`). Once it is signed off: mount the
   same `<Intro />` on `/` for a visitor's first load (sessionStorage), and
   delete `app/intro/`.
