@@ -7,8 +7,15 @@ import { GlitchText } from "./GlitchText";
 import { TextScramble } from "./TextScramble";
 import "./intro.css";
 
-/** How long the word glitches once it has resolved, before the site opens. */
-const GLITCH_MS = 1600;
+/** How long the scramble takes to resolve the whole word, in seconds, and how
+ *  often it draws a new set of letters. The reference's 0.8s and 40ms read as
+ *  a blur (2026-09-21), so it runs at 2s and 60ms. */
+const SCRAMBLE_S = 2;
+const SCRAMBLE_FRAME_S = 0.06;
+
+/** How long the word glitches once it has resolved, before the site opens.
+ *  The glitch's own speed and strength are set in intro.css. */
+const GLITCH_MS = 2000;
 
 /**
  * The intro — the studio's name on white, scrambling into place and then
@@ -64,7 +71,12 @@ export function Intro() {
         <span className="intro__name">{siteName}</span>
         <span aria-hidden="true">
           {phase === "scramble" ? (
-            <TextScramble text={siteName} onComplete={() => setPhase("glitch")} />
+            <TextScramble
+              text={siteName}
+              duration={SCRAMBLE_S}
+              speed={SCRAMBLE_FRAME_S}
+              onComplete={() => setPhase("glitch")}
+            />
           ) : (
             <GlitchText text={siteName} />
           )}

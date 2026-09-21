@@ -56,58 +56,74 @@
 /* ── Glitch ────────────────────────────────────────────────────────────────
    Three copies in one grid cell, multiplied onto the white. isolation keeps
    the blend inside the word, so it only ever mixes with the intro's own
-   ground. Loop lengths are the reference's: 150, 130 and 110ms, each running
-   back and forth, so the three never settle into step. The curve stands in
-   for framer-motion's "anticipate" — a pull back before each move. */
+   ground.
+
+   The keyframes are the reference's own shape — its offsets (2px and 1px at
+   60px type, written as em so they scale with the word), its skews, its
+   opacity dips and its 150/130/110ms loops, each running back and forth so the
+   three never settle into step. Two dials scale all of it at once:
+
+     --glitch-strength  1 is the reference. It read as too violent at this
+                        size (2026-09-21), so the shake, skew and flicker all
+                        run at a third.
+     --glitch-slow      1 is the reference. At 4 the loops are 600/520/440ms:
+                        a drift rather than a buzz.
+
+   The curve is a plain ease-in-out, not the reference's "anticipate": that
+   pulls back before each move, and slowed down the pull-back reads as a bounce. */
 .intro-glitch {
+  --glitch-strength: 0.35;
+  --glitch-slow: 4;
   display: inline-grid;
   isolation: isolate;
 }
 
 .intro-glitch__layer {
+  --shift: calc(0.033em * var(--glitch-strength));
+  --nudge: calc(0.017em * var(--glitch-strength));
+  --skew: calc(2deg * var(--glitch-strength));
   grid-area: 1 / 1;
   mix-blend-mode: multiply;
-  animation-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
 
-/* Offsets are the reference's 2px and 1px at 60px type, as em: 0.033em and
-   0.017em. */
 .intro-glitch__layer--red {
   color: #ff0000;
   animation-name: intro-glitch-red;
-  animation-duration: 150ms;
+  animation-duration: calc(150ms * var(--glitch-slow));
 }
 
 .intro-glitch__layer--green {
   color: #00ff00;
   animation-name: intro-glitch-green;
-  animation-duration: 130ms;
+  animation-duration: calc(130ms * var(--glitch-slow));
 }
 
 .intro-glitch__layer--blue {
   color: #0000ff;
   animation-name: intro-glitch-blue;
-  animation-duration: 110ms;
+  animation-duration: calc(110ms * var(--glitch-slow));
 }
 
+/* Opacity dips are the reference's 0.8 and 0.9, scaled the same way. */
 @keyframes intro-glitch-red {
-  0%   { transform: translate(-0.033em, 0) skew(0deg); opacity: 1; }
-  50%  { transform: translate(0.033em, -0.017em) skew(-2deg); opacity: 0.8; }
-  100% { transform: translate(-0.033em, 0.017em) skew(2deg); opacity: 0.9; }
+  0%   { transform: translate(calc(var(--shift) * -1), 0) skew(0deg); opacity: 1; }
+  50%  { transform: translate(var(--shift), calc(var(--nudge) * -1)) skew(calc(var(--skew) * -1)); opacity: calc(1 - 0.2 * var(--glitch-strength)); }
+  100% { transform: translate(calc(var(--shift) * -1), var(--nudge)) skew(var(--skew)); opacity: calc(1 - 0.1 * var(--glitch-strength)); }
 }
 
 @keyframes intro-glitch-green {
-  0%   { transform: translate(0.033em, 0.017em) skew(-2deg); opacity: 0.9; }
-  50%  { transform: translate(-0.033em, -0.017em) skew(2deg); opacity: 1; }
-  100% { transform: translate(0.033em, 0) skew(0deg); opacity: 0.8; }
+  0%   { transform: translate(var(--shift), var(--nudge)) skew(calc(var(--skew) * -1)); opacity: calc(1 - 0.1 * var(--glitch-strength)); }
+  50%  { transform: translate(calc(var(--shift) * -1), calc(var(--nudge) * -1)) skew(var(--skew)); opacity: 1; }
+  100% { transform: translate(var(--shift), 0) skew(0deg); opacity: calc(1 - 0.2 * var(--glitch-strength)); }
 }
 
 @keyframes intro-glitch-blue {
-  0%   { transform: translate(-0.017em, -0.017em) skew(2deg); opacity: 0.8; }
-  50%  { transform: translate(0.017em, 0.017em) skew(-2deg); opacity: 0.9; }
-  100% { transform: translate(-0.017em, 0) skew(0deg); opacity: 1; }
+  0%   { transform: translate(calc(var(--nudge) * -1), calc(var(--nudge) * -1)) skew(var(--skew)); opacity: calc(1 - 0.2 * var(--glitch-strength)); }
+  50%  { transform: translate(var(--nudge), var(--nudge)) skew(calc(var(--skew) * -1)); opacity: calc(1 - 0.1 * var(--glitch-strength)); }
+  100% { transform: translate(calc(var(--nudge) * -1), 0) skew(0deg); opacity: 1; }
 }
 
 /* Still: the three layers sit exactly on top of each other and multiply to a

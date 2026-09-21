@@ -14,8 +14,8 @@ const CAPITALS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 /**
  * Text scramble: every letter starts as a random character and they lock in
  * left to right until the whole word has resolved. A port of the framer-motion
- * TextScramble component, with its timing kept (0.8s, a new frame every 40ms)
- * and two changes:
+ * TextScramble component, with its default timing kept (0.8s, a new frame
+ * every 40ms; the intro passes its own) and two changes:
  *
  *  - **Each letter holds its final width.** The real character sits invisibly
  *    in each cell and the random one is drawn over it. The reference writes the
