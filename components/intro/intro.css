@@ -12,19 +12,47 @@
   color: var(--brand-black);
 }
 
-/* Playfair 700 — the face of the logotype's roman half, so the capitals are
-   the wordmark's own letters rather than a stand-in. Sized against height as
-   well as width, like the rest of the site's display type: 11vw alone is
-   enormous on a short, wide laptop screen. */
+/* Sized against height as well as width, like the rest of the site's display
+   type: 11vw alone is enormous on a short, wide laptop screen. */
 .intro__word {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
   font-size: min(11vw, 20vh);
   line-height: 1;
-  letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+/* ── Faces ─────────────────────────────────────────────────────────────────
+   The typefaces the glitch swaps between — see FACES in Intro.tsx. Four of
+   the site's own, picked to differ as much as possible from each other, so
+   every swap is unmistakable: a Didone, a grotesque, a mono and a hairline.
+
+   Playfair 700 opens and closes: it is the face of the logotype's roman half,
+   so those capitals are the wordmark's own letters rather than a stand-in. */
+.intro__word[data-face="playfair"] {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.intro__word[data-face="heros"] {
+  font-family: var(--font-swiss);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.intro__word[data-face="mono"] {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Switzer is variable, 100–900; 200 is the lightest cut that still carries
+   the glitch's fringes at this size. */
+.intro__word[data-face="switzer"] {
+  font-family: var(--font-body);
+  font-weight: 200;
+  letter-spacing: 0.04em;
 }
 
 /* The name for assistive tech — the visible letters are aria-hidden. */
@@ -66,16 +94,28 @@
      --glitch-strength  1 is the reference. It read as too violent at this
                         size (2026-09-21), so the shake, skew and flicker all
                         run at a third.
-     --glitch-slow      1 is the reference. At 4 the loops are 600/520/440ms:
-                        a drift rather than a buzz.
+     --glitch-slow      1 is the reference's speed. It went to 4 for a slow
+                        drift, then back to 1 when the glitch became short
+                        bursts between face swaps (2026-09-21): a burst is a
+                        quarter of a second, and at 4 it barely moves in that.
 
-   The curve is a plain ease-in-out, not the reference's "anticipate": that
-   pulls back before each move, and slowed down the pull-back reads as a bounce. */
+   The curve stands in for framer-motion's "anticipate" — a pull back before
+   each move. (At 4× slower the pull-back read as a bounce; at full speed it is
+   what makes it a glitch rather than a wobble.)
+
+   Off between bursts — data-active="false" — the animation is removed, so the
+   three layers sit exactly on top of each other and multiply to plain black.
+   Removing it rather than pausing it also means each burst starts from the top
+   of its loop, with the layers jumping apart at once. */
 .intro-glitch {
   --glitch-strength: 0.35;
-  --glitch-slow: 4;
+  --glitch-slow: 1;
   display: inline-grid;
   isolation: isolate;
+}
+
+.intro-glitch[data-active="false"] .intro-glitch__layer {
+  animation-name: none;
 }
 
 .intro-glitch__layer {
@@ -84,7 +124,7 @@
   --skew: calc(2deg * var(--glitch-strength));
   grid-area: 1 / 1;
   mix-blend-mode: multiply;
-  animation-timing-function: ease-in-out;
+  animation-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
