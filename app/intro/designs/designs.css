@@ -1,0 +1,56 @@
+/* /intro/designs — see page.tsx. */
+
+.intro-designs {
+  padding: 96px 16px 64px;
+  background: var(--brand-white);
+  color: var(--brand-black);
+}
+
+.intro-designs__title {
+  margin: 0 0 32px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.intro-designs__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr));
+  gap: 32px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: design;
+}
+
+.intro-designs__item {
+  container-type: inline-size;
+  counter-increment: design;
+}
+
+/* The tile's width sets the lettering's base size, as the screen's does in
+   the intro itself, so every treatment is in proportion to the others. */
+.intro-designs__tile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  font-size: 12cqi;
+  border: 1px solid #e6e6e6;
+  background:
+    linear-gradient(#ececec, #ececec) center / 1px 100% no-repeat,
+    linear-gradient(#ececec, #ececec) center / 100% 1px no-repeat,
+    var(--brand-white);
+}
+
+.intro-designs__caption {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.intro-designs__caption::before {
+  content: counter(design, decimal-leading-zero) "  ";
+}

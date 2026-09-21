@@ -13,47 +13,21 @@
 }
 
 /* ── Opening onto the home page ────────────────────────────────────────────
-   Two copies of the screen, each clipped to one half with its half of the
-   word, parting along the centre line — top up, bottom down — on a
-   slow-fast-slow curve so it eases away rather than snapping. The halves
-   overlap by a pixel so no seam of the page shows before they move. The
-   overlay stops taking clicks the moment it starts, so the page underneath is
+   The whole overlay fades out over whatever it was showing, onto the home
+   page underneath. It stops taking clicks the moment it starts, so the page is
    usable while it is still being uncovered. */
-.intro[data-stage="reveal"] {
-  background: none;
+.intro[data-fading="true"] {
   pointer-events: none;
+  animation: intro-fade var(--intro-fade) ease forwards;
 }
 
-.intro__half {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: var(--brand-white);
-  animation: var(--intro-reveal) cubic-bezier(0.76, 0, 0.24, 1) forwards;
-}
-
-.intro__half--top {
-  clip-path: inset(0 0 calc(50% - 0.5px) 0);
-  animation-name: intro-part-up;
-}
-
-.intro__half--bottom {
-  clip-path: inset(calc(50% - 0.5px) 0 0 0);
-  animation-name: intro-part-down;
-}
-
-@keyframes intro-part-up {
-  to { transform: translateY(-50%); }
-}
-
-@keyframes intro-part-down {
-  to { transform: translateY(50%); }
+@keyframes intro-fade {
+  to { opacity: 0; }
 }
 
 /* Sized against height as well as width, like the rest of the site's display
    type: 11vw alone is enormous on a short, wide laptop screen. --intro-size is
-   the base; each face below sets its own multiple of it. */
+   the base; each treatment in faces.css is a multiple of it. */
 .intro__word {
   --intro-size: min(11vw, 20vh);
   margin: 0;
@@ -61,51 +35,6 @@
   line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
-}
-
-/* ── Faces ─────────────────────────────────────────────────────────────────
-   The typefaces the word morphs through — see FACES in Intro.tsx. Each one
-   differs from its neighbours in shape AND size, swinging large, small, large,
-   small, so every change alters the word's whole silhouette. The sizes are
-   also what keep the wide ones inside the screen.
-
-   Playfair 700 opens and closes: it is the face of the logotype's roman half,
-   so those capitals are the wordmark's own letters rather than a stand-in. */
-.intro__face[data-face="playfair"] {
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.intro__face[data-face="anton"] {
-  font-family: var(--font-anton), Impact, sans-serif;
-  font-weight: 400;
-  font-size: calc(var(--intro-size) * 1.7);
-  letter-spacing: 0.01em;
-}
-
-/* Letter-spacing trails after the last letter too, so at 0.35em the word
-   would sit left of centre; the matching padding on the other side evens it. */
-.intro__face[data-face="switzer"] {
-  font-family: var(--font-body);
-  font-weight: 400;
-  font-size: calc(var(--intro-size) * 0.6);
-  letter-spacing: 0.35em;
-  padding-left: 0.35em;
-}
-
-.intro__face[data-face="instrument"] {
-  font-family: var(--font-instrument), serif;
-  font-weight: 400;
-  font-size: calc(var(--intro-size) * 1.35);
-  letter-spacing: 0;
-}
-
-.intro__face[data-face="syncopate"] {
-  font-family: var(--font-syncopate), sans-serif;
-  font-weight: 700;
-  font-size: calc(var(--intro-size) * 0.55);
-  letter-spacing: 0.04em;
 }
 
 /* ── Morph ─────────────────────────────────────────────────────────────────
@@ -133,8 +62,13 @@
   filter: url(#intro-melt);
 }
 
+/* Grids all the way down to the lettering, rather than inline boxes: an
+   inline box would sit on a line of its own, whose strut adds the font's
+   descent under the lettering and pushes it up off centre. */
 .intro__face {
   grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
   font-size: var(--intro-size);
 }
 
@@ -211,7 +145,7 @@
 .intro-glitch {
   --glitch-strength: 0.35;
   --glitch-slow: 1;
-  display: inline-grid;
+  display: grid;
   isolation: isolate;
 }
 
@@ -224,6 +158,8 @@
   --nudge: calc(0.017em * var(--glitch-strength));
   --skew: calc(2deg * var(--glitch-strength));
   grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
   mix-blend-mode: multiply;
   animation-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
   animation-iteration-count: infinite;
@@ -272,5 +208,9 @@
 @media (prefers-reduced-motion: reduce) {
   .intro-glitch__layer {
     animation: none;
+  }
+
+  .intro[data-fading="true"] {
+    animation-duration: 1ms;
   }
 }

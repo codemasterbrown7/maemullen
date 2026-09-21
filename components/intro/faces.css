@@ -1,0 +1,300 @@
+/* ============================================================================
+   The intro's lettering — see components/intro/faces.tsx.
+
+   Sizes are in em of whatever the treatment sits in: the intro sets that to
+   its base size (--intro-size), and each treatment is a multiple of it, so
+   they swing between large and small against one another.
+
+   Everything is drawn in currentColor, and anything cut out of it — rings,
+   stripes, grooves, the grin — in var(--brand-white), the intro's ground.
+   The RGB glitch recolours currentColor layer by layer, so every treatment
+   glitches the same way the plain word does.
+   ============================================================================ */
+
+/* The box is the ink: text-box-trim cuts the line down to cap height and
+   baseline, so the box a face is centred by is the capitals themselves, not
+   the font's ascender and descender space — which differs from face to face,
+   and is what made the word jump up and down between changes. An umlaut
+   stands above the box, as it would above a line of capitals. */
+.face {
+  display: block;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-box: trim-both cap alphabetic;
+}
+
+.face__line {
+  display: block;
+}
+
+/* Anything cut out of a mark: a white stroke with round ends. */
+.face__cut {
+  fill: none;
+  stroke: var(--brand-white);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+/* Letter-spacing also trails after the last letter, so a tracked word sits off
+   centre by half of it; a matching pad on the other side evens that out. */
+
+/* ── The wordmark ─────────────────────────────────────────────────────────── */
+.face--playfair {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding-left: 0.02em;
+}
+
+/* ── Speed stripes (ref 03) ───────────────────────────────────────────────────
+   Towering condensed capitals with white rules cut through their lower half,
+   thickening as they fall, like type moving too fast to hold together. */
+.face--stripes {
+  position: relative;
+  font-family: var(--font-anton), Impact, sans-serif;
+  font-size: 1.55em;
+  letter-spacing: 0.01em;
+  padding-left: 0.01em;
+}
+
+.face--stripes::after {
+  content: "";
+  position: absolute;
+  inset: 0 -0.05em;
+  background: linear-gradient(
+    to bottom,
+    transparent 38%,
+    var(--brand-white) 38% 42%,
+    transparent 42% 54%,
+    var(--brand-white) 54% 59%,
+    transparent 59% 69%,
+    var(--brand-white) 69% 75%,
+    transparent 75% 83%,
+    var(--brand-white) 83% 91%,
+    transparent 91%
+  );
+}
+
+/* ── Smiley badge (ref 02) ──────────────────────────────────────────────── */
+.face--smiley {
+  width: 1.6em;
+  height: 1.6em;
+}
+
+.face--smiley text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 1px;
+  fill: var(--brand-white);
+}
+
+/* ── Sticker (ref 04) ───────────────────────────────────────────────────────
+   Fat, soft capitals, stacked, with a 70s drop shadow: a solid copy knocked
+   down and to the right, and a thin white ring round the letters so the two
+   never merge. (A ring all the way round, like a die-cut sticker, filled
+   every counter of letters this fat and read as one black blob.) */
+.face--sticker {
+  display: grid;
+  font-family: var(--font-bagel), sans-serif;
+  font-size: 1.05em;
+  line-height: 1.02;
+  text-align: center;
+}
+
+/* position: relative puts all three in one painting layer, in source order.
+   Otherwise the shadow's translate lifts it into a layer of its own, which
+   paints over the other two rather than under them. */
+.face--sticker > * {
+  position: relative;
+  grid-area: 1 / 1;
+  text-box: trim-both cap alphabetic;
+}
+
+.face--sticker__edge {
+  translate: 0.08em 0.08em;
+}
+
+.face--sticker__gap {
+  color: var(--brand-white);
+  -webkit-text-stroke: 0.07em var(--brand-white);
+  paint-order: stroke fill;
+}
+
+/* The shadow's weight is all down and to the right; pulled back by half its
+   offset so the lockup stays centred. */
+.face--sticker {
+  translate: -0.04em -0.04em;
+}
+
+/* ── Katakana (ref 07) ──────────────────────────────────────────────────── */
+.face--katakana {
+  font-family: var(--font-dela), sans-serif;
+  font-size: 0.82em;
+  line-height: 1.12;
+  text-align: center;
+}
+
+/* ── Tracked out, with a heart (ref 10) ───────────────────────────────────
+   Small and flung wide. The heart is a drawing, not a character, so no
+   spacing trails after it and the line needs no pad. */
+.face--tracked {
+  font-family: var(--font-syncopate), sans-serif;
+  font-weight: 700;
+  font-size: 0.3em;
+  letter-spacing: 0.4em;
+}
+
+.face--tracked__heart {
+  display: inline-block;
+  height: 1cap;
+  width: calc(1cap * 100 / 90);
+  vertical-align: baseline;
+}
+
+/* ── Inline monogram (ref 09) ─────────────────────────────────────────────── */
+.face--inline {
+  width: 2.86em;
+  height: 1.2em;
+}
+
+.face--inline__body,
+.face--inline__groove {
+  fill: none;
+  stroke-linejoin: round;
+}
+
+.face--inline__body {
+  stroke: currentColor;
+  stroke-width: 24;
+}
+
+.face--inline__groove {
+  stroke: var(--brand-white);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+/* ── Block letters (ref 13) ─────────────────────────────────────────────────
+   White capitals with a black edge, extruded down and to the right by a
+   stack of hard shadows. The extrusion makes the ink heavier on one side, so
+   the word is pulled back by half its depth to stay centred. */
+.face--extrude {
+  font-family: var(--font-dela), sans-serif;
+  font-size: 0.66em;
+  letter-spacing: 0.03em;
+  padding-left: 0.03em;
+  -webkit-text-fill-color: var(--brand-white);
+  -webkit-text-stroke: 0.05em currentColor;
+  paint-order: stroke fill;
+  text-shadow:
+    0.015em 0.015em, 0.03em 0.03em, 0.045em 0.045em, 0.06em 0.06em,
+    0.075em 0.075em, 0.09em 0.09em, 0.105em 0.105em, 0.12em 0.12em;
+  translate: -0.06em -0.06em;
+}
+
+/* ── Seal (ref 01) ──────────────────────────────────────────────────────────
+   The name is nine letters, which is three rows of three — a stamp. The row
+   gap leaves room for the Ü's dots. */
+.face--seal {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3em 0.14em;
+  padding: 0.3em 0.3em;
+  border: 0.07em solid currentColor;
+  border-radius: 0.18em;
+  font-family: var(--font-dela), sans-serif;
+  font-size: 0.42em;
+  text-align: center;
+}
+
+.face--seal > * {
+  text-box: trim-both cap alphabetic;
+}
+
+/* ── Split line (ref 15) ────────────────────────────────────────────────────
+   Wide capitals in outline, cut through the middle. The outline has a floor
+   in px so it never thins to a hairline on a small screen. */
+.face--split {
+  position: relative;
+  font-family: var(--font-syncopate), sans-serif;
+  font-weight: 700;
+  font-size: 0.6em;
+  letter-spacing: 0.08em;
+  padding-left: 0.08em;
+  -webkit-text-fill-color: var(--brand-white);
+  -webkit-text-stroke: max(0.055em, 2px) currentColor;
+}
+
+.face--split::after {
+  content: "";
+  position: absolute;
+  inset: 42% -0.1em auto;
+  height: 16%;
+  background: var(--brand-white);
+}
+
+/* ── Standing and lying (ref 20) ────────────────────────────────────────────
+   One M stands; the other lies flat on the floor at its foot, squashed and
+   sheared as if seen from above, with a white edge where it crosses in front
+   of the standing one. The lying M hangs below the baseline and shears off
+   to the left, so the pair is moved up and right to keep its ink centred. */
+.face--console {
+  display: grid;
+  font-family: var(--font-dela), sans-serif;
+  font-size: 1.3em;
+  translate: 0.34em -0.16em;
+}
+
+.face--console > * {
+  grid-area: 1 / 1;
+  text-box: trim-both cap alphabetic;
+}
+
+.face--console__stand {
+  translate: -0.3em 0;
+}
+
+.face--console__lie {
+  transform-origin: 0 0;
+  transform: translate(-0.12em, 100%) skewX(-50deg) scaleY(0.42);
+  -webkit-text-stroke: 0.08em var(--brand-white);
+  paint-order: stroke fill;
+}
+
+/* ── Tight grotesk (ref 12) ───────────────────────────────────────────────── */
+.face--tight {
+  font-family: var(--font-body);
+  font-weight: 900;
+  font-size: 1.05em;
+  letter-spacing: -0.09em;
+  padding-right: 0.09em;
+}
+
+/* ── Slashes (ref 18) ───────────────────────────────────────────────────────
+   The initials upright — only the three bars before them lean. */
+.face--slashes {
+  font-family: var(--font-dela), sans-serif;
+  font-size: 1.25em;
+  letter-spacing: -0.02em;
+  padding-right: 0.02em;
+  /* The leaning bars overhang the box on the left. */
+  translate: 0.1em 0;
+}
+
+.face--slashes__bar {
+  display: inline-block;
+  width: 0.13em;
+  height: 1cap;
+  margin-right: 0.07em;
+  background: currentColor;
+  transform: skewX(-24deg);
+  vertical-align: baseline;
+}
+
+/* ── Heart (ref 24) ─────────────────────────────────────────────────────── */
+.face--heart {
+  width: 1.5em;
+  height: 1.35em;
+}
