@@ -6,118 +6,49 @@
   position: fixed;
   inset: 0;
   z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--brand-white);
   color: var(--brand-black);
 }
 
-/* The black behind the screen is two halves, not one background, so it can
-   part down the middle at the end. Each half runs 1px past the centre line, so
-   no seam of the page beneath shows through while they are closed. z-index -1
-   keeps them under the screen but inside .intro, its own stacking context. */
-.intro::before,
-.intro::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: calc(50% + 1px);
-  z-index: -1;
-  background: var(--brand-black);
+/* ── Opening onto the home page ────────────────────────────────────────────
+   Two copies of the screen, each clipped to one half with its half of the
+   word, parting along the centre line — top up, bottom down — on a
+   slow-fast-slow curve so it eases away rather than snapping. The halves
+   overlap by a pixel so no seam of the page shows before they move. The
+   overlay stops taking clicks the moment it starts, so the page underneath is
+   usable while it is still being uncovered. */
+.intro[data-stage="reveal"] {
+  background: none;
+  pointer-events: none;
 }
 
-.intro::before {
-  top: 0;
-}
-
-.intro::after {
-  bottom: 0;
-}
-
-/* The screen — the white picture the name is shown on. The switch-off happens
-   to this, not to the word: it is clipped, never scaled, so the letters stay
-   exactly as they were while the picture closes over them. */
-.intro__screen {
+.intro__half {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
   background: var(--brand-white);
+  animation: var(--intro-reveal) cubic-bezier(0.76, 0, 0.24, 1) forwards;
 }
 
-/* ── Switching off ─────────────────────────────────────────────────────────
-   How a CRT went dark, in black: the picture closes from top and bottom to a
-   thin line across the middle — fast at first, slowing as it narrows — then
-   the beam takes over from the last sliver of picture: a white line, held for
-   a beat, drawing in to a glowing dot, which fades out. Percentages are of
-   TV_OFF_MS in Intro.tsx. */
-.intro[data-stage="off"] .intro__screen {
-  animation: intro-screen-off var(--intro-tv-off) forwards;
+.intro__half--top {
+  clip-path: inset(0 0 calc(50% - 0.5px) 0);
+  animation-name: intro-part-up;
 }
 
-@keyframes intro-screen-off {
-  0%        { clip-path: inset(0 0 0 0); animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
-  38%       { clip-path: inset(calc(50% - 1.5px) 0 calc(50% - 1.5px) 0); }
-  40%, 100% { clip-path: inset(50% 0 50% 0); }
-}
-
-/* The beam: the line and then the dot. Width and height animate rather than a
-   scale, because a scaled box-shadow would squash the glow along with the box
-   and the dot would come out as a smear. */
-.intro__beam {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 3px;
-  border-radius: 3px;
-  transform: translate(-50%, -50%);
-  background: var(--brand-white);
-  box-shadow: 0 0 12px 2px rgb(255 255 255 / 0.6);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.intro[data-stage="off"] .intro__beam {
-  animation: intro-beam var(--intro-tv-off) forwards;
-}
-
-@keyframes intro-beam {
-  0%, 36% { opacity: 0; width: 100%; height: 3px; }
-  40%     { opacity: 1; width: 100%; height: 3px; }
-  58%     { opacity: 1; width: 100%; height: 3px; animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
-  84%     { opacity: 1; width: 6px; height: 6px; box-shadow: 0 0 14px 4px rgb(255 255 255 / 0.8); }
-  100%    { opacity: 0; width: 3px; height: 3px; box-shadow: 0 0 4px 1px rgb(255 255 255 / 0); }
-}
-
-/* ── Opening onto the home page ────────────────────────────────────────────
-   The black halves part along the centre line the picture closed to, top up
-   and bottom down, on a slow-fast-slow curve so it eases away rather than
-   snapping. The overlay stops taking clicks the moment it starts, so the page
-   underneath is usable while it is still being uncovered. Screen and beam are
-   gone by now — hidden outright, so a skip mid-glitch goes straight to black
-   rather than showing the white screen over the parting. */
-.intro[data-stage="reveal"] {
-  pointer-events: none;
-}
-
-.intro[data-stage="reveal"] .intro__screen,
-.intro[data-stage="reveal"] .intro__beam {
-  visibility: hidden;
-}
-
-.intro[data-stage="reveal"]::before {
-  animation: intro-part-up var(--intro-reveal) cubic-bezier(0.76, 0, 0.24, 1) forwards;
-}
-
-.intro[data-stage="reveal"]::after {
-  animation: intro-part-down var(--intro-reveal) cubic-bezier(0.76, 0, 0.24, 1) forwards;
+.intro__half--bottom {
+  clip-path: inset(calc(50% - 0.5px) 0 0 0);
+  animation-name: intro-part-down;
 }
 
 @keyframes intro-part-up {
-  to { transform: translateY(-100%); }
+  to { transform: translateY(-50%); }
 }
 
 @keyframes intro-part-down {
-  to { transform: translateY(100%); }
+  to { transform: translateY(50%); }
 }
 
 /* Sized against height as well as width, like the rest of the site's display
@@ -134,10 +65,9 @@
 
 /* ── Faces ─────────────────────────────────────────────────────────────────
    The typefaces the glitch swaps between — see FACES in Intro.tsx. Each one
-   differs from its neighbours in shape AND in size, so every swap changes the
-   word's whole silhouette, not just its details: tall and narrow, then a small
-   hairline, then short and wide. The sizes are also what keep them all inside
-   the screen — Unbounded at the base size would run off both edges.
+   differs from its neighbours in shape AND size, swinging huge, small, large,
+   small, so every swap changes the word's whole silhouette. The sizes are also
+   what keep the wide ones inside the screen.
 
    Playfair 700 opens and closes: it is the face of the logotype's roman half,
    so those capitals are the wordmark's own letters rather than a stand-in. */
@@ -150,27 +80,32 @@
 .intro__word[data-face="anton"] {
   font-family: var(--font-anton), Impact, sans-serif;
   font-weight: 400;
-  font-size: calc(var(--intro-size) * 1.5);
+  font-size: calc(var(--intro-size) * 1.7);
   letter-spacing: 0.01em;
 }
 
-/* Switzer is variable, 100–900; 200 is the lightest cut that still carries
-   the glitch's fringes, and still reads at phone size. Letter-spacing trails
-   after the last letter too, so at 0.2em the word would sit visibly left of
-   centre; the matching padding on the other side evens it out. */
+/* Letter-spacing trails after the last letter too, so at 0.5em the word would
+   sit well left of centre; the matching padding on the other side evens it. */
 .intro__word[data-face="switzer"] {
   font-family: var(--font-body);
-  font-weight: 200;
-  font-size: calc(var(--intro-size) * 0.8);
-  letter-spacing: 0.2em;
-  padding-left: 0.2em;
+  font-weight: 100;
+  font-size: calc(var(--intro-size) * 0.45);
+  letter-spacing: 0.5em;
+  padding-left: 0.5em;
 }
 
-.intro__word[data-face="unbounded"] {
-  font-family: var(--font-unbounded), "Arial Black", sans-serif;
-  font-weight: 900;
-  font-size: calc(var(--intro-size) * 0.7);
-  letter-spacing: -0.02em;
+.intro__word[data-face="blackletter"] {
+  font-family: var(--font-blackletter), serif;
+  font-weight: 700;
+  font-size: calc(var(--intro-size) * 1.1);
+  letter-spacing: 0;
+}
+
+.intro__word[data-face="pixel"] {
+  font-family: var(--font-pixel), monospace;
+  font-weight: 400;
+  font-size: calc(var(--intro-size) * 0.55);
+  letter-spacing: 0.04em;
 }
 
 /* The name for assistive tech — the visible letters are aria-hidden. */

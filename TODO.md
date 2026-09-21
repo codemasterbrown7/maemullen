@@ -29,8 +29,8 @@ noted 2026-08-20.
 ## Visual — in progress
 
 - **The intro — being tuned at `/intro`, not live for visitors yet.** The name
-  types in, glitches through four faces, switches off to black like an old TV, sits
-  black, and parts onto the home page (`components/intro/`). Once it is signed off: mount the
+  types in, glitches through five faces and the screen parts onto the home
+  page (`components/intro/`). Once it is signed off: mount the
   same `<Intro />` on `/` for a visitor's first load (sessionStorage), and
   delete `app/intro/`.
 - **Optional: photograph a crumpled receipt for `/packages`.** The crumple is
